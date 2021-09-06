@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL.Repositories
 {
-    class EnvironmentRepository
+    public class EnvironmentRepository
     {
         private readonly Database DB;
 
