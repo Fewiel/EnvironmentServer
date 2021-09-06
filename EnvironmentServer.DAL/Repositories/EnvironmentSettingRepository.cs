@@ -17,7 +17,7 @@ namespace EnvironmentServer.DAL.Repositories
             DB = db;
         }
 
-        public EnvironmentSetting Get(string id)
+        public EnvironmentSetting Get(long id)
         {
             using (var connection = DB.GetConnection())
             {

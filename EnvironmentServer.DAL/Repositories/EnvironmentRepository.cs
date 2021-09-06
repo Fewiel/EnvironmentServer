@@ -16,7 +16,7 @@ namespace EnvironmentServer.DAL.Repositories
             DB = db;
         }
 
-        public Environment Get(string id)
+        public Environment Get(long id)
         {
             using (var connection = DB.GetConnection())
             {
@@ -40,7 +40,7 @@ namespace EnvironmentServer.DAL.Repositories
             return null;
         }
 
-        public IEnumerable<Environment> GetForUser(string userID)
+        public IEnumerable<Environment> GetForUser(long userID)
         {
             using (var connection = DB.GetConnection())
             {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL.Repositories
 {
-    class EnvironmentSettingValueRepository
+    public class EnvironmentSettingValueRepository
     {
         private readonly Database DB;
 
@@ -17,7 +17,7 @@ namespace EnvironmentServer.DAL.Repositories
             DB = db;
         }
 
-        public IEnumerable<EnvironmentSettingValue> GetForEnvironment(string environmentID)
+        public IEnumerable<EnvironmentSettingValue> GetForEnvironment(long environmentID)
         {
             using (var connection = DB.GetConnection())
             {
@@ -34,7 +34,7 @@ namespace EnvironmentServer.DAL.Repositories
             }
         }
 
-        public IEnumerable<EnvironmentSettingValue> GetForEnvironmentSetting(string environmentSettingID)
+        public IEnumerable<EnvironmentSettingValue> GetForEnvironmentSetting(long environmentSettingID)
         {
             using (var connection = DB.GetConnection())
             {
