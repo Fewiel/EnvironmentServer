@@ -34,7 +34,8 @@ namespace EnvironmentServer.DAL.Repositories
                         ID = reader.GetInt64(0),
                         Email = reader.GetString(1),
                         Username = reader.GetString(2),
-                        Password = reader.GetString(3)
+                        Password = reader.GetString(3),
+                        IsAdmin = reader.GetBoolean(4)
                     };
 
                     reader.Close();
@@ -64,7 +65,8 @@ namespace EnvironmentServer.DAL.Repositories
                         ID = reader.GetInt64(0),
                         Email = reader.GetString(1),
                         Username = reader.GetString(2),
-                        Password = reader.GetString(3)
+                        Password = reader.GetString(3),
+                        IsAdmin = reader.GetBoolean(4)
                     };
 
                     reader.Close();
@@ -81,11 +83,12 @@ namespace EnvironmentServer.DAL.Repositories
         {
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`) "
-                     + "VALUES (NULL, '@email', '@username', '@password')");
+                var Command = new MySqlCommand("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`) "
+                     + "VALUES (NULL, '@email', '@username', '@password', @isAdmin)");
                 Command.Parameters.AddWithValue("@email", user.Email);
                 Command.Parameters.AddWithValue("@username", user.Username);
                 Command.Parameters.AddWithValue("@password", user.Password);
+                Command.Parameters.AddWithValue("@isAdmin", user.IsAdmin);
                 Command.Connection = connection;
                 connection.Open();
                 Command.ExecuteNonQuery();
@@ -97,11 +100,12 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `users` SET "
-                     + "`Email` = '@email', `Username` = '@username', `Password` = '@password' WHERE `users`.`ID` = @id");
+                     + "`Email` = '@email', `Username` = '@username', `Password` = '@password', `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id");
                 Command.Parameters.AddWithValue("@id", user.ID);
                 Command.Parameters.AddWithValue("@email", user.Email);
                 Command.Parameters.AddWithValue("@username", user.Username);
                 Command.Parameters.AddWithValue("@password", user.Password);
+                Command.Parameters.AddWithValue("@isAdmin", user.IsAdmin);
                 Command.Connection = connection;
                 connection.Open();
                 Command.ExecuteNonQuery();
