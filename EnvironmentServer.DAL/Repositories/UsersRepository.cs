@@ -84,7 +84,7 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`) "
-                     + "VALUES (NULL, '@email', '@username', '@password', @isAdmin)");
+                     + "VALUES (NULL, @email, @username, @password, @isAdmin)");
                 Command.Parameters.AddWithValue("@email", user.Email);
                 Command.Parameters.AddWithValue("@username", user.Username);
                 Command.Parameters.AddWithValue("@password", user.Password);
@@ -100,7 +100,7 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `users` SET "
-                     + "`Email` = '@email', `Username` = '@username', `Password` = '@password', `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id");
+                     + "`Email` = @email, `Username` = @username, `Password` = @password, `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id");
                 Command.Parameters.AddWithValue("@id", user.ID);
                 Command.Parameters.AddWithValue("@email", user.Email);
                 Command.Parameters.AddWithValue("@username", user.Username);

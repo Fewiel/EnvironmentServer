@@ -55,7 +55,7 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `environments_settings` (`ID`, `Property`) VALUES "
-                    + "(NULL, '@property');");
+                    + "(NULL, @property);");
                 Command.Parameters.AddWithValue("@property", environment.Property);
                 Command.Connection = connection;
                 connection.Open();
@@ -67,7 +67,7 @@ namespace EnvironmentServer.DAL.Repositories
         {
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand("UPDATE `environments_settings` SET `Property` = '@property'"
+                var Command = new MySqlCommand("UPDATE `environments_settings` SET `Property` = @property"
                     + " WHERE `environments_settings`.`ID` = @id;");
                 Command.Parameters.AddWithValue("@id", environment.ID);
                 Command.Parameters.AddWithValue("@property", environment.Property);

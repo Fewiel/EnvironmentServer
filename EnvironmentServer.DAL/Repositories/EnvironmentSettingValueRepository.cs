@@ -66,7 +66,7 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `environment_setting_value` (`environments_ID_fk`, "
-                     + "`environments_settings_ID_fk`, `Value`) VALUES (@environmentID, @environmentSettingID, '@value');");
+                     + "`environments_settings_ID_fk`, `Value`) VALUES (@environmentID, @environmentSettingID, @value);");
                 Command.Parameters.AddWithValue("@environmentID", environment.EnvironmentID);
                 Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
                 Command.Parameters.AddWithValue("@value", environment.Value);
@@ -81,7 +81,7 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `environments_settings_values` SET `environments_ID_fk`= @environmentID,"
-                     + "`environments_settings_ID_fk`= @environmentSettingID,`Value`='@value' WHERE `environments_ID_fk` = @environmentID "
+                     + "`environments_settings_ID_fk`= @environmentSettingID,`Value`=@value WHERE `environments_ID_fk` = @environmentID "
                       + "AND `environments_settings_ID_fk` = @environmentSettingID;");
                 Command.Parameters.AddWithValue("@environmentID", environment.EnvironmentID);
                 Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);

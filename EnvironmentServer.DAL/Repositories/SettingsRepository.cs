@@ -52,7 +52,7 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `settings` (`ID`, `SettingKey`, `DisplayName`, `Value`) VALUES "
-                    + "(NULL, '@key', '@displayName', '@value');");
+                    + "(NULL, @key, @displayName, @value);");
                 Command.Parameters.AddWithValue("@key", setting.Key);
                 Command.Parameters.AddWithValue("@displayName", setting.DisplayName);
                 Command.Parameters.AddWithValue("@value", setting.Value);
@@ -66,8 +66,8 @@ namespace EnvironmentServer.DAL.Repositories
         {
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand("UPDATE `settings` SET `SettingKey` = '@key', `DisplayName` = '@displayName', "
-                    + "`Value` = '@value' WHERE `settings`.`ID` = @id;");
+                var Command = new MySqlCommand("UPDATE `settings` SET `SettingKey` = @key, `DisplayName` = @displayName, "
+                    + "`Value` = @value WHERE `settings`.`ID` = @id;");
                 Command.Parameters.AddWithValue("@id", setting.ID);
                 Command.Parameters.AddWithValue("@key", setting.Key);
                 Command.Parameters.AddWithValue("@displayName", setting.DisplayName);
