@@ -9,7 +9,8 @@ namespace EnvironmentServer.DAL
 {
     public class PasswordHasher
     {
-        private const string HashVersion = "$EnvHash$V1${0}${1}";
+        private const string HashVersion = "$EnvHash$V1${0}";
+        private const string HashTemplate = HashVersion + "${1}";
         private const int DefaultIterations = 10000;
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace EnvironmentServer.DAL
             var base64Hash = Convert.ToBase64String(hashBytes);
 
             // Format hash with extra information
-            return string.Format(HashVersion, iterations, base64Hash);
+            return string.Format(HashTemplate, iterations, base64Hash);
         }
 
         /// <summary>
@@ -65,9 +66,9 @@ namespace EnvironmentServer.DAL
         /// </summary>
         /// <param name="hashString">The hash.</param>
         /// <returns>Is supported?</returns>
-        public static bool IsHashSupported(string hashString)
+        public static bool IsHashSupported(string hashString, int iterations)
         {
-            return hashString.Contains(HashVersion);
+            return hashString.Contains(string.Format(HashVersion, iterations));
         }
 
         /// <summary>
@@ -78,16 +79,16 @@ namespace EnvironmentServer.DAL
         /// <returns>Could be verified?</returns>
         public static bool Verify(string password, string hashedPassword)
         {
+            // Extract iteration and Base64 string
+            var splittedHashString = hashedPassword.Replace(HashTemplate, "").Split('$');
+            var iterations = int.Parse(splittedHashString[3]);
+            var base64Hash = splittedHashString[4];
+
             // Check hash
-            if (!IsHashSupported(hashedPassword))
+            if (!IsHashSupported(hashedPassword, iterations))
             {
                 throw new NotSupportedException("The hashtype is not supported");
             }
-
-            // Extract iteration and Base64 string
-            var splittedHashString = hashedPassword.Replace(HashVersion, "").Split('$');
-            var iterations = int.Parse(splittedHashString[0]);
-            var base64Hash = splittedHashString[1];
 
             // Get hash bytes
             var hashBytes = Convert.FromBase64String(base64Hash);

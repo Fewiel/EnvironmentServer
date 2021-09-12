@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using EnvironmentServer.Web.Extensions
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -30,6 +32,18 @@
         </nav>
     </header>
     <div class="container">
+        @{
+            var msgs = TempData.Get<List<Message>>("messages");
+        }
+        @if (msgs != null)
+        {
+            <div class="row">
+                @foreach (var msg in msgs)
+                {
+                    <div class="alert @msg.Class">@msg.Content</div>
+                }
+            </div>
+        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

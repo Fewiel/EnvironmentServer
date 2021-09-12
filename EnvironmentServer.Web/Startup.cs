@@ -25,7 +25,7 @@ namespace EnvironmentServer.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton(new Database("server=environment.p-weitkamp.de;database=EnvironmentServer;uid=admin;pwd=-------;"));
+            services.AddSingleton(new Database("server=environment.p-weitkamp.de;database=EnvironmentServer;uid=admin;pwd=-;"));
             services.AddRazorPages().AddRazorRuntimeCompilation();
         }
 
