@@ -1,5 +1,8 @@
 ﻿using EnvironmentServer.DAL;
+using EnvironmentServer.Web.Attributes;
+using EnvironmentServer.Web.Extensions;
 using EnvironmentServer.Web.ViewModels.Login;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
 {
+    [AllowNotLoggedIn]
     public class LoginController : ControllerBase
     {
         private readonly Database DB;
@@ -17,13 +21,13 @@ namespace EnvironmentServer.Web.Controllers
             DB = database;
         }
 
-        [HttpGet, Route("/Login")]
+        [HttpGet, Route("/Login", Name = "login")]
         public IActionResult Login()
         {
             return View();
         }
 
-        [HttpPost, Route("/Login")]
+        [HttpPost, Route("/Login", Name = "login")]
         public IActionResult Login([FromForm]LoginViewModel lvm)
         {
             if (!ModelState.IsValid)
@@ -37,10 +41,19 @@ namespace EnvironmentServer.Web.Controllers
             }
 
             if (PasswordHasher.Verify(lvm.Password, usr.Password))
+            {
+                HttpContext.Session.SetObject("user", usr);
                 return RedirectToAction("Index", "Home");
+            }
 
             AddError("Wrong username or password");
             return View();
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToRoute("login");
         }
     }
 }

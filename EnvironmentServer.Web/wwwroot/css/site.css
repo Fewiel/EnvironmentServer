@@ -5,3 +5,11 @@
     white-space: nowrap;
     line-height: 60px;
 }
+
+.fullHeight {
+    height: 100%;
+}
+
+.pageHeight {
+    height: calc(100% - 60px);
+}

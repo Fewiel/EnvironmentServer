@@ -1,4 +1,5 @@
-﻿using EnvironmentServer.Web.Models;
+﻿using EnvironmentServer.Web.Attributes;
+using EnvironmentServer.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ControllerBase
     {
         private readonly ILogger<HomeController> _logger;
 
@@ -23,6 +24,7 @@ namespace EnvironmentServer.Web.Controllers
             return View();
         }
 
+        [AdminOnly]
         public IActionResult Privacy()
         {
             return View();

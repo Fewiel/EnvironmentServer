@@ -1,0 +1,10 @@
+﻿@model EnvironmentServer.DAL.Models.User
+
+@if (Model == null)
+{
+    <a asp-route="login">Login</a>
+}
+else
+{
+    <span>@Model.Username</span><span> - </span><a asp-controller="Login" asp-action="Logout">Logout</a>
+}

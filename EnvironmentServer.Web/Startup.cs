@@ -1,6 +1,7 @@
 using EnvironmentServer.DAL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +26,17 @@ namespace EnvironmentServer.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton(new Database("server=environment.p-weitkamp.de;database=EnvironmentServer;uid=admin;pwd=-;"));
             services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddSingleton(new Database("server=phillip.local;database=EnvironmentServer;uid=admin;pwd=1594875;"));
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            //Sessions
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(1);//You can set Time   
+            });
+            //services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,9 +55,8 @@ namespace EnvironmentServer.Web
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

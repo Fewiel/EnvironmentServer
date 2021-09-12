@@ -4,16 +4,19 @@
     ViewData["Title"] = "Login";
 }
 
-<form method="post" asp-action="Login">
-    <div class="mb-3">
-        <label asp-for="Username" class="form-label">Username</label>
-        <input asp-for="Username" class="form-control" />
-        <span asp-validation-for="Username"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label">Password</label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
+<div class="d-flex align-items-center justify-content-center fullHeight">
+    <form method="post" asp-action="Login" style="width: 400px;">
+        <div class="mb-3">
+            <label asp-for="Username" class="form-label">Username</label>
+            <input asp-for="Username" class="form-control" />
+            <span asp-validation-for="Username"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label">Password</label>
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        <p style="margin-top: 10px;">To get an environment system account contact: MAILADDRESS</p>
+    </form>
+</div>

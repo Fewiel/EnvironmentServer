@@ -1,7 +1,9 @@
-﻿@using EnvironmentServer.Web.Extensions
+﻿@using Microsoft.AspNetCore.Http
+@using EnvironmentServer.Web.Extensions
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="pageHeight">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +11,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap-dark-5/dist/css/bootstrap-night.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
+<body class="fullHeight">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3" style="margin-bottom: 0 !important;">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EnvironmentServer.Web</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -27,11 +29,17 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    <span class="navbar-text">
+                        @{ 
+                            var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
+                        }
+                        <partial name="/Views/Components/Login.cshtml" model=usr />
+                    </span>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container pageHeight">
         @{
             var msgs = TempData.Get<List<Message>>("messages");
         }
@@ -44,7 +52,7 @@
                 }
             </div>
         }
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 fullHeight">
             @RenderBody()
         </main>
     </div>
