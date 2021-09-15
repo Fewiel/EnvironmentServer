@@ -21,15 +21,16 @@ namespace EnvironmentServer.DAL
             ConnString = connString;
             Settings = new SettingsRepository(this);
             Users = new UsersRepository(this);
-            if (Users.GetByUsername("root") == null)
+            if (Users.GetByUsername("Admin") == null)
             {
-                Users.Insert(new User
+                Task.Run(() => Users.InsertAsync(new User
                 {
                     Email = "root@root.tld",
-                    Username = "root",
-                    Password = PasswordHasher.Hash("root"),
+                    Username = "Admin",
+                    Password = PasswordHasher.Hash("Admin"),
                     IsAdmin = true
-                });
+                }, "Admin"));
+                
             }
         }
 

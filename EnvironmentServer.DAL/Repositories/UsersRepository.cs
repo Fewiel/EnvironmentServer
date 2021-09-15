@@ -1,4 +1,5 @@
-﻿using EnvironmentServer.DAL.Models;
+﻿using CliWrap;
+using EnvironmentServer.DAL.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ namespace EnvironmentServer.DAL.Repositories
             return null;
         }
 
-        public void Insert(User user)
+        public async Task InsertAsync(User user, string shellPassword)
         {
             using (var connection = DB.GetConnection())
             {
@@ -93,9 +94,50 @@ namespace EnvironmentServer.DAL.Repositories
                 connection.Open();
                 Command.ExecuteNonQuery();
             }
+
+            //sudo addgroup sftp_users
+
+            //  /etc/ssh/sshd_config
+            //https://linuxize.com/post/how-to-set-up-sftp-chroot-jail/
+            //
+            //            Match Group sftp_users
+            //# Force the connection to use SFTP and chroot to the required directory.
+            //              ForceCommand internal-sftp
+            //              ChrootDirectory %h
+            //              # Disable tunneling, authentication agent, TCP and X11 forwarding.
+            //              PermitTunnel no
+            //              AllowAgentForwarding no
+            //              AllowTcpForwarding no
+            //              X11Forwarding no
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"usermod -G sftp_users {user.Username}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"mkdir /home/{user.Username}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"sudo chown root /home/{user.Username}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"sudo chmod 755 /home/{user.Username}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"mkdir /home/{user.Username}/files")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"sudo chown {user.Username} /home/{user.Username}/files")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"sudo chmod 755 /home/{user.Username}/files")
+                .ExecuteAsync();
+
         }
 
-        public void Update(User user)
+        public async void Update(User user, string shellPassword)
         {
             using (var connection = DB.GetConnection())
             {
@@ -110,9 +152,14 @@ namespace EnvironmentServer.DAL.Repositories
                 connection.Open();
                 Command.ExecuteNonQuery();
             }
+
+            //echo "linuxpassword" | passwd --stdin linuxuser
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"echo \"{shellPassword}\" | passwd --stdin {user.Username}")
+                .ExecuteAsync();
         }
 
-        public void Delete(User user)
+        public async void Delete(User user)
         {
             using (var connection = DB.GetConnection())
             {
@@ -122,6 +169,11 @@ namespace EnvironmentServer.DAL.Repositories
                 connection.Open();
                 Command.ExecuteNonQuery();
             }
+
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"sudo userdel {user.Username} --force")
+                .ExecuteAsync();
         }
     }
 }
