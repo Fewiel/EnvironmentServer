@@ -12,6 +12,5 @@ namespace EnvironmentServer.Daemon.Models
 
         public string Version { get; set; }
         public string Path { get; set; }
-        public ShellUser User { get; set; }
     }
 }

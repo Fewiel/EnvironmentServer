@@ -1,8 +1,10 @@
-﻿using EnvironmentServer.DAL.Models;
+﻿using CliWrap;
+using EnvironmentServer.DAL.Models;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL.Repositories
@@ -68,8 +70,10 @@ namespace EnvironmentServer.DAL.Repositories
             };
         }
 
-        public void Insert(Environment environment)
+        public async Task InsertAsync(Environment environment, User user)
         {
+            var dbString = user.Username + "_" + Regex.Replace(environment.Name, @"[^\w\.@-]", "");
+
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `environments` (`ID`, `users_ID_fk`, `Name`, `Address`) VALUES "
@@ -80,7 +84,31 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 connection.Open();
                 Command.ExecuteNonQuery();
+
+                Command = new MySqlCommand("create database @database;");
+                Command.Parameters.AddWithValue("@database", dbString);
+                Command.Connection = connection;
+                connection.Open();
+                Command.ExecuteNonQuery();
+
+                Command = new MySqlCommand("grant all on @database.* to @user@'localhost';");
+                Command.Parameters.AddWithValue("@user", user.Username);
+                Command.Parameters.AddWithValue("@database", dbString);
+                Command.Connection = connection;
+                connection.Open();
+                Command.ExecuteNonQuery();
+
             }
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"mkdir /home/{user.Username}/files")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"chown {user.Username} /home/{user.Username}/files")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"chmod 755 /home/{user.Username}/files")
+                .ExecuteAsync();
         }
 
         public void Update(Environment environment)
