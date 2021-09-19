@@ -93,6 +93,14 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 connection.Open();
                 Command.ExecuteNonQuery();
+
+                Command = new MySqlCommand("create user @username@'localhost' identified by @password;");
+                Command.Parameters.AddWithValue("@password", shellPassword);
+                Command.Parameters.AddWithValue("@username", user.Username);
+                Command.Connection = connection;
+                connection.Open();
+                Command.ExecuteNonQuery();
+
             }
 
             //sudo addgroup sftp_users
@@ -120,19 +128,19 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithArguments($"mkdir /home/{user.Username}")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo chown root /home/{user.Username}")
+                .WithArguments($"chown root /home/{user.Username}")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo chmod 755 /home/{user.Username}")
+                .WithArguments($"chmod 755 /home/{user.Username}")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"mkdir /home/{user.Username}/files")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo chown {user.Username} /home/{user.Username}/files")
+                .WithArguments($"chown {user.Username} /home/{user.Username}/files")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo chmod 755 /home/{user.Username}/files")
+                .WithArguments($"chmod 755 /home/{user.Username}/files")
                 .ExecuteAsync();
 
         }
@@ -171,7 +179,7 @@ namespace EnvironmentServer.DAL.Repositories
 
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo userdel {user.Username} --force")
+                .WithArguments($"userdel {user.Username} --force")
                 .ExecuteAsync();
         }
     }

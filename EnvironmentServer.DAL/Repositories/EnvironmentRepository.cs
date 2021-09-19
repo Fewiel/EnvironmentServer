@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL.Repositories
@@ -91,6 +92,8 @@ namespace EnvironmentServer.DAL.Repositories
 
         public async Task InsertAsync(Environment environment, User user)
         {
+            var dbString = user.Username + "_" + Regex.Replace(environment.Name, @"[^\w\.@-]", "");
+
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `environments` (`ID`, `users_ID_fk`, `Name`, `Address`, `Version`) VALUES "
@@ -102,6 +105,20 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 connection.Open();
                 Command.ExecuteNonQuery();
+
+                Command = new MySqlCommand("create database @database;");
+                Command.Parameters.AddWithValue("@database", dbString);
+                Command.Connection = connection;
+                connection.Open();
+                Command.ExecuteNonQuery();
+
+                Command = new MySqlCommand("grant all on @database.* to @user@'localhost';");
+                Command.Parameters.AddWithValue("@user", user.Username);
+                Command.Parameters.AddWithValue("@database", dbString);
+                Command.Connection = connection;
+                connection.Open();
+                Command.ExecuteNonQuery();
+
             }
 
             await Cli.Wrap("/bin/bash")
@@ -114,18 +131,13 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithArguments($"sudo chmod 755 /home/{user.Username}/files/{environment.Name}")
                 .ExecuteAsync();
 
-            //Template setzen - PHP Version, Pfad, Domain
-            var conf = System.String.Format(ApacheConf, environment.Version.AsString(), user.Email, );
-            File.WriteAllText($"/etc/apache2/sites-available/{environment.Name}.conf", conf);
-
-
-
+            //Template setzen - PHP Version, Pfad, Domain - Fertig machen!! <<<
+            //var conf = System.String.Format(ApacheConf, environment.Version.AsString(), user.Email, ); 
+            //File.WriteAllText($"/etc/apache2/sites-available/{environment.Name}.conf", conf);
 
             //im Apache site enable machen
             //Apache Config neu laden
             //finish
-
-
         }
 
         public void Update(Environment environment)
