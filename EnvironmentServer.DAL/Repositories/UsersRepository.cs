@@ -153,7 +153,6 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.ExecuteNonQuery();
             }
 
-            //echo "linuxpassword" | passwd --stdin linuxuser
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"echo \"{shellPassword}\" | passwd --stdin {user.Username}")
                 .ExecuteAsync();
