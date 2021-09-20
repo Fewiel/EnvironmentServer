@@ -27,7 +27,7 @@ namespace EnvironmentServer.Web
         {
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            services.AddSingleton(new Database("server=phillip.local;database=EnvironmentServer;uid=admin;pwd=1594875;"));
+            services.AddSingleton(new Database("server=phillip.local;database=EnvironmentServer;uid=adm;pwd=1594875!Adm;"));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //Sessions
