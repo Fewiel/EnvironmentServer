@@ -29,8 +29,8 @@ namespace EnvironmentServer.DAL.Repositories
         Require all granted
     </Directory>
 
-    ErrorLog {6}/error.log
-    CustomLog {6}/access.log combined
+    ErrorLog {5}/error.log
+    CustomLog {5}/access.log combined
 </VirtualHost>";
 
         public EnvironmentRepository(Database db)
@@ -90,10 +90,10 @@ namespace EnvironmentServer.DAL.Repositories
             };
         }
 
-        public async Task InsertAsync(Environment environment, User user)
+        public async Task InsertAsync(Environment environment, User user, string domain)
         {
             var dbString = user.Username + "_" + Regex.Replace(environment.Name, @"[^\w\.@-]", "");
-
+            //Create database for environment
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `environments` (`ID`, `users_ID_fk`, `Name`, `Address`, `Version`) VALUES "
@@ -118,45 +118,40 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 connection.Open();
                 Command.ExecuteNonQuery();
-
             }
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"mkdir /home/{user.Username}/files/{environment.Name}")
-                .ExecuteAsync();
+            //Create environment dir            
+            Directory.CreateDirectory($"/home/{user.Username}/files/{environment.Name}");
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"sudo chown {user.Username} /home/{user.Username}/files/{environment.Name}")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"sudo chmod 755 /home/{user.Username}/files/{environment.Name}")
                 .ExecuteAsync();
+            //Create log dir
+            Directory.CreateDirectory($"/home/{user.Username}/files/logs/{environment.Name}");
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"sudo chown {user.Username} /home/{user.Username}/files/logs/{environment.Name}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"sudo chmod 755 /home/{user.Username}/files/logs/{environment.Name}")
+                .ExecuteAsync();
 
-            //Template setzen - PHP Version, Pfad, Domain - Fertig machen!! <<<
-            //var conf = System.String.Format(ApacheConf, environment.Version.AsString(), user.Email, ); 
-            //File.WriteAllText($"/etc/apache2/sites-available/{environment.Name}.conf", conf);
-
-            //im Apache site enable machen
-            //Apache Config neu laden
-            //finish
+            //Create Apache2 configuration
+            var docRoot = $"/home/{user.Username}/files/{environment.Name}";
+            var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
+            var conf = System.String.Format(ApacheConf, environment.Version.AsString(), user.Email,
+                environment.Name + "." + user.Username, domain, docRoot, logRoot);
+            File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"a2ensite {user.Username}_{environment.Name}.conf")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("service apache2 reload")
+                .ExecuteAsync();
         }
 
-        public void Update(Environment environment)
-        {
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("UPDATE `environments` SET `users_ID_fk` = @userID, `Name` = @name, "
-                    + "`Address` = @address WHERE `environments`.`ID` = @id;");
-                Command.Parameters.AddWithValue("@id", environment.ID);
-                Command.Parameters.AddWithValue("@userID", environment.UserID);
-                Command.Parameters.AddWithValue("@name", environment.Name);
-                Command.Parameters.AddWithValue("@address", environment.Address);
-                Command.Connection = connection;
-                connection.Open();
-                Command.ExecuteNonQuery();
-            }
-        }
-
-        public void Delete(Environment environment)
+        public async Task DeleteAsync(Environment environment, User user, string domain)
         {
             using (var connection = DB.GetConnection())
             {
@@ -166,6 +161,16 @@ namespace EnvironmentServer.DAL.Repositories
                 connection.Open();
                 Command.ExecuteNonQuery();
             }
+
+            Directory.Delete($"/home/{user.Username}/files/{environment.Name}", true);
+            Directory.Delete($"/home/{user.Username}/files/logs/{environment.Name}", true);
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"a2dissite {user.Username}_{environment.Name}.conf")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("service apache2 reload")
+                .ExecuteAsync();
+            File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf");
         }
 
     }
