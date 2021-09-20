@@ -13,4 +13,8 @@
     <ProjectReference Include="..\EnvironmentServer.DAL\EnvironmentServer.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>
