@@ -92,7 +92,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public async Task InsertAsync(Environment environment, User user, string domain)
         {
-            var dbString = user.Username + "_" + Regex.Replace(environment.Name, @"[^\w\.@-]", "");
+            var dbString = user.Username + "_" + Regex.Replace(environment.Name, @"^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$", "");
             //Create database for environment
             using (var connection = DB.GetConnection())
             {
