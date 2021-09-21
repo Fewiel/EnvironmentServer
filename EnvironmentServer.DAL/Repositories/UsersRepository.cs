@@ -123,10 +123,11 @@ namespace EnvironmentServer.DAL.Repositories
             //Cli.Wrap("/bin/bash")
             //    .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
             //.ExecuteAsync();
+            Process.Start("/bin/bash", $"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'");
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'")
-                .ExecuteAsync();
+            //await Cli.Wrap("/bin/bash")
+            //    .WithArguments($"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'")
+            //    .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c 'usermod -G sftp_users {user.Username}'")
                 .ExecuteAsync();
