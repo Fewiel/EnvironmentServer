@@ -118,9 +118,9 @@ namespace EnvironmentServer.DAL.Repositories
             //              AllowTcpForwarding no
             //              X11Forwarding no
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}")
-                .ExecuteAsync();
+            Cli.Wrap("/bin/bash")
+                .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
+                //.ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"usermod -G sftp_users {user.Username}")
                 .ExecuteAsync();
