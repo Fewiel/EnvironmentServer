@@ -34,7 +34,7 @@ namespace EnvironmentServer.DAL
                 {
                     Email = "root@root.tld",
                     Username = "Admin",
-                    Password = PasswordHasher.Hash("Admin!1594875"),
+                    Password = PasswordHasher.Hash("Admin"),
                     IsAdmin = true
                 }, "Admin");
             }
