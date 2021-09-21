@@ -27,7 +27,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("select * from users where ID = @id;");
                 Command.Parameters.AddWithValue("@id", ID);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -58,7 +57,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("select * from users where Username = @username;");
                 Command.Parameters.AddWithValue("@username", username);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -165,7 +163,6 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Parameters.AddWithValue("@password", user.Password);
                 Command.Parameters.AddWithValue("@isAdmin", user.IsAdmin);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
 
@@ -181,7 +178,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("DELETE FROM `users` WHERE `users`.`ID` = @id");
                 Command.Parameters.AddWithValue("@id", user.ID);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
 
