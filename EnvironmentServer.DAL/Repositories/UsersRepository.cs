@@ -82,7 +82,7 @@ namespace EnvironmentServer.DAL.Repositories
             return null;
         }
 
-        public async Task InsertAsync(User user, string shellPassword)
+        public void InsertAsync(User user, string shellPassword)
         {
             using (var connection = DB.GetConnection())
             {
@@ -123,28 +123,35 @@ namespace EnvironmentServer.DAL.Repositories
             //Cli.Wrap("/bin/bash")
             //    .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
             //.ExecuteAsync();
+            //
             Process.Start("/bin/bash", $"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'");
+            //var ps = new ProcessStartInfo
+            //{
+            //    FileName = "/bin/bash",
+            //    Arguments = $"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'",
+            //    RedirectStandardOutput = true
+            //};
 
             //await Cli.Wrap("/bin/bash")
             //    .WithArguments($"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'")
             //    .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'usermod -G sftp_users {user.Username}'")
-                .ExecuteAsync();
-            Directory.CreateDirectory($"/home/{user.Username}'");
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'chown root /home/{user.Username}'")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'chmod 755 /home/{user.Username}'")
-                .ExecuteAsync();
-            Directory.CreateDirectory($"/home/{user.Username}/files");
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'chown {user.Username} /home/{user.Username}/files'")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'chmod 755 /home/{user.Username}/files'")
-                .ExecuteAsync();
+            //await Cli.Wrap("/bin/bash")
+            //    .WithArguments($"-c 'usermod -G sftp_users {user.Username}'")
+            //    .ExecuteAsync();
+            //Directory.CreateDirectory($"/home/{user.Username}'");
+            //await Cli.Wrap("/bin/bash")
+            //    .WithArguments($"-c 'chown root /home/{user.Username}'")
+            //    .ExecuteAsync();
+            //await Cli.Wrap("/bin/bash")
+            //    .WithArguments($"-c 'chmod 755 /home/{user.Username}'")
+            //    .ExecuteAsync();
+            //Directory.CreateDirectory($"/home/{user.Username}/files");
+            //await Cli.Wrap("/bin/bash")
+            //    .WithArguments($"-c 'chown {user.Username} /home/{user.Username}/files'")
+            //    .ExecuteAsync();
+            //await Cli.Wrap("/bin/bash")
+            //    .WithArguments($"-c 'chmod 755 /home/{user.Username}/files'")
+            //    .ExecuteAsync();
 
         }
 
