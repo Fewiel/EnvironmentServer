@@ -93,9 +93,8 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
 
-                Command = new MySqlCommand("create user #username@'localhost' identified by #password;");
-                Command.Parameters.AddWithValue("#password", shellPassword);
-                Command.Parameters.AddWithValue("#username", user.Username);
+                Command = new MySqlCommand("create user '" + user.Username + "'@ 'localhost' identified by @password;");
+                Command.Parameters.AddWithValue("@password", shellPassword);
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
 
