@@ -3,6 +3,7 @@ using EnvironmentServer.DAL.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -118,9 +119,12 @@ namespace EnvironmentServer.DAL.Repositories
             //              AllowTcpForwarding no
             //              X11Forwarding no
 
-            Cli.Wrap("/bin/bash")
-                .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
-                //.ExecuteAsync();
+            //Cli.Wrap("/bin/bash")
+            //    .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
+            //.ExecuteAsync();
+
+            Process.Start("/bin/bash", $"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"usermod -G sftp_users {user.Username}")
                 .ExecuteAsync();
