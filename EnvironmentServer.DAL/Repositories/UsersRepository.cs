@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,28 +124,25 @@ namespace EnvironmentServer.DAL.Repositories
             //    .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
             //.ExecuteAsync();
 
-            Process.Start($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
-
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"usermod -G sftp_users {user.Username}")
+                .WithArguments($"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"mkdir /home/{user.Username}")
+                .WithArguments($"-c 'usermod -G sftp_users {user.Username}'")
+                .ExecuteAsync();
+            Directory.CreateDirectory($"/home/{user.Username}'");
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c 'chown root /home/{user.Username}'")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"chown root /home/{user.Username}")
+                .WithArguments($"-c 'chmod 755 /home/{user.Username}'")
+                .ExecuteAsync();
+            Directory.CreateDirectory($"/home/{user.Username}/files");
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c 'chown {user.Username} /home/{user.Username}/files'")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"chmod 755 /home/{user.Username}")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"mkdir /home/{user.Username}/files")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"chown {user.Username} /home/{user.Username}/files")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"chmod 755 /home/{user.Username}/files")
+                .WithArguments($"-c 'chmod 755 /home/{user.Username}/files'")
                 .ExecuteAsync();
 
         }
