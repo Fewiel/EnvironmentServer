@@ -120,6 +120,7 @@ namespace EnvironmentServer.DAL.Repositories
             //.ExecuteAsync();
             //
             //Process.Start("/bin/bash", $"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'");
+            Console.WriteLine($"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'");
             var ps = new ProcessStartInfo
             {
                 FileName = "/bin/bash",
