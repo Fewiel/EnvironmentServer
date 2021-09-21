@@ -37,11 +37,14 @@ namespace EnvironmentServer.DAL
                     Password = PasswordHasher.Hash("Admin"),
                     IsAdmin = true
                 }, "Admin");
-
-
             }
         }
 
-        public MySqlConnection GetConnection() => new(ConnString);
+        public MySqlConnection GetConnection()
+        {
+            var c = new MySqlConnection(ConnString);
+            c.Open();
+            return c;
+        }
     }
 }
