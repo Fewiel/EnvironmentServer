@@ -149,6 +149,30 @@ namespace EnvironmentServer.DAL.Repositories
             await Cli.Wrap("/bin/bash")
                 .WithArguments("service apache2 reload")
                 .ExecuteAsync();
+
+            //Docker anlegen Elasticsearch 
+
+            //        version: "3"
+
+            //services:
+
+            //        elasticsearch:
+            //        image: elasticsearch: 6.8.1
+            //      container_name: elasticsearch681
+            //      hostname: EnvName - elastic
+            //      networks:
+            //            -web
+            //      environment:
+            //            -"EA_JAVA_OPTS=-Xms512m -Xms512m"
+            //            - discovery.type = single - node
+
+            //networks:
+            //        web:
+            //        external: false
+
+            //#docker run  
+            //#cron zum abschalten nachts
+            //#möglich persistent
         }
 
         public async Task DeleteAsync(Environment environment, User user, string domain)
