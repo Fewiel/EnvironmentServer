@@ -122,7 +122,7 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
                 .ExecuteAsync();
 
-            Directory.CreateDirectory($"/home/{user.Username}'");
+            Directory.CreateDirectory($"/home/{user.Username}");
 
             await Cli.Wrap("/bin/bash")
                .WithArguments($"-c \"chown root /home/{user.Username}\"")
