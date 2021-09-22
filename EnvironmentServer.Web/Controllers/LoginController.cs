@@ -1,4 +1,5 @@
 ﻿using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.Extensions;
 using EnvironmentServer.Web.ViewModels.Login;
@@ -22,10 +23,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpGet, Route("/Login", Name = "login")]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        public IActionResult Login() => View();
 
         [HttpPost, Route("/Login", Name = "login")]
         public IActionResult Login([FromForm]LoginViewModel lvm)
@@ -47,6 +45,27 @@ namespace EnvironmentServer.Web.Controllers
             }
 
             AddError("Wrong username or password");
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Registration() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> Registration([FromForm]RegistrationViewModel rvm)
+        {
+            if (!ModelState.IsValid)
+                return View();
+
+            if (DB.Users.GetByUsername(rvm.Username) != null)
+            {
+                AddError("Username already taken.");
+                return View();
+            }
+
+            var usr = new User { Username = rvm.Username, Email = rvm.Email, Password = PasswordHasher.Hash(rvm.Password) };
+            await DB.Users.InsertAsync(usr, rvm.Password).ConfigureAwait(false);
+
             return View();
         }
 

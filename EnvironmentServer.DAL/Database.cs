@@ -23,20 +23,13 @@ namespace EnvironmentServer.DAL
             Users = new UsersRepository(this);
             if (Users.GetByUsername("Admin") == null)
             {
-                //Task.Run(() => Users.InsertAsync(new User
-                //{
-                //    Email = "root@root.tld",
-                //    Username = "Admin",
-                //    Password = PasswordHasher.Hash("Admin"),
-                //    IsAdmin = true
-                //}, "Admin"));
-                Users.InsertAsync(new User
+                Task.Run(() => Users.InsertAsync(new User
                 {
                     Email = "root@root.tld",
                     Username = "Admin",
                     Password = PasswordHasher.Hash("Admin"),
                     IsAdmin = true
-                }, "Admin");
+                }, "Admin"));
             }
         }
 
