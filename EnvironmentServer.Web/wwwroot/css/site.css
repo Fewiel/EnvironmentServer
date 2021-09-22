@@ -13,3 +13,12 @@
 .pageHeight {
     height: calc(100% - 60px);
 }
+
+.card:not(.disabled) {
+    transition: 50ms linear;
+}
+
+.card:hover:not(.disabled) {
+    background-color: #333333;
+    transform: scale(1.025);
+}
