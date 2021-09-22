@@ -124,7 +124,7 @@ namespace EnvironmentServer.DAL.Repositories
             var ps = new ProcessStartInfo
             {
                 FileName = "/bin/bash",
-                Arguments = $"-c 'useradd {user.Username} -p {shellPassword}'",
+                Arguments = $"-c \"useradd {user.Username} -p {shellPassword}\"",
                 RedirectStandardOutput = true
             };
             var p = Process.Start(ps);
