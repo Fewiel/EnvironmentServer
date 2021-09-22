@@ -124,7 +124,7 @@ namespace EnvironmentServer.DAL.Repositories
             var ps = new ProcessStartInfo
             {
                 FileName = "/bin/bash",
-                Arguments = $"-c \"useradd {user.Username} -p {shellPassword}\"",
+                Arguments = $"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"",
                 RedirectStandardOutput = true
             };
             var p = Process.Start(ps);
@@ -139,18 +139,18 @@ namespace EnvironmentServer.DAL.Repositories
             Directory.CreateDirectory($"/home/{user.Username}'");
 
             Cli.Wrap("/bin/bash")
-               .WithArguments($"-c 'chown root /home/{user.Username}'");
+               .WithArguments($"-c \"chown root /home/{user.Username}\"");
 
             Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'chmod 755 /home/{user.Username}'");
+                .WithArguments($"-c \"chmod 755 /home/{user.Username}\"");
 
             Directory.CreateDirectory($"/home/{user.Username}/files");
 
             Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'chown {user.Username} /home/{user.Username}/files'");
+                .WithArguments($"-c \"chown {user.Username} /home/{user.Username}/files\"");
 
             Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'chmod 755 /home/{user.Username}/files'");
+                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files\"");
 
 
         }
