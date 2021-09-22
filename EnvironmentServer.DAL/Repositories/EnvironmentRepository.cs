@@ -123,18 +123,18 @@ namespace EnvironmentServer.DAL.Repositories
             //Create environment dir            
             Directory.CreateDirectory($"/home/{user.Username}/files/{environment.Name}");
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo chown {user.Username} /home/{user.Username}/files/{environment.Name}")
+                .WithArguments($"-c \"chown {user.Username} /home/{user.Username}/files/{environment.Name}\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo chmod 755 /home/{user.Username}/files/{environment.Name}")
+                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/{environment.Name}\"")
                 .ExecuteAsync();
             //Create log dir
             Directory.CreateDirectory($"/home/{user.Username}/files/logs/{environment.Name}");
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo chown {user.Username} /home/{user.Username}/files/logs/{environment.Name}")
+                .WithArguments($"-c \"chown {user.Username} /home/{user.Username}/files/logs/{environment.Name}\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"sudo chmod 755 /home/{user.Username}/files/logs/{environment.Name}")
+                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/logs/{environment.Name}\"")
                 .ExecuteAsync();
 
             //Create Apache2 configuration
@@ -144,10 +144,10 @@ namespace EnvironmentServer.DAL.Repositories
                 environment.Name + "." + user.Username, domain, docRoot, logRoot);
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"a2ensite {user.Username}_{environment.Name}.conf")
+                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments("service apache2 reload")
+                .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
             //Docker anlegen Elasticsearch 
@@ -188,12 +188,14 @@ namespace EnvironmentServer.DAL.Repositories
 
             Directory.Delete($"/home/{user.Username}/files/{environment.Name}", true);
             Directory.Delete($"/home/{user.Username}/files/logs/{environment.Name}", true);
+
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"a2dissite {user.Username}_{environment.Name}.conf")
+                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments("service apache2 reload")
+                .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
+
             File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf");
         }
 

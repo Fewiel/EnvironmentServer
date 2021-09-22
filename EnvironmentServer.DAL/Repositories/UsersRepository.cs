@@ -80,7 +80,7 @@ namespace EnvironmentServer.DAL.Repositories
             return null;
         }
 
-        public void InsertAsync(User user, string shellPassword)
+        public async Task InsertAsync(User user, string shellPassword)
         {
             using (var connection = DB.GetConnection())
             {
@@ -115,44 +115,30 @@ namespace EnvironmentServer.DAL.Repositories
             //              AllowTcpForwarding no
             //              X11Forwarding no
 
-            //Cli.Wrap("/bin/bash")
-            //    .WithArguments($"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}");
-            //.ExecuteAsync();
-            //
-            //Process.Start("/bin/bash", $"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'");
-            Console.WriteLine($"-c 'useradd {user.Username} -p {shellPassword}'");
-            var ps = new ProcessStartInfo
-            {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"",
-                RedirectStandardOutput = true
-            };
-            var p = Process.Start(ps);
-            Console.WriteLine(p.StandardOutput.ReadToEnd());
-
-            //await Cli.Wrap("/bin/bash")
-            //    .WithArguments($"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'")
-            //    .ExecuteAsync();
-            Cli.Wrap("/bin/bash")
-                .WithArguments($"-c 'usermod -G sftp_users {user.Username}'");
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
+                .ExecuteAsync();
 
             Directory.CreateDirectory($"/home/{user.Username}'");
 
-            Cli.Wrap("/bin/bash")
-               .WithArguments($"-c \"chown root /home/{user.Username}\"");
-
-            Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 755 /home/{user.Username}\"");
+            await Cli.Wrap("/bin/bash")
+               .WithArguments($"-c \"chown root /home/{user.Username}\"")
+               .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chmod 755 /home/{user.Username}\"")
+                .ExecuteAsync();
 
             Directory.CreateDirectory($"/home/{user.Username}/files");
 
-            Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user.Username} /home/{user.Username}/files\"");
-
-            Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files\"");
-
-
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown {user.Username} /home/{user.Username}/files\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files\"")
+                .ExecuteAsync();
         }
 
         public async void Update(User user, string shellPassword)
@@ -171,7 +157,7 @@ namespace EnvironmentServer.DAL.Repositories
             }
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"echo \"{shellPassword}\" | passwd --stdin {user.Username}")
+                .WithArguments($"-c \"echo \"{shellPassword}\" | passwd --stdin {user.Username}\"")
                 .ExecuteAsync();
         }
 
@@ -185,9 +171,8 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.ExecuteNonQuery();
             }
 
-
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"userdel {user.Username} --force")
+                .WithArguments($"-c \"userdel {user.Username} --force\"")
                 .ExecuteAsync();
         }
     }
