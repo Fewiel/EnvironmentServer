@@ -129,26 +129,29 @@ namespace EnvironmentServer.DAL.Repositories
             };
             var p = Process.Start(ps);
             Console.WriteLine(p.StandardOutput.ReadToEnd());
+
             //await Cli.Wrap("/bin/bash")
             //    .WithArguments($"-c 'useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}'")
             //    .ExecuteAsync();
-            //await Cli.Wrap("/bin/bash")
-            //    .WithArguments($"-c 'usermod -G sftp_users {user.Username}'")
-            //    .ExecuteAsync();
-            //Directory.CreateDirectory($"/home/{user.Username}'");
-            //await Cli.Wrap("/bin/bash")
-            //    .WithArguments($"-c 'chown root /home/{user.Username}'")
-            //    .ExecuteAsync();
-            //await Cli.Wrap("/bin/bash")
-            //    .WithArguments($"-c 'chmod 755 /home/{user.Username}'")
-            //    .ExecuteAsync();
-            //Directory.CreateDirectory($"/home/{user.Username}/files");
-            //await Cli.Wrap("/bin/bash")
-            //    .WithArguments($"-c 'chown {user.Username} /home/{user.Username}/files'")
-            //    .ExecuteAsync();
-            //await Cli.Wrap("/bin/bash")
-            //    .WithArguments($"-c 'chmod 755 /home/{user.Username}/files'")
-            //    .ExecuteAsync();
+            Cli.Wrap("/bin/bash")
+                .WithArguments($"-c 'usermod -G sftp_users {user.Username}'");
+
+            Directory.CreateDirectory($"/home/{user.Username}'");
+
+            Cli.Wrap("/bin/bash")
+               .WithArguments($"-c 'chown root /home/{user.Username}'");
+
+            Cli.Wrap("/bin/bash")
+                .WithArguments($"-c 'chmod 755 /home/{user.Username}'");
+
+            Directory.CreateDirectory($"/home/{user.Username}/files");
+
+            Cli.Wrap("/bin/bash")
+                .WithArguments($"-c 'chown {user.Username} /home/{user.Username}/files'");
+
+            Cli.Wrap("/bin/bash")
+                .WithArguments($"-c 'chmod 755 /home/{user.Username}/files'");
+
 
         }
 
