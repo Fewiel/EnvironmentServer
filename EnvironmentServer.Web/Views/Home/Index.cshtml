@@ -6,10 +6,13 @@
 
     <!--For Shopware 5-->
     <div class="col-md-3 px-1">
-        <div class="card mb-2" style="min-height: 310px;">
+        <div class="card mb-2" style="height: 370px;">
             <a asp-controller="Item" class="text-decoration-none text-body">
                 <p class="text-center">
                     <img src="~/img/sw5-signet.svg" width="100" height="100" style="padding-top: 15px;" />
+                    <a asp-controller="Environment" asp-action="Edit" asp-route-id="">
+                        <i class="bi bi-pencil-square" style="font-size: 20px; float: right; position: absolute; right: 5px;"></i>
+                    </a>
                 </p>
                 <div class="card-body">
                     <h5 class="card-title">shopware572</h5>
@@ -19,6 +22,12 @@
                         <a class="btn btn-primary me-auto">Frontend</a>
                         <a class="btn btn-primary">Backend</a>
                     </div>
+                    <div class="d-flex" style="padding: 10px 30px 0px 30px;">
+                        <i class="bi bi-skip-backward-circle me-auto" style="font-size: 30px;"></i>
+                        <i class="bi bi-skip-start-circle me-auto" style="font-size: 30px;"></i>
+                        <i class="bi bi-plus-circle me-auto" style="font-size: 30px;"></i>
+                        <i class="bi bi-x-circle" style="font-size: 30px;"></i>
+                    </div>
                 </div>
             </a>
         </div>
@@ -26,10 +35,13 @@
 
     <!--For Shopware 6-->
     <div class="col-md-3 px-1">
-        <div class="card mb-2" style="min-height: 310px;">
+        <div class="card mb-2" style="min-height: 370px;">
             <a asp-controller="Item" class="text-decoration-none text-body">
                 <p class="text-center">
                     <img src="~/img/sw6-signet.svg" width="100" height="100" style="padding-top: 15px;" />
+                    <a asp-controller="Environment" asp-action="Edit" asp-route-id="">
+                        <i class="bi bi-pencil-square" style="font-size: 20px; float: right; position: absolute; right: 5px;"></i>
+                    </a>
                 </p>
                 <div class="card-body">
                     <h5 class="card-title">shopware6441</h5>
@@ -39,13 +51,21 @@
                         <a class="btn btn-primary me-auto">Frontend</a>
                         <a class="btn btn-primary">Admin</a>
                     </div>
-                </div>
+                    <div class="d-flex" style="padding: 10px 0px 0px 0px;">
+                        <div>
+                            <i class="bi bi-info-circle" style="font-size: 30px;"></i>
+                        </div>
+                        <div style="margin-left: 15px;">
+                            <span style="font-size: 90%;">Task running. Please wait.<br />Refresh page in one minute</span>
+                        </div>
+                    </div>
+                </div>                
             </a>
         </div>
     </div>
 
     <div class="col-md-3 px-1">
-        <div class="card mb-2 align-middle d-flex align-content-center" style="height: 310px;">
+        <div class="card mb-2 align-middle d-flex align-content-center" style="height: 370px;">
             <a asp-controller="Item" class="text-decoration-none text-body fullHeight justify-content-center d-flex">
                 <i class="bi bi-plus-lg align-self-center" style="font-size: 50px"></i>
             </a>

@@ -14,5 +14,6 @@ namespace EnvironmentServer.DAL.Models
         public string Name { get; set; }
         public string Address { get; set; }
         public PhpVersion Version { get; set; }
+        public List<EnvironmentSettingValue> Settings { get; set; }
     }
 }

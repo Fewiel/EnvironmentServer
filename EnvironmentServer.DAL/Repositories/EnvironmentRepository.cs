@@ -86,8 +86,41 @@ namespace EnvironmentServer.DAL.Repositories
                 ID = reader.GetInt64(0),
                 UserID = reader.GetInt64(1),
                 Name = reader.GetString(2),
-                Address = reader.GetString(3)
+                Address = reader.GetString(3),
+                Version = (PhpVersion)reader.GetInt32(4),
+                Settings = new List<EnvironmentSettingValue>(GetSettingValues(reader.GetInt64(0)))
             };
+        }
+
+        public IEnumerable<EnvironmentSettingValue> GetSettingValues(long id)
+        {
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("SELECT * FROM environments_settings_values " +
+                    "LEFT JOIN environments_settings " +
+                    "ON environments_settings.ID = environments_settings_values.environments_settings_ID_fk " +
+                    "WHERE environments_ID_fk = @id;");
+                Command.Parameters.AddWithValue("@id", id);
+                Command.Connection = connection;
+                connection.Open();
+                MySqlDataReader reader = Command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    yield return new EnvironmentSettingValue
+                    {
+                        EnvironmentID = reader.GetInt64(0),
+                        EnvironmentSettingID = reader.GetInt64(1),
+                        Value = reader.GetString(2),
+                        EnvironmentSetting = new EnvironmentSetting
+                        {
+                            ID = reader.GetInt64(3),
+                            Property = reader.GetString(4)
+                        }
+                    };
+                }
+                reader.Close();
+            }
         }
 
         public async Task InsertAsync(Environment environment, User user, string domain)
@@ -112,8 +145,7 @@ namespace EnvironmentServer.DAL.Repositories
                 connection.Open();
                 Command.ExecuteNonQuery();
 
-                Command = new MySqlCommand("grant all on @database.* to @user@'localhost';");
-                Command.Parameters.AddWithValue("@user", user.Username);
+                Command = new MySqlCommand("grant all on @database.* to '" + user.Username + "'@'localhost';");
                 Command.Parameters.AddWithValue("@database", dbString);
                 Command.Connection = connection;
                 connection.Open();

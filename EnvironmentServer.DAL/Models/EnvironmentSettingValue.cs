@@ -10,6 +10,7 @@ namespace EnvironmentServer.DAL.Models
     {
         public long EnvironmentID { get; set; }
         public long EnvironmentSettingID { get; set; }
+        public EnvironmentSetting EnvironmentSetting { get; set; }
         public string Value { get; set; }
     }
 }
