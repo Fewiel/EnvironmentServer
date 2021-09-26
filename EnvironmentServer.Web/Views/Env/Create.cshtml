@@ -1,0 +1,36 @@
+﻿@model EnvironmentServer.Web.ViewModels.Env.CreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="d-flex align-items-center justify-content-center fullHeight">
+    <form method="post" asp-action="Create" style="width: 400px;">
+        <div class="mb-3">
+            <label asp-for="EnvironmentName" class="form-label">Environment Name</label>
+            <input asp-for="EnvironmentName" class="form-control" />
+            <span asp-validation-for="EnvironmentName"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="SWVersion" class="form-label">Shopware Version (example: 6.4.4.1)</label>
+            <input asp-for="SWVersion" class="form-control" />
+            <span asp-validation-for="SWVersion"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">PHP Version</label>
+            <select asp-for="Version" asp-items="Model.PhpVersions" class="form-select"></select>
+            <span asp-validation-for="Version" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Template</label>
+            <select asp-for="TemplateID" asp-items="Model.Templates" class="form-select"></select>
+            <span asp-validation-for="TemplateID" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="File" class="form-label">Direct SW.zip</label>
+            <input asp-for="File" class="form-control" />
+            <span asp-validation-for="File"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>

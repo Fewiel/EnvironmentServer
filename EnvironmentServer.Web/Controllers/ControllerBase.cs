@@ -69,5 +69,7 @@ namespace EnvironmentServer.Web.Controllers
                 return false;
             return usr.IsAdmin;
         }
+
+        public User GetSessionUser() => HttpContext.Session.GetObject<User>("user");
     }
 }

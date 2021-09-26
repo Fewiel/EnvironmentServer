@@ -1,5 +1,8 @@
-﻿using EnvironmentServer.Web.Attributes;
+﻿using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Repositories;
+using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.Models;
+using EnvironmentServer.Web.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,16 +15,17 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class HomeController : ControllerBase
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly Database DB;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(Database database)
         {
-            _logger = logger;
+            DB = database;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var dash = new DashboardModel() { Environments = DB.Environments.GetForUser(GetSessionUser().ID) };
+            return View(dash);
         }
 
         [AdminOnly]

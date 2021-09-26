@@ -45,7 +45,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("select * from environments where ID = @id;");
                 Command.Parameters.AddWithValue("@id", id);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -69,7 +68,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("select * from environments where users_ID_fk = @id;");
                 Command.Parameters.AddWithValue("@id", userID);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -102,7 +100,6 @@ namespace EnvironmentServer.DAL.Repositories
                     "WHERE environments_ID_fk = @id;");
                 Command.Parameters.AddWithValue("@id", id);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -123,9 +120,10 @@ namespace EnvironmentServer.DAL.Repositories
             }
         }
 
-        public async Task InsertAsync(Environment environment, User user, string domain)
+        public async Task<long> InsertAsync(Environment environment, User user)
         {
             var dbString = user.Username + "_" + Regex.Replace(environment.Name, @"^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$", "");
+            long lastID;
             //Create database for environment
             using (var connection = DB.GetConnection())
             {
@@ -136,19 +134,17 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Parameters.AddWithValue("@address", environment.Address);
                 Command.Parameters.AddWithValue("@version", environment.Version);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
+                lastID = Command.LastInsertedId;
 
                 Command = new MySqlCommand("create database @database;");
                 Command.Parameters.AddWithValue("@database", dbString);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
 
                 Command = new MySqlCommand("grant all on @database.* to '" + user.Username + "'@'localhost';");
                 Command.Parameters.AddWithValue("@database", dbString);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
 
@@ -173,7 +169,7 @@ namespace EnvironmentServer.DAL.Repositories
             var docRoot = $"/home/{user.Username}/files/{environment.Name}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
             var conf = System.String.Format(ApacheConf, environment.Version.AsString(), user.Email,
-                environment.Name + "." + user.Username, domain, docRoot, logRoot);
+                environment.Name + "." + user.Username, environment.Address, docRoot, logRoot);
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
@@ -181,6 +177,8 @@ namespace EnvironmentServer.DAL.Repositories
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
+
+            return lastID;
 
             //Docker anlegen Elasticsearch 
 
@@ -214,7 +212,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("DELETE FROM `environments` WHERE `environments`.`ID` = @id");
                 Command.Parameters.AddWithValue("@id", environment.ID);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
 

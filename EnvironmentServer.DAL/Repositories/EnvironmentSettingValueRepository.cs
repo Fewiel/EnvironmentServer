@@ -24,7 +24,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("select * from environments_settings_value where environments_ID_fk = @id;");
                 Command.Parameters.AddWithValue("@id", environmentID);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -41,7 +40,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("select * from environments_settings_value where environments_settings_ID_fk = @id;");
                 Command.Parameters.AddWithValue("@id", environmentSettingID);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -71,7 +69,6 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
                 Command.Parameters.AddWithValue("@value", environment.Value);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }
@@ -87,7 +84,6 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
                 Command.Parameters.AddWithValue("@value", environment.Value);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }
@@ -101,7 +97,6 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Parameters.AddWithValue("@environmentID", environment.EnvironmentID);
                 Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }

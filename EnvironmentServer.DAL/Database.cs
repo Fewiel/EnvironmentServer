@@ -14,13 +14,18 @@ namespace EnvironmentServer.DAL
         private readonly string ConnString;
 
         public SettingsRepository Settings { get; }
-        public UsersRepository Users { get; set; }
+        public UsersRepository Users { get; }
+        public EnvironmentRepository Environments { get; }
+        public EnvironmentSettingValueRepository EnvironmentSettings { get; }
 
         public Database(string connString)
         {
             ConnString = connString;
             Settings = new SettingsRepository(this);
             Users = new UsersRepository(this);
+            Environments = new EnvironmentRepository(this);
+            EnvironmentSettings = new EnvironmentSettingValueRepository(this);
+
             if (Users.GetByUsername("Admin") == null)
             {
                 Task.Run(() => Users.InsertAsync(new User

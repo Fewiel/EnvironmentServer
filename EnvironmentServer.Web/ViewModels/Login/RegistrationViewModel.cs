@@ -13,10 +13,10 @@ namespace EnvironmentServer.Web.ViewModels.Login
         public string Username { get; set; }
 
         [MinLength(4), DataType(DataType.Password)]
+        [RegularExpression(@"^[^'"" $´`]*$", ErrorMessage = "Password may not contain: ^'\"$´`[SPACE]")]
         public string Password { get; set; }
 
         [DataType(DataType.EmailAddress)]
-        [RegularExpression(@"^[^'"" $´`]*$", ErrorMessage = "Password may not contain: ^'\"$´`[SPACE]")]
         public string Email { get; set; }
     }
 }
