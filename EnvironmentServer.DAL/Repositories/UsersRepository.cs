@@ -114,7 +114,7 @@ namespace EnvironmentServer.DAL.Repositories
             //              AllowAgentForwarding no
             //              AllowTcpForwarding no
             //              X11Forwarding no
-
+            Console.WriteLine("Creating User");
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"")
                 .ExecuteAsync();
@@ -122,6 +122,7 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
                 .ExecuteAsync();
 
+            Console.WriteLine("Creating Home Folder");
             Directory.CreateDirectory($"/home/{user.Username}");
 
             await Cli.Wrap("/bin/bash")
@@ -131,6 +132,7 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithArguments($"-c \"chmod 755 /home/{user.Username}\"")
                 .ExecuteAsync();
 
+            Console.WriteLine("Creating Files Folder");
             Directory.CreateDirectory($"/home/{user.Username}/files");
 
             await Cli.Wrap("/bin/bash")
