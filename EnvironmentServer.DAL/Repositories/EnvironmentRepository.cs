@@ -141,8 +141,7 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
 
-                Command = new MySqlCommand("grant all on @database.* to '" + user.Username + "'@'localhost';");
-                Command.Parameters.AddWithValue("@database", dbString);
+                Command = new MySqlCommand("grant all on " + dbString + ".* to '" + user.Username + "'@'localhost';");
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
