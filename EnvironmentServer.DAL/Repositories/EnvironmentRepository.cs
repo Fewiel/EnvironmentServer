@@ -31,6 +31,10 @@ namespace EnvironmentServer.DAL.Repositories
 
     ErrorLog {5}/error.log
     CustomLog {5}/access.log combined
+<IfModule mpm_itk_module>
+AssignUserId {6} sftp-users
+</IfModule>
+
 </VirtualHost>";
 
         public EnvironmentRepository(Database db)
@@ -167,7 +171,7 @@ namespace EnvironmentServer.DAL.Repositories
             var docRoot = $"/home/{user.Username}/files/{environment.Name}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
             var conf = System.String.Format(ApacheConf, environment.Version.AsString(), user.Email,
-                environment.Name + "." + user.Username, environment.Address, docRoot, logRoot);
+                environment.Name + "." + user.Username, environment.Address, docRoot, logRoot, user.Username);
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
