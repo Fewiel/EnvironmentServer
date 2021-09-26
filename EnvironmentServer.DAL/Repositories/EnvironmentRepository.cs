@@ -137,8 +137,7 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.ExecuteNonQuery();
                 lastID = Command.LastInsertedId;
 
-                Command = new MySqlCommand("create database @database;");
-                Command.Parameters.AddWithValue("@database", dbString);
+                Command = new MySqlCommand("create database " + dbString + ";");
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
 
