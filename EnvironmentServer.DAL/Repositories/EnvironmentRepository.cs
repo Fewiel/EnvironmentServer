@@ -32,7 +32,7 @@ namespace EnvironmentServer.DAL.Repositories
     ErrorLog {5}/error.log
     CustomLog {5}/access.log combined
 <IfModule mpm_itk_module>
-AssignUserId {6} sftp-users
+AssignUserId {6} sftp_users
 </IfModule>
 
 </VirtualHost>";
