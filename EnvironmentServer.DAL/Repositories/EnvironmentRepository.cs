@@ -170,7 +170,7 @@ AssignUserId {6} sftp_users
             //Create Apache2 configuration
             var docRoot = $"/home/{user.Username}/files/{environment.Name}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
-            var conf = System.String.Format(ApacheConf, environment.Version.AsString(), user.Email,
+            var conf = string.Format(ApacheConf, environment.Version.AsString(), user.Email,
                 environment.Name + "." + user.Username, environment.Address, docRoot, logRoot, user.Username);
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
