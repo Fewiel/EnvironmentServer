@@ -16,7 +16,7 @@ namespace EnvironmentServer.DAL.Repositories
     {
         private readonly Database DB;
         private const string phpfpm = @"
-[Admin]
+[{0}]
 user = {0}
 group = sftp_users
 
