@@ -17,7 +17,7 @@ namespace EnvironmentServer.DAL.Repositories
         private const string ApacheConf = @"
 <VirtualHost *:80>
 	<FilesMatch \.php>
-        SetHandler ""proxy:unix:/var/run/php/{0}-{7}.sock|fcgi://localhost/"" 
+        SetHandler ""proxy:unix:/var/run/php/{0}-{6}.sock|fcgi://localhost/"" 
     </FilesMatch>
 
 	ServerAdmin {1}
