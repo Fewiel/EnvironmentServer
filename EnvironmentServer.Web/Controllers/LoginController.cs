@@ -66,7 +66,7 @@ namespace EnvironmentServer.Web.Controllers
             var usr = new User { Username = rvm.Username, Email = rvm.Email, Password = PasswordHasher.Hash(rvm.Password) };
             await DB.Users.InsertAsync(usr, rvm.Password).ConfigureAwait(false);
 
-            return View();
+            return RedirectToRoute("login");
         }
 
         public IActionResult Logout()
