@@ -17,22 +17,22 @@ namespace EnvironmentServer.DAL.Repositories
         private const string ApacheConf = @"
 <VirtualHost *:80>
 	<FilesMatch \.php>
-        SetHandler ""proxy:unix:/var/run/php/{0}-{6}.sock|fcgi://localhost/"" 
+        SetHandler ""proxy:unix:/var/run/php/{0}-{5}.sock|fcgi://localhost/"" 
     </FilesMatch>
 
 	ServerAdmin {1}
-    ServerName {2}.{3}
-	DocumentRoot {4}
-    <Directory {4}>
+    ServerName {2}
+	DocumentRoot {3}
+    <Directory {3}>
         Options Indexes FollowSymLinks MultiViews
         AllowOverride All
         Require all granted
     </Directory>
 
-    ErrorLog {5}/error.log
-    CustomLog {5}/access.log combined
+    ErrorLog {4}/error.log
+    CustomLog {4}/access.log combined
 <IfModule mpm_itk_module>
-AssignUserId {6} sftp_users
+AssignUserId {5} sftp_users
 </IfModule>
 
 </VirtualHost>";
@@ -170,8 +170,7 @@ AssignUserId {6} sftp_users
             //Create Apache2 configuration
             var docRoot = $"/home/{user.Username}/files/{environment.Name}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
-            var conf = string.Format(ApacheConf, environment.Version.AsString(), user.Email,
-                environment.Name + "." + user.Username, environment.Address, docRoot, logRoot, user.Username);
+            var conf = string.Format(ApacheConf, environment.Version.AsString(), user.Email, environment.Address, docRoot, logRoot, user.Username);
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
