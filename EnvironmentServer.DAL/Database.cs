@@ -17,6 +17,8 @@ namespace EnvironmentServer.DAL
         public UsersRepository Users { get; }
         public EnvironmentRepository Environments { get; }
         public EnvironmentSettingValueRepository EnvironmentSettings { get; }
+        public EnvironmentSnapshotRepository Snapshot { get; }
+        public CmdActionRepository CmdAction { get; }
 
         public Database(string connString)
         {
@@ -25,6 +27,8 @@ namespace EnvironmentServer.DAL
             Users = new UsersRepository(this);
             Environments = new EnvironmentRepository(this);
             EnvironmentSettings = new EnvironmentSettingValueRepository(this);
+            Snapshot = new EnvironmentSnapshotRepository(this);
+            CmdAction = new CmdActionRepository(this);
 
             if (Users.GetByUsername("Admin") == null)
             {

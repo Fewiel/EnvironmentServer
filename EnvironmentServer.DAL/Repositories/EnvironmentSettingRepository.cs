@@ -24,7 +24,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("select * from environments_settings where ID = @id;");
                 Command.Parameters.AddWithValue("@id", id);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -58,7 +57,6 @@ namespace EnvironmentServer.DAL.Repositories
                     + "(NULL, @property);");
                 Command.Parameters.AddWithValue("@property", environment.Property);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }
@@ -72,7 +70,6 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Parameters.AddWithValue("@id", environment.ID);
                 Command.Parameters.AddWithValue("@property", environment.Property);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }
@@ -84,7 +81,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("DELETE FROM `environments_settings` WHERE `environments_settings`.`ID` = @id");
                 Command.Parameters.AddWithValue("@id", environment.ID);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }
