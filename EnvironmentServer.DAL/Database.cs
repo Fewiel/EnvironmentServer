@@ -19,6 +19,7 @@ namespace EnvironmentServer.DAL
         public EnvironmentSettingValueRepository EnvironmentSettings { get; }
         public EnvironmentSnapshotRepository Snapshot { get; }
         public CmdActionRepository CmdAction { get; }
+        public LogRepository Logs { get; }
 
         public Database(string connString)
         {
@@ -29,15 +30,17 @@ namespace EnvironmentServer.DAL
             EnvironmentSettings = new EnvironmentSettingValueRepository(this);
             Snapshot = new EnvironmentSnapshotRepository(this);
             CmdAction = new CmdActionRepository(this);
+            Logs = new LogRepository(this);
 
             if (Users.GetByUsername("Admin") == null)
             {
+                Logs.Add("DAL", "Creating Admin user");
                 Task.Run(() => Users.InsertAsync(new User
                 {
                     Email = "root@root.tld",
                     Username = "Admin",
                     Password = PasswordHasher.Hash("Admin"),
-                    IsAdmin = true
+                    IsAdmin = true                    
                 }, "Admin"));
             }
         }

@@ -49,6 +49,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void Insert(Setting setting)
         {
+            DB.Logs.Add("DAL", "Insert setting " + setting.Key);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `settings` (`ID`, `SettingKey`, `DisplayName`, `Value`) VALUES "
@@ -64,6 +65,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void Update(Setting setting)
         {
+            DB.Logs.Add("DAL", "Update setting " + setting.Key);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `settings` SET `SettingKey` = @key, `DisplayName` = @displayName, "
@@ -80,6 +82,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void Delete(Setting setting)
         {
+            DB.Logs.Add("DAL", "Delete setting " + setting.Key);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("DELETE FROM `settings` WHERE `settings`.`ID` = @id");

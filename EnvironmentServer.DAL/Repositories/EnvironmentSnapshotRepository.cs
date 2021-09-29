@@ -65,14 +65,44 @@ namespace EnvironmentServer.DAL.Repositories
                 reader.Close();
             }
         }
-
+      
         public void CreateSnapshot(string name, long env_id, long user_id)
         {
-            DB.CmdAction.CreateTask(new CmdAction() { Action = "snapshot_create", ExecutedById = user_id, Id_Variable = env_id });
+            DB.Logs.Add("DAL", "Create snapshot " + name);
+            long id;
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("INSERT INTO `environments_snapshots` (`Id`, `environments_Id_fk`, `Name`, `Hash`, `Template`, `Created`) VALUES (NULL, @envid, @name, '0', '0', NOW());");
+                Command.Parameters.AddWithValue("@envid", env_id);
+                Command.Parameters.AddWithValue("@name", name);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+                id = Command.LastInsertedId;
+            }
+            DB.CmdAction.CreateTask(new CmdAction() { Action = "snapshot_create", ExecutedById = user_id, Id_Variable = id });
+        }
+
+        public void UpdateSnapshot(EnvironmentSnapshot snapshot)
+        {
+            DB.Logs.Add("DAL", "Update snapshot " + snapshot.Name);
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("UPDATE `environments_snapshots` SET " +
+                    "Name = @name, " +
+                    "Hash = @hash, " +
+                    "Template = @template " +
+                    "WHERE `environments_snapshots`.`Id` = 9;");
+                Command.Parameters.AddWithValue("@hash", snapshot.Hash);
+                Command.Parameters.AddWithValue("@name", snapshot.Name);
+                Command.Parameters.AddWithValue("@template", snapshot.Template);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
         }
 
         public void DeleteSnapshot(long id)
         {
+            DB.Logs.Add("DAL", "Delete snapshot " + id);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("DELETE FROM environments_snapshots WHERE id = @id;");

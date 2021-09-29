@@ -61,6 +61,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void Insert(EnvironmentSettingValue environment)
         {
+            DB.Logs.Add("DAL", "Insert EnvironmentSettingValue " + environment.EnvironmentSetting.Property);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `environments_settings_values` (`environments_ID_fk`, "
@@ -75,6 +76,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void Update(EnvironmentSettingValue environment)
         {
+            DB.Logs.Add("DAL", "Update EnvironmentSettingValue " + environment.EnvironmentSettingID);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `environments_settings_values` SET `environments_ID_fk`= @environmentID,"
@@ -90,6 +92,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void Delete(EnvironmentSettingValue environment)
         {
+            DB.Logs.Add("DAL", "Delete EnvironmentSettingValue " + environment.EnvironmentSettingID);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("DELETE FROM `environments_settings_values` WHERE `environments_ID_fk` = @environmentID "

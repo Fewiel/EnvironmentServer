@@ -42,6 +42,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void SetExecuted(long id)
         {
+            DB.Logs.Add("DAL", "Completed Task " + id);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `cmd_actions` SET `Executed` = NOW() WHERE `cmd_actions`.`Id` = @id;");
@@ -53,6 +54,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void CreateTask(CmdAction action)
         {
+            DB.Logs.Add("DAL", "Create Task " + action.Action);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand($"INSERT INTO `cmd_actions` " +
@@ -66,6 +68,7 @@ namespace EnvironmentServer.DAL.Repositories
         //Delete old entries (7 days back)
         public void DeleteOldExecuted()
         {
+            DB.Logs.Add("DAL", "Delete old Tasks");
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("DELETE FROM cmd_actions WHERE Executed <= NOW() - INTERVAL 7 DAY");

@@ -34,6 +34,7 @@ namespace EnvironmentServer.Web.Controllers
             var usr = DB.Users.GetByUsername(lvm.Username);
             if (usr == null)
             {
+                DB.Logs.Add("Web", "Login failed for: " + lvm.Username + ". User not found.");
                 AddError("Wrong username or password");
                 return View();
             }
@@ -43,7 +44,7 @@ namespace EnvironmentServer.Web.Controllers
                 HttpContext.Session.SetObject("user", usr);
                 return RedirectToAction("Index", "Home");
             }
-
+            DB.Logs.Add("Web", "Login failed for: " + lvm.Username + ". Wrong username or password.");
             AddError("Wrong username or password");
             return View();
         }
@@ -59,6 +60,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (DB.Users.GetByUsername(rvm.Username) != null)
             {
+                DB.Logs.Add("Web", "Registration failed for: " + rvm.Username + ". Username already taken.");
                 AddError("Username already taken.");
                 return View();
             }

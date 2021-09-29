@@ -126,6 +126,7 @@ AssignUserId {5} sftp_users
 
         public async Task<long> InsertAsync(Environment environment, User user)
         {
+            DB.Logs.Add("DAL", "Insert Environment " + environment.Name + " for " + user.Username);
             var dbString = user.Username + "_" + environment.Name;
             long lastID;
             //Create database for environment
@@ -208,6 +209,7 @@ AssignUserId {5} sftp_users
 
         public async Task DeleteAsync(Environment environment, User user, string domain)
         {
+            DB.Logs.Add("DAL", "Delete Environment " + environment.Name + " for " + user.Username);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("DELETE FROM `environments` WHERE `environments`.`ID` = @id");

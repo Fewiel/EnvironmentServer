@@ -6,7 +6,7 @@ namespace EnvironmentServer.Daemon
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Environment Server Deamon");
         }
     }
 }

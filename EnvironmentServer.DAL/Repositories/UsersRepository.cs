@@ -105,6 +105,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
 
         public async Task InsertAsync(User user, string shellPassword)
         {
+            DB.Logs.Add("DAL", "Insert user " + user.Username);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`) "
@@ -137,7 +138,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
             //              AllowAgentForwarding no
             //              AllowTcpForwarding no
             //              X11Forwarding no
-            Console.WriteLine("Creating User");
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"")
                 .ExecuteAsync();
@@ -145,7 +145,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
                 .ExecuteAsync();
 
-            Console.WriteLine("Creating Home Folder");
             Directory.CreateDirectory($"/home/{user.Username}");
 
             await Cli.Wrap("/bin/bash")
@@ -155,7 +154,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 .WithArguments($"-c \"chmod 755 /home/{user.Username}\"")
                 .ExecuteAsync();
 
-            Console.WriteLine("Creating Files Folder");
             Directory.CreateDirectory($"/home/{user.Username}/files");
 
             await Cli.Wrap("/bin/bash")
@@ -190,6 +188,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
 
         public async void Update(User user, string shellPassword)
         {
+            DB.Logs.Add("DAL", "Update user " + user.Username);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `users` SET "
@@ -210,6 +209,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
 
         public async void Delete(User user)
         {
+            DB.Logs.Add("DAL", "Delete user " + user.Username);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("DELETE FROM `users` WHERE `users`.`ID` = @id");
