@@ -29,10 +29,18 @@
                 @if (!taskRunning)
                 {
                     <div class="d-flex" style="padding: 10px 30px 0px 30px;">
-                        <i class="bi bi-skip-backward-circle me-auto" style="font-size: 30px;"></i>
-                        <i class="bi bi-skip-start-circle me-auto" style="font-size: 30px;"></i>
-                        <i class="bi bi-plus-circle me-auto" style="font-size: 30px;"></i>
-                        <i class="bi bi-x-circle" style="font-size: 30px;"></i>
+                        <a asp-controller="Environment" asp-action="ShowSnapshots" asp-route-id="">
+                            <i class="bi bi-skip-backward-circle me-auto" style="font-size: 30px;"></i>
+                        </a>
+                        <a asp-controller="Environment" asp-action="LatestSnapshot" asp-route-id="">
+                            <i class="bi bi-skip-start-circle me-auto" style="font-size: 30px;"></i>
+                        </a>
+                        <a asp-controller="Environment" asp-action="CreateSnapshot" asp-route-id="">
+                            <i class="bi bi-plus-circle me-auto" style="font-size: 30px;"></i>
+                        </a>
+                        <a asp-controller="Environment" asp-action="Delete" asp-route-id="">
+                            <i class="bi bi-x-circle" style="font-size: 30px;"></i>
+                        </a>
                     </div>
                 }
                 else
