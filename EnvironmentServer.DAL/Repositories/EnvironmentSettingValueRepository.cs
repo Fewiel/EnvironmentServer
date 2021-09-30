@@ -61,7 +61,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void Insert(EnvironmentSettingValue environment)
         {
-            DB.Logs.Add("DAL", "Insert EnvironmentSettingValue " + environment.EnvironmentSetting.Property);
+            DB.Logs.Add("DAL", "Insert EnvironmentSettingValue");
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `environments_settings_values` (`environments_ID_fk`, "
