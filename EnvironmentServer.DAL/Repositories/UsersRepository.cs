@@ -124,20 +124,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
 
             }
             DB.Logs.Add("DAL", "Start Useradd: " + user.Username);
-            //sudo addgroup sftp_users
-
-            //  /etc/ssh/sshd_config
-            //https://linuxize.com/post/how-to-set-up-sftp-chroot-jail/
-            //
-            //            Match Group sftp_users
-            //# Force the connection to use SFTP and chroot to the required directory.
-            //              ForceCommand internal-sftp
-            //              ChrootDirectory %h
-            //              # Disable tunneling, authentication agent, TCP and X11 forwarding.
-            //              PermitTunnel no
-            //              AllowAgentForwarding no
-            //              AllowTcpForwarding no
-            //              X11Forwarding no
+            
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"")
                 .ExecuteAsync();
