@@ -23,6 +23,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         protected void AddError(string msg) => AddMessageInternal(new Message(msg, "alert-danger"));
+        protected void AddInfo(string msg) => AddMessageInternal(new Message(msg, "alert-primary"));
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

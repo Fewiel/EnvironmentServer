@@ -104,7 +104,7 @@ namespace EnvironmentServer.DAL.Repositories
             }
         }
 
-        public void DeleteAllbyEnv(long env_id)
+        public void DeleteAllByEnv(long env_id)
         {
             DB.Logs.Add("DAL", "Delete EnvironmentSettingValue " + env_id.ToString());
             using (var connection = DB.GetConnection())

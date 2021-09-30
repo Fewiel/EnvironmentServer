@@ -211,7 +211,7 @@ AssignUserId {5} sftp_users
         {
             DB.Logs.Add("DAL", "Delete Environment " + environment.Name + " for " + user.Username);
 
-            DB.EnvironmentSettings.DeleteAllbyEnv(environment.ID);
+            DB.EnvironmentSettings.DeleteAllByEnv(environment.ID);
 
             using (var connection = DB.GetConnection())
             {

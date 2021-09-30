@@ -48,7 +48,7 @@ namespace EnvironmentServer.Web.Controllers
         {
             if (!ModelState.IsValid)
                 return View(cvm);
-          
+
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
@@ -90,6 +90,30 @@ namespace EnvironmentServer.Web.Controllers
             DB.EnvironmentSettings.Insert(envSettingTask);
 
             return RedirectToAction("Index", "Home");
+        }
+        public ActionResult Delete(long id)
+        {
+            var env = DB.Environments.Get(id);
+            if (env == null)
+            {
+                AddError("Could not find Environment");
+                return RedirectToAction("Index");
+            }
+            return View(env);
+        }
+
+        public async Task<ActionResult> DeleteConfirmed(long id)
+        {
+            var env = DB.Environments.Get(id);
+            if (env == null)
+            {
+                AddError("Could not find Environment");
+                return RedirectToAction("Index");
+            }
+
+            await DB.Environments.DeleteAsync(env, GetSessionUser()).ConfigureAwait(false);
+            AddInfo("Environment sucessfull deleted");
+            return RedirectToAction("Index");
         }
     }
 }
