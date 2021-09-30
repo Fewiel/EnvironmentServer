@@ -144,7 +144,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
                 .ExecuteAsync();
-
+            DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
 
             await Cli.Wrap("/bin/bash")
@@ -154,6 +154,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 .WithArguments($"-c \"chmod 755 /home/{user.Username}\"")
                 .ExecuteAsync();
 
+            DB.Logs.Add("DAL", "Create user files folder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}/files");
 
             await Cli.Wrap("/bin/bash")
@@ -163,6 +164,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 .WithArguments($"-c \"chmod 755 /home/{user.Username}/files\"")
                 .ExecuteAsync();
 
+            DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
             var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
             File.WriteAllText($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf", conf);
             conf = string.Format(phpfpm, user.Username, "php7.4-fpm");
