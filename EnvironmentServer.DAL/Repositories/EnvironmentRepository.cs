@@ -207,9 +207,12 @@ AssignUserId {5} sftp_users
             //#möglich persistent
         }
 
-        public async Task DeleteAsync(Environment environment, User user, string domain)
+        public async Task DeleteAsync(Environment environment, User user)
         {
             DB.Logs.Add("DAL", "Delete Environment " + environment.Name + " for " + user.Username);
+
+            DB.EnvironmentSettings.DeleteAllbyEnv(environment.ID);
+
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("DELETE FROM `environments` WHERE `environments`.`ID` = @id");
