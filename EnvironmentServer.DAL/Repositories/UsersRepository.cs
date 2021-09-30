@@ -123,7 +123,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 Command.ExecuteNonQuery();
 
             }
-
+            DB.Logs.Add("DAL", "Start Useradd: " + user.Username);
             //sudo addgroup sftp_users
 
             //  /etc/ssh/sshd_config
