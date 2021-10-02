@@ -103,18 +103,5 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.ExecuteNonQuery();
             }
         }
-
-        public void DeleteAllByEnv(long env_id)
-        {
-            DB.Logs.Add("DAL", "Delete EnvironmentSettingValue " + env_id.ToString());
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("DELETE FROM `environments_settings_values` WHERE `environments_ID_fk` = @environmentID "
-                      + "AND `environments_settings_ID_fk` = @environmentSettingID;");
-                Command.Parameters.AddWithValue("@environmentID", env_id);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
-        }
     }
 }

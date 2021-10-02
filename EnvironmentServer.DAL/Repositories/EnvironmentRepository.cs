@@ -211,8 +211,6 @@ AssignUserId {5} sftp_users
         {
             DB.Logs.Add("DAL", "Delete Environment " + environment.Name + " for " + user.Username);
 
-            DB.EnvironmentSettings.DeleteAllByEnv(environment.ID);
-
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("DELETE FROM `environments` WHERE `environments`.`ID` = @id");
