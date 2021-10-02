@@ -6,10 +6,10 @@
 <h2>Are you sure you want to delete this environment?</h2>
 <p>@Model.Name</p>
 <p>
-    <a asp-controller="Env" asp-action="Index">Back to Home</a>
+    <a asp-controller="Home" asp-action="Index">Back to Home</a>
 </p>
 
-<form method="post" asp-controller="Env" asp-action="DeleteConfirmed">
+<form method="post" asp-action="DeleteConfirmed">
     <input type="hidden" asp-for="ID" />
     <button type="submit" class="btn btn-primary">Delete</button>
 </form>

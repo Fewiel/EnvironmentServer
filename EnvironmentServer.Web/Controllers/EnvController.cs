@@ -97,7 +97,7 @@ namespace EnvironmentServer.Web.Controllers
             if (env == null)
             {
                 AddError("Could not find Environment");
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
             return View(env);
         }
@@ -108,12 +108,12 @@ namespace EnvironmentServer.Web.Controllers
             if (env == null)
             {
                 AddError("Could not find Environment");
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
 
             await DB.Environments.DeleteAsync(env, GetSessionUser()).ConfigureAwait(false);
             AddInfo("Environment sucessfull deleted");
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
         }
     }
 }
