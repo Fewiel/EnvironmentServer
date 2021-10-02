@@ -219,6 +219,13 @@ AssignUserId {5} sftp_users
                 Command.ExecuteNonQuery();
             }
 
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("DROP DATABASE " + user.Username + "_" + environment.Name);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+
             Directory.Delete($"/home/{user.Username}/files/{environment.Name}", true);
             Directory.Delete($"/home/{user.Username}/files/logs/{environment.Name}", true);
 
