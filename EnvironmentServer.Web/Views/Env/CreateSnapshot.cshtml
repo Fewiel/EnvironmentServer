@@ -1,0 +1,20 @@
+﻿@model EnvironmentServer.DAL.Models.EnvironmentSnapshot
+@{
+    ViewData["Title"] = "Create Snapshot";
+}
+
+<h2>Create Snapshot</h2>
+
+<p>
+    <a asp-controller="Home" asp-action="Index">Back to Home</a>
+</p>
+
+<form method="post" asp-action="CreateConfirm">
+    <input type="hidden" asp-for="EnvironmentId" />
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Snapshot name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

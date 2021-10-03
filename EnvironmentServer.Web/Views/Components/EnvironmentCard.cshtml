@@ -29,16 +29,16 @@
                 @if (!taskRunning)
                 {
                     <div class="d-flex" style="padding: 10px 30px 0px 30px;">
-                        <a asp-controller="Env" asp-action="ShowSnapshots" asp-route-id=@Model.ID>
-                            <i class="bi bi-skip-backward-circle me-auto" style="font-size: 30px;"></i>
+                        <a class="me-auto" asp-controller="Env" asp-action="ShowSnapshots" asp-route-id=@Model.ID>
+                            <i class="bi bi-skip-backward-circle" style="font-size: 30px;"></i>
                         </a>
-                        <a asp-controller="Env" asp-action="LatestSnapshot" asp-route-id=@Model.ID>
-                            <i class="bi bi-skip-start-circle me-auto" style="font-size: 30px;"></i>
+                        <a class="me-auto" asp-controller="Env" asp-action="LatestSnapshot" asp-route-id=@Model.ID>
+                            <i class="bi bi-skip-start-circle" style="font-size: 30px;"></i>
                         </a>
-                        <a asp-controller="Env" asp-action="CreateSnapshot" asp-route-id=@Model.ID>
-                            <i class="bi bi-plus-circle me-auto" style="font-size: 30px;"></i>
+                        <a class="me-auto" asp-controller="Env" asp-action="CreateSnapshot" asp-route-id=@Model.ID>
+                            <i class="bi bi-plus-circle" style="font-size: 30px;"></i>
                         </a>
-                        <a asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>
+                        <a class="me-auto" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>
                             <i class="bi bi-x-circle" style="font-size: 30px;"></i>
                         </a>
                     </div>
