@@ -207,6 +207,20 @@ AssignUserId {5} sftp_users
             //#möglich persistent
         }
 
+        public async Task UpdatePhpAsync(Environment environment, User user)
+        {
+            var docRoot = $"/home/{user.Username}/files/{environment.Name}";
+            var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
+            var conf = string.Format(ApacheConf, environment.Version.AsString(), user.Email, environment.Address, docRoot, logRoot, user.Username);
+            File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
+        }
+
         public async Task DeleteAsync(Environment environment, User user)
         {
             DB.Logs.Add("DAL", "Delete Environment " + environment.Name + " for " + user.Username);
