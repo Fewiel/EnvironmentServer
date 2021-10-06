@@ -43,6 +43,29 @@ namespace EnvironmentServer.Web.Controllers
             return View(createViewModel);
         }
 
+        [HttpGet]
+        public IActionResult Update(long id)
+        {
+            var createViewModel = new UpdateViewModel()
+            {
+                ID = id,
+                EnvironmentName = DB.Environments.Get(id).Name,
+                PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
+                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString()))
+            };
+            return View(createViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateAsync(long id, [FromForm] UpdateViewModel cvm)
+        {
+
+            await DB.Environments.UpdatePhpAsync(id, GetSessionUser(), (PhpVersion)cvm.Version);
+
+            AddInfo("Environment PhpVersion sucessfull updated");
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] CreateViewModel cvm)
         {

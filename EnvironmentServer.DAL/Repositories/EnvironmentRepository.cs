@@ -207,8 +207,19 @@ AssignUserId {5} sftp_users
             //#möglich persistent
         }
 
-        public async Task UpdatePhpAsync(Environment environment, User user)
+        public async Task UpdatePhpAsync(long id, User user, PhpVersion version)
         {
+            var environment = DB.Environments.Get(id);
+            //UPDATE `environments` SET `Version` = '2' WHERE `environments`.`ID` = 23;
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("UPDATE `environments` SET `Version` = '@version' WHERE `environments`.`ID` = @id;");
+                Command.Parameters.AddWithValue("@version", version);
+                Command.Parameters.AddWithValue("@id", id);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
                 .ExecuteAsync();
@@ -217,7 +228,7 @@ AssignUserId {5} sftp_users
                 .ExecuteAsync();
             var docRoot = $"/home/{user.Username}/files/{environment.Name}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
-            var conf = string.Format(ApacheConf, environment.Version.AsString(), user.Email, environment.Address, docRoot, logRoot, user.Username);
+            var conf = string.Format(ApacheConf, version.AsString(), user.Email, environment.Address, docRoot, logRoot, user.Username);
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
