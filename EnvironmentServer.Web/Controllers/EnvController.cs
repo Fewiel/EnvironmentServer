@@ -57,7 +57,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateAsync(long id, [FromForm] UpdateViewModel cvm)
+        public async Task<IActionResult> Update(long id, [FromForm] UpdateViewModel cvm)
         {
 
             await DB.Environments.UpdatePhpAsync(id, GetSessionUser(), (PhpVersion)cvm.Version);
