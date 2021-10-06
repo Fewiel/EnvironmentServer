@@ -213,7 +213,7 @@ AssignUserId {5} sftp_users
             //UPDATE `environments` SET `Version` = '2' WHERE `environments`.`ID` = 23;
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand("UPDATE `environments` SET `Version` = '@version' WHERE `environments`.`ID` = @id;");
+                var Command = new MySqlCommand("UPDATE `environments` SET `Version` = @version WHERE `environments`.`ID` = @id;");
                 Command.Parameters.AddWithValue("@version", version);
                 Command.Parameters.AddWithValue("@id", id);
                 Command.Connection = connection;
