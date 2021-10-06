@@ -209,6 +209,12 @@ AssignUserId {5} sftp_users
 
         public async Task UpdatePhpAsync(Environment environment, User user)
         {
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
             var docRoot = $"/home/{user.Username}/files/{environment.Name}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
             var conf = string.Format(ApacheConf, environment.Version.AsString(), user.Email, environment.Address, docRoot, logRoot, user.Username);
@@ -224,6 +230,15 @@ AssignUserId {5} sftp_users
         public async Task DeleteAsync(Environment environment, User user)
         {
             DB.Logs.Add("DAL", "Delete Environment " + environment.Name + " for " + user.Username);
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
+
+            File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf");
 
             using (var connection = DB.GetConnection())
             {
@@ -242,15 +257,6 @@ AssignUserId {5} sftp_users
 
             Directory.Delete($"/home/{user.Username}/files/{environment.Name}", true);
             Directory.Delete($"/home/{user.Username}/files/logs/{environment.Name}", true);
-
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
-
-            File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf");
         }
 
     }
