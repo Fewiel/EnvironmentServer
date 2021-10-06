@@ -1,0 +1,20 @@
+﻿@model EnvironmentServer.Web.ViewModels.Env.UpdateViewModel
+
+@{
+    ViewData["Title"] = "Update";
+}
+
+<div class="d-flex align-items-center justify-content-center fullHeight">
+    <form method="post" asp-action="Update" style="width: 400px;">
+        <input type="hidden" asp-for="ID" />
+        <div class="mb-3">
+            <label class="form-label">Environment Name @Model.EnvironmentName</label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">PHP Version</label>
+            <select asp-for="Version" asp-items="Model.PhpVersions" class="form-select"></select>
+            <span asp-validation-for="Version" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
