@@ -79,6 +79,13 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.ExecuteNonQuery();
                 id = Command.LastInsertedId;
             }
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'True' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
+                Command.Parameters.AddWithValue("@envid", env_id);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
             DB.CmdAction.CreateTask(new CmdAction() { Action = "snapshot_create", ExecutedById = user_id, Id_Variable = id });
         }
 

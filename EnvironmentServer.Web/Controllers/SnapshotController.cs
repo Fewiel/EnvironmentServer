@@ -22,11 +22,18 @@ namespace EnvironmentServer.Web.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Create(long ID)
+        {
+            return View();
+        }
+
         [HttpPost]
         public IActionResult Create([FromForm] EnvironmentSnapshot env_snap, long ID)
         {
             DB.Snapshot.CreateSnapshot(env_snap.Name, ID, GetSessionUser().ID);
-            return View();
+            AddInfo("Environment Snapshot will be createt in a few seconds");
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Restore()
