@@ -22,8 +22,10 @@ namespace EnvironmentServer.Web.Controllers
             return View();
         }
 
+        [HttpPost]
         public IActionResult Create([FromForm] EnvironmentSnapshot env_snap, long ID)
         {
+            DB.Snapshot.CreateSnapshot(env_snap.Name, ID, GetSessionUser().ID);
             return View();
         }
 
