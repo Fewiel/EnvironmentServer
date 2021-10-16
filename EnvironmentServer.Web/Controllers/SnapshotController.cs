@@ -17,15 +17,15 @@ namespace EnvironmentServer.Web.Controllers
             DB = database;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(long id)
         {
-            return View();
+            return View(DB.Snapshot.GetForEnvironment(id));
         }
 
         [HttpGet]
         public IActionResult Create(long ID)
         {
-            return View();
+            return View(ID);
         }
 
         [HttpPost]
@@ -36,14 +36,21 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult Restore()
+        public IActionResult RestoreConfirmed(long id)
         {
-            return View();
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "snapshot_restore",
+                Id_Variable = id,
+                ExecutedById = GetSessionUser().ID
+            });
+            AddInfo("Environment Snapshot will be restored, this can take a few seconds");
+            return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult Delete()
+        public IActionResult RestoreConfirm(long id)
         {
-            return View();
+            return View(id);
         }
     }
 }

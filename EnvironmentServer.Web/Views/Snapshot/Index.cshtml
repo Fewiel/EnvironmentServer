@@ -1,0 +1,38 @@
+﻿@model IEnumerable<EnvironmentServer.DAL.Models.EnvironmentSnapshot>
+@{
+    ViewData["Title"] = "Snapshots";
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Hash</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var snap in Model)
+        {
+            <tr>
+                <td>
+                    <a>@snap.Id</a>
+                </td>
+                <td>
+                    <a>@snap.Name</a>
+                </td>
+                <td>
+                    <a>@snap.Hash</a>
+                </td>
+                <td>
+                    <a>@snap.Created</a>
+                </td>
+                <td>
+                    <a asp-action="RestoreConfirm" asp-route-id="@snap.Id">Restore</a> |
+                    <a asp-action="Delete" asp-route-id="@snap.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

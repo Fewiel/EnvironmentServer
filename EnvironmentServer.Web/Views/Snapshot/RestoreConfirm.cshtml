@@ -1,0 +1,17 @@
+﻿@model EnvironmentServer.DAL.Models.EnvironmentSnapshot
+
+@{
+    ViewData["Title"] = "Restore to - " + @Model.Name;
+}
+
+<h2>Are you sure you want to restore to this snapshot?</h2>
+<h2>Keep in mind, all newer snapshots will be deleted!</h2>
+<p>@Model.Name</p>
+<p>
+    <a asp-controller="Home" asp-action="Index">Back to Snapshots</a>
+</p>
+
+<form method="post" asp-action="RestoreConfirmed">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-primary">Restore and Delete newer</button>
+</form>

@@ -29,7 +29,7 @@ namespace EnvironmentServer.Daemon
             ActiveWorkerTask.Wait(TimeSpan.FromMinutes(5));
         }
 
-        private void DoWork()
+        private async Task DoWork()
         {
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -50,7 +50,7 @@ namespace EnvironmentServer.Daemon
                 }
 
                 //Execute action
-                act.Execute(task.Id_Variable, task.ExecutedById);
+                await act.ExecuteAsync(DB, task.Id_Variable, task.ExecutedById);
 
                 //Set executed in DB
                 DB.CmdAction.SetExecuted(task.Id);

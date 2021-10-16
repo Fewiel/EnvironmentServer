@@ -114,6 +114,7 @@ namespace EnvironmentServer.Web.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
         public ActionResult Delete(long id)
         {
             var env = DB.Environments.Get(id);

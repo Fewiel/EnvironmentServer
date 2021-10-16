@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.Daemon.Actions
 {
-    public class SnapshotCreate : ActionBase
+    public class SnapshotRestore : ActionBase
     {
-        public override string ActionIdentifier => "snapshot_create";
+        public override string ActionIdentifier => "snapshot_restore";
 
         public override async Task ExecuteAsync(Database db, long variableID, long userID)
         {
@@ -29,45 +29,40 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
-            //Create database dump in site folder
+            //Git checkout
             await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"mysqldump -u adm -p1594875!Adm " + dbString + " > db.sql\"")
+                .WithArguments($"-c \"git reset --hard {snap.Hash}\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
-            //check for git init
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"git init\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .ExecuteAsync();
-
-            //git stage
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"git stage -A\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .ExecuteAsync();
-
-            //create commit
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"git commit\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .ExecuteAsync();
-
-            //save hash
-            StringBuilder hash = new();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"git rev-parse head\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(hash))
-                .ExecuteAsync();
-
+            //Recreate Database            
             using (var connection = db.GetConnection())
             {
-                //SELECT * FROM environments_snapshots WHERE environments_Id_fk = 1 ORDER BY Created DESC LIMIT 1;
-                var Command = new MySqlCommand($"UPDATE environments_snapshots SET Hash = {hash} WHERE id = {snap.Id};");
+                var Command = new MySqlCommand("drop database " + dbString + ";");
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+
+                Command = new MySqlCommand("create database " + dbString + ";");
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+
+                Command = new MySqlCommand("grant all on " + dbString + ".* to '" + user.Username + "'@'localhost';");
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
+
+            foreach (var i in db.Snapshot.GetForEnvironment(env.ID))
+            {
+                if (i.Id > snap.Id)
+                {
+                    db.Snapshot.DeleteSnapshot(i.Id);
+                }
+            }
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"mysqldump -u adm -p1594875!Adm " + dbString + " < db.sql\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
 
             //restart site
             await Cli.Wrap("/bin/bash")

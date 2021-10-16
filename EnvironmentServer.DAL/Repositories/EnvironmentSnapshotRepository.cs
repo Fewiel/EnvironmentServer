@@ -18,6 +18,58 @@ namespace EnvironmentServer.DAL.Repositories
             DB = database;
         }
 
+        public EnvironmentSnapshot Get(long id)
+        {
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("SELECT * FROM `environments_snapshots` WHERE id = @id;");
+                Command.Parameters.AddWithValue("@id", id);
+                Command.Connection = connection;
+                MySqlDataReader reader = Command.ExecuteReader();
+                EnvironmentSnapshot env = null;
+                while (reader.Read())
+                {
+                    env = new EnvironmentSnapshot()
+                    {
+                        Id = reader.GetInt64(0),
+                        EnvironmentId = reader.GetInt64(1),
+                        Name = reader.GetString(2),
+                        Hash = reader.GetString(3),
+                        Template = reader.GetBoolean(4),
+                        Created = reader.GetDateTime(5)
+                    };
+                }
+                reader.Close();
+                return env;
+            }
+        }
+
+        public EnvironmentSnapshot GetLatest(long id)
+        {
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("SELECT * FROM `environments_snapshots` WHERE environments_Id_fk = @id ORDER BY Created DESC LIMIT 1;");
+                Command.Parameters.AddWithValue("@id", id);
+                Command.Connection = connection;
+                MySqlDataReader reader = Command.ExecuteReader();
+                EnvironmentSnapshot env = null;
+                while (reader.Read())
+                {
+                    env = new EnvironmentSnapshot()
+                    {
+                        Id = reader.GetInt64(0),
+                        EnvironmentId = reader.GetInt64(1),
+                        Name = reader.GetString(2),
+                        Hash = reader.GetString(3),
+                        Template = reader.GetBoolean(4),
+                        Created = reader.GetDateTime(5)
+                    };
+                }
+                reader.Close();
+                return env;
+            }
+        }
+
         public IEnumerable<EnvironmentSnapshot> GetForEnvironment(long id)
         {
             using (var connection = DB.GetConnection())
