@@ -31,10 +31,14 @@ namespace EnvironmentServer.DAL.Repositories
 
     ErrorLog {4}/error.log
     CustomLog {4}/access.log combined
-<IfModule mpm_itk_module>
-AssignUserId {5} sftp_users
-</IfModule>
 
+    <IfModule mpm_itk_module>
+        AssignUserId {5} sftp_users
+    </IfModule>
+
+    <IfModule mod_rewrite>
+        RewriteEngine On
+    </IfModule>
 </VirtualHost>";
 
         public EnvironmentRepository(Database db)
