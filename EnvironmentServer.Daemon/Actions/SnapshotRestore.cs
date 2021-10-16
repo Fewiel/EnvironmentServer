@@ -21,6 +21,15 @@ namespace EnvironmentServer.Daemon.Actions
             var env = db.Environments.Get(snap.EnvironmentId);
             var dbString = user.Username + "_" + env.Name;
 
+            using (var connection = db.GetConnection())
+            {
+                var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'True' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
+                Command.Parameters.AddWithValue("@envid", env.ID);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+
+            db.Logs.Add("Daemon", "SnapshotRestore - Disable Site: " + env.Name);
             //Stop Website (a2dissite)
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2dissite {user.Username}_{env.Name}.conf\"")
@@ -29,12 +38,14 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
-            //Git checkout
+            db.Logs.Add("Daemon", "SnapshotRestore - git reset --hard: " + env.Name);
+            //Git reset
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git reset --hard {snap.Hash}\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
+            db.Logs.Add("Daemon", "SnapshotRestore - Recreate/dump database: " + env.Name);
             //Recreate Database            
             using (var connection = db.GetConnection())
             {
@@ -64,6 +75,7 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
+            db.Logs.Add("Daemon", "SnapshotRestore - Enable Site: " + env.Name);
             //restart site
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{env.Name}.conf\"")
@@ -71,6 +83,15 @@ namespace EnvironmentServer.Daemon.Actions
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
+
+            using (var connection = db.GetConnection())
+            {
+                var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'False' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
+                Command.Parameters.AddWithValue("@envid", env.ID);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+            db.Logs.Add("Daemon", "SnapshotRestore - Done: " + env.Name);
         }
     }
 }
