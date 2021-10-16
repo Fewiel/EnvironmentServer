@@ -37,11 +37,6 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult Restore(long id)
-        {
-            return View(DB.Snapshot.GetForEnvironment(id));
-        }
-
         public IActionResult RestoreLatest(long id)
         {
             DB.CmdAction.CreateTask(new CmdAction

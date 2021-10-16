@@ -29,7 +29,7 @@
                 @if (!taskRunning)
                 {
                     <div class="d-flex" style="padding: 10px 30px 0px 30px;">
-                        <a class="me-auto" asp-controller="Snapshot" asp-action="Restore" asp-route-id=@Model.ID>
+                        <a class="me-auto" asp-controller="Snapshot" asp-route-id=@Model.ID>
                             <i class="bi bi-skip-backward-circle" style="font-size: 30px;"></i>
                         </a>
                         <a class="me-auto" asp-controller="Snapshot" asp-action="RestoreLatest" asp-route-id=@Model.ID>
