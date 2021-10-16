@@ -62,7 +62,7 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult RestoreConfirm(long id)
         {
-            return View(id);
+            return View(DB.Snapshot.GetForEnvironment(id));
         }
     }
 }
