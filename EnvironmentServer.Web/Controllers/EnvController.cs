@@ -31,14 +31,7 @@ namespace EnvironmentServer.Web.Controllers
             var createViewModel = new CreateViewModel()
             {
                 PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
-                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
-                Templates = new List<SelectListItem>
-                {
-                    new SelectListItem("Shopware 6.4.4.1", "1"),
-                    new SelectListItem("Shopware 6.4.4.0", "2"),
-                    new SelectListItem("Shopware 6.3.3.6", "3"),
-                    new SelectListItem("Shopware 5.5.1", "4")
-                }
+                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString()))
             };
             return View(createViewModel);
         }
@@ -81,6 +74,18 @@ namespace EnvironmentServer.Web.Controllers
             };
 
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser()).ConfigureAwait(false);
+
+            if (!string.IsNullOrEmpty(cvm.File) && System.Uri.IsWellFormedUriString(cvm.File, System.UriKind.RelativeOrAbsolute))
+            {
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{cvm.EnvironmentName}/dl.txt", cvm.File);
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "download_extract",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+            }
 
             var envSettingPersistent = new EnvironmentSettingValue()
             {
