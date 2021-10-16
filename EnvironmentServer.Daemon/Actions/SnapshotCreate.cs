@@ -62,7 +62,7 @@ namespace EnvironmentServer.Daemon.Actions
             //save hash
             StringBuilder hash = new();
             await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"git rev-parse head\"")
+                .WithArguments("-c \"git rev-parse HEAD\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .WithStandardOutputPipe(PipeTarget.ToStringBuilder(hash))
                 .ExecuteAsync();
