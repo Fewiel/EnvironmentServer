@@ -63,7 +63,7 @@ namespace EnvironmentServer.Daemon.Actions
             }
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"mysqldump -u adm -p1594875!Adm " + dbString + " < db.sql\"")
+                .WithArguments("-c \"mysql -u adm -p1594875!Adm " + dbString + " < db.sql\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
