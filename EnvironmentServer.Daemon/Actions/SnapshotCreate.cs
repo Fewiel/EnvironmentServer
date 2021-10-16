@@ -54,7 +54,7 @@ namespace EnvironmentServer.Daemon.Actions
             db.Logs.Add("Daemon", "SnapshotCreate - Git commit: " + env.Name);
             //create commit
             await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"git commit\"")
+                .WithArguments("-c \"git commit -m 'EnvSnapshot'\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
