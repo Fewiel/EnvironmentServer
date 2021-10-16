@@ -26,7 +26,7 @@ namespace EnvironmentServer.Web.Controllers
         [HttpGet]
         public IActionResult Create(long ID)
         {
-            return View(ID);
+            return View(new EnvironmentSnapshot { EnvironmentId = ID });
         }
 
         [HttpPost]
