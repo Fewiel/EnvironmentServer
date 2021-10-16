@@ -31,7 +31,6 @@ namespace EnvironmentServer.DAL.Repositories
                         Id = reader.GetInt64(0),
                         Action = reader.GetString(1),
                         Id_Variable = reader.GetInt64(2),
-                        Executed = reader.GetDateTime(3),
                         ExecutedById = reader.GetInt64(4)
                     };
                 }

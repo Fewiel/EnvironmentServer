@@ -1,13 +1,73 @@
-﻿using System;
+﻿using EnvironmentServer.Daemon.Actions;
+using EnvironmentServer.DAL;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Daemon
 {
     public class Worker
     {
+        private readonly Database DB;
+        private readonly CancellationTokenSource cancellationToken;
+        private readonly Task ActiveWorkerTask;
+        private readonly Dictionary<string, ActionBase> Actions = new();
 
+        public Worker()
+        {
+            FillActions();
+            DB = new Database("server=192.168.178.167;database=EnvironmentServer;uid=adm;pwd=1594875!Adm;");
+            cancellationToken = new CancellationTokenSource();
+            ActiveWorkerTask = Task.Factory.StartNew(DoWork, cancellationToken.Token);
+        }
+
+        public void StopWorker()
+        {
+            cancellationToken.Cancel();
+            Console.WriteLine("Waiting for last task");
+            ActiveWorkerTask.Wait(TimeSpan.FromMinutes(5));
+        }
+
+        private void DoWork()
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                //Get task
+                var task = DB.CmdAction.GetFirstNonExecuted();
+                if (string.IsNullOrEmpty(task.Action))
+                {
+                    Thread.Yield();
+                    continue;
+                }
+
+                //Get correct action for task
+                if (!Actions.TryGetValue(task.Action, out var act))
+                {
+                    DB.Logs.Add("Deamon", "Undefined action called: " + task.Action);
+                    DB.CmdAction.SetExecuted(task.Id);
+                    continue;
+                }
+
+                //Execute action
+                act.Execute(task.Id_Variable, task.ExecutedById);
+
+                //Set executed in DB
+                DB.CmdAction.SetExecuted(task.Id);
+            }
+        }
+
+        private void FillActions()
+        {
+            var l = new List<ActionBase>
+            {
+                new SnapshotCreate()
+            };
+
+            foreach (var a in l)
+            {
+                Actions.Add(a.ActionIdentifier, a);
+            }
+        }
     }
 }

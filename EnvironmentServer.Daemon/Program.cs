@@ -6,7 +6,10 @@ namespace EnvironmentServer.Daemon
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Environment Server Deamon");
+            var w = new Worker();
+            Console.WriteLine("Press Enter to stop deamon");
+            Console.ReadLine();
+            w.StopWorker();
         }
     }
 }
