@@ -70,7 +70,7 @@ namespace EnvironmentServer.Daemon.Actions
             using (var connection = db.GetConnection())
             {
                 //SELECT * FROM environments_snapshots WHERE environments_Id_fk = 1 ORDER BY Created DESC LIMIT 1;
-                var Command = new MySqlCommand($"UPDATE environments_snapshots SET Hash = {hash} WHERE id = {snap.Id};");
+                var Command = new MySqlCommand($"UPDATE environments_snapshots SET Hash = '{hash}' WHERE id = {snap.Id};");
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
