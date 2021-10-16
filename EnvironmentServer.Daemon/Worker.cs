@@ -50,7 +50,18 @@ namespace EnvironmentServer.Daemon
                 }
 
                 //Execute action
-                await act.ExecuteAsync(DB, task.Id_Variable, task.ExecutedById);
+                try
+                {
+                    await act.ExecuteAsync(DB, task.Id_Variable, task.ExecutedById);
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    throw;
+#endif
+                    Console.WriteLine(ex.ToString());
+                    DB.Logs.Add("Daemon", "ERROR in Worker: " + ex.ToString());
+                }
 
                 //Set executed in DB
                 DB.CmdAction.SetExecuted(task.Id);
