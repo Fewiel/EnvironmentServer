@@ -72,7 +72,9 @@ namespace EnvironmentServer.Daemon
         {
             var l = new List<ActionBase>
             {
-                new SnapshotCreate()
+                new SnapshotCreate(),
+                new SnapshotRestoreLatest(),
+                new SnapshotRestore()
             };
 
             foreach (var a in l)

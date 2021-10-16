@@ -32,7 +32,7 @@
                         <a class="me-auto" asp-controller="Env" asp-action="ShowSnapshots" asp-route-id=@Model.ID>
                             <i class="bi bi-skip-backward-circle" style="font-size: 30px;"></i>
                         </a>
-                        <a class="me-auto" asp-controller="Env" asp-action="LatestSnapshot" asp-route-id=@Model.ID>
+                        <a class="me-auto" asp-controller="Snapshot" asp-action="LatestSnapshot" asp-route-id=@Model.ID>
                             <i class="bi bi-skip-start-circle" style="font-size: 30px;"></i>
                         </a>
                         <a class="me-auto" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>
