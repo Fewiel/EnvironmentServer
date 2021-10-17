@@ -58,6 +58,7 @@ namespace EnvironmentServer.Web.Controllers
             if (!ModelState.IsValid)
                 return View();
 
+            //Issue #9 Check username
             if (DB.Users.GetByUsername(rvm.Username) != null)
             {
                 DB.Logs.Add("Web", "Registration failed for: " + rvm.Username + ". Username already taken.");

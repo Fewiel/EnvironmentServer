@@ -65,6 +65,18 @@ namespace EnvironmentServer.Web.Controllers
             if (!ModelState.IsValid)
                 return View(cvm);
 
+            var tmp_env_list = DB.Environments.GetForUser(GetSessionUser().ID);
+
+            //Issue #10 Check for environment name
+            foreach (var i in tmp_env_list)
+            {
+                if (i.Name.ToLower() == cvm.EnvironmentName.ToLower())
+                {
+                    AddError("Environment Name already in use");
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
@@ -75,6 +87,7 @@ namespace EnvironmentServer.Web.Controllers
 
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser()).ConfigureAwait(false);
 
+            //Issue #4 Download and extract
             if (!string.IsNullOrEmpty(cvm.File) && System.Uri.IsWellFormedUriString(cvm.File, System.UriKind.RelativeOrAbsolute))
             {
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{cvm.EnvironmentName}/dl.txt", cvm.File);
