@@ -30,16 +30,25 @@ namespace EnvironmentServer.Daemon.Actions
 
             var url = System.IO.File.ReadAllText($"/home/{user.Username}/files/{env.Name}/dl.txt");
 
-            db.Logs.Add("Daemon", "Download File for: " + env.Name);
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"rm dl.txt\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+
+            db.Logs.Add("Daemon", "Download File for: " + env.Name + " File: " + url);
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"wget -c {url} -O dl.zip\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
+
+            db.Logs.Add("Daemon", "Unzip File for: " + env.Name);
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"unzip dl.zip\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
+
+            db.Logs.Add("Daemon", "Unzip File Done for: " + env.Name);
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"rm dl.zip\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")

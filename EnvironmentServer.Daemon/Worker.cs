@@ -74,7 +74,8 @@ namespace EnvironmentServer.Daemon
             {
                 new SnapshotCreate(),
                 new SnapshotRestoreLatest(),
-                new SnapshotRestore()
+                new SnapshotRestore(),
+                new DownloadExtract()
             };
 
             foreach (var a in l)
