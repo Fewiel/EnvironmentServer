@@ -16,4 +16,8 @@
     <ProjectReference Include="..\EnvironmentServer.DAL\EnvironmentServer.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Admin\" />
+  </ItemGroup>
+
 </Project>

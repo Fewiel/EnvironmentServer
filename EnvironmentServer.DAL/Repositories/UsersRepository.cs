@@ -162,16 +162,16 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
             File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"service php5.6-fpm reload\"")
+                .WithArguments("-c \"service php5.6-fpm reload\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"service php7.4-fpm reload\"")
+                .WithArguments("-c \"service php7.4-fpm reload\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"service php8.0-fpm reload\"")
+                .WithArguments("-c \"service php8.0-fpm reload\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"service php8.1-fpm reload\"")
+                .WithArguments("-c \"service php8.1-fpm reload\"")
                 .ExecuteAsync();
         }
 
@@ -191,6 +191,14 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 Command.ExecuteNonQuery();
             }
 
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand($"ALTER USER '{user.Username}'@'localhost' IDENTIFIED BY @password;");
+                Command.Parameters.AddWithValue("@password", shellPassword);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"echo \"{shellPassword}\" | passwd --stdin {user.Username}\"")
                 .ExecuteAsync();
@@ -198,6 +206,31 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
 
         public async void Delete(User user)
         {
+
+            foreach (var env in DB.Environments.GetForUser(user.ID))
+            {
+                await DB.Environments.DeleteAsync(env, user);
+            }
+
+            DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
+            File.Delete($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf");
+            File.Delete($"/etc/php/7.4/fpm/pool.d/{user.Username}.conf");
+            File.Delete($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf");
+            File.Delete($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf");
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php5.6-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php7.4-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php8.0-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php8.1-fpm reload\"")
+                .ExecuteAsync();
+
             DB.Logs.Add("DAL", "Delete user " + user.Username);
             using (var connection = DB.GetConnection())
             {
