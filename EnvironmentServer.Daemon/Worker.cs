@@ -17,7 +17,7 @@ namespace EnvironmentServer.Daemon
         public Worker()
         {
             FillActions();
-            DB = new Database("server=192.168.178.167;database=EnvironmentServer;uid=adm;pwd=1594875!Adm;");
+            DB = new Database("server=127.0.0.1;database=EnvironmentServer;uid=adm;pwd=1594875!Adm;");
             cancellationToken = new CancellationTokenSource();
             ActiveWorkerTask = Task.Factory.StartNew(DoWork, cancellationToken.Token);
         }
