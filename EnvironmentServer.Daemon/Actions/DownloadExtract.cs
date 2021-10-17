@@ -16,9 +16,7 @@ namespace EnvironmentServer.Daemon.Actions
         public override async Task ExecuteAsync(Database db, long variableID, long userID)
         {
             var user = db.Users.GetByID(userID);
-            var snap = db.Snapshot.Get(variableID);
-            var env = db.Environments.Get(snap.EnvironmentId);
-            var dbString = user.Username + "_" + env.Name;
+            var env = db.Environments.Get(variableID);
 
             using (var connection = db.GetConnection())
             {
