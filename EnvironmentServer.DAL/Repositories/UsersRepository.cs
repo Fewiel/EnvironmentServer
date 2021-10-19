@@ -34,13 +34,40 @@ pm.max_spare_servers = 3
 php_admin_value[open_basedir] = /home/{0}
 php_admin_value[sys_temp_dir] = /home/{0}/php/tmp
 php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
-
-
-
+        private static readonly Random Random = new();
+        public static string RandomPasswordString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[Random.Next(s.Length)]).ToArray());
+        }
 
         public UsersRepository(Database db)
         {
             DB = db;
+        }
+
+        public IEnumerable<User> GetUsers()
+        {
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("select * from users;");
+                Command.Connection = connection;
+                MySqlDataReader reader = Command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    yield return new User
+                    {
+                        ID = reader.GetInt64(0),
+                        Email = reader.GetString(1),
+                        Username = reader.GetString(2),
+                        Password = reader.GetString(3),
+                        IsAdmin = reader.GetBoolean(4)
+                    };
+                }
+                reader.Close();
+            }
         }
 
         public User GetByID(long ID)
@@ -121,10 +148,10 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 Command.Parameters.AddWithValue("@password", shellPassword);
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
-
             }
+
             DB.Logs.Add("DAL", "Start Useradd: " + user.Username);
-            
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"")
                 .ExecuteAsync();
@@ -204,13 +231,60 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 .ExecuteAsync();
         }
 
+        public async void UpdateByAdmin(User usr, bool newPassword)
+        {
+            DB.Logs.Add("DAL", "Admin Update user " + usr.Username);
+
+            var user = new User();
+
+            if (newPassword)
+            {
+                var shellPassword = RandomPasswordString(32);
+
+                user = new User
+                {
+                    ID = usr.ID,
+                    Username = usr.Username,
+                    Email = usr.Email,
+                    IsAdmin = usr.IsAdmin,
+                    Password = PasswordHasher.Hash(shellPassword)
+                };
+
+                using (var connection = DB.GetConnection())
+                {
+                    var Command = new MySqlCommand($"ALTER USER '{user.Username}'@'localhost' IDENTIFIED BY @password;");
+                    Command.Parameters.AddWithValue("@password", shellPassword);
+                    Command.Connection = connection;
+                    Command.ExecuteNonQuery();
+                }
+
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"echo \"{shellPassword}\" | passwd --stdin {user.Username}\"")
+                    .ExecuteAsync();
+            }
+            else
+            {
+                user = usr;
+            }
+
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("UPDATE `users` SET "
+                     + "`Email` = @email, `Username` = @username, `Password` = @password, `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id");
+                Command.Parameters.AddWithValue("@id", user.ID);
+                Command.Parameters.AddWithValue("@email", user.Email);
+                Command.Parameters.AddWithValue("@username", user.Username);
+                Command.Parameters.AddWithValue("@password", user.Password);
+                Command.Parameters.AddWithValue("@isAdmin", user.IsAdmin);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+        }
+
         public async void Delete(User user)
         {
-
             foreach (var env in DB.Environments.GetForUser(user.ID))
-            {
-                await DB.Environments.DeleteAsync(env, user);
-            }
+                await DB.Environments.DeleteAsync(env, user).ConfigureAwait(false);
 
             DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
             File.Delete($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf");

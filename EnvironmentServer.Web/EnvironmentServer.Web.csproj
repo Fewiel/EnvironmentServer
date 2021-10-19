@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ViewModels\Users\" />
     <Folder Include="Views\Admin\" />
   </ItemGroup>
 

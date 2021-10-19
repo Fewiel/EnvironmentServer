@@ -1,0 +1,39 @@
+﻿@model IEnumerable<EnvironmentServer.DAL.Models.User>
+@{
+    ViewData["Title"] = "Users";
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Admin</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usr in Model)
+        {
+            <tr>
+                <td>
+                    <a>@usr.ID</a>
+                </td>
+                <td>
+                    <a>@usr.Username</a>
+                </td>
+                <td>
+                    <a>@usr.Email</a>
+                </td>
+                <td>
+                    <a>@usr.IsAdmin</a>
+                </td>
+                <td>
+                    <a asp-action="Index" asp-route-id="@usr.ID">Reset Password</a>
+                    <a asp-action="Update" asp-route-id="@usr.ID">Update</a>
+                    <a asp-action="Delete" asp-route-id="@usr.ID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
