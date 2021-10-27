@@ -36,7 +36,7 @@ namespace EnvironmentServer.Mail
             var smtpClient = new SmtpClient(DB.Settings.Get("smtp_host").Value)
             {
                 Port = port,
-                Credentials = new NetworkCredential(DB.Settings.Get("smtp_user").Value, DB.Settings.Get("smtp_password").Value),
+                Credentials = new NetworkCredential(DB.Settings.Get("smtp_user").Value, DB.Settings.Get("smtp_password").Value),                
                 EnableSsl = ssl
             };
 
@@ -47,7 +47,8 @@ namespace EnvironmentServer.Mail
                 Body = body,
                 IsBodyHtml = false,
             };
-            mailMessage.To.Add(recipient);
+
+            mailMessage.To.Add(new MailAddress(recipient));
 
             smtpClient.Send(mailMessage);
 
