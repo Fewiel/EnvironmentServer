@@ -24,7 +24,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("select * from settings where key = @key;");
                 Command.Parameters.AddWithValue("@key", key);
                 Command.Connection = connection;
-                connection.Open();
                 MySqlDataReader reader = Command.ExecuteReader();
 
                 while (reader.Read())
@@ -58,7 +57,6 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Parameters.AddWithValue("@displayName", setting.DisplayName);
                 Command.Parameters.AddWithValue("@value", setting.Value);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }
@@ -75,7 +73,6 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Parameters.AddWithValue("@displayName", setting.DisplayName);
                 Command.Parameters.AddWithValue("@value", setting.Value);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }
@@ -88,7 +85,6 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand("DELETE FROM `settings` WHERE `settings`.`ID` = @id");
                 Command.Parameters.AddWithValue("@id", setting.ID);
                 Command.Connection = connection;
-                connection.Open();
                 Command.ExecuteNonQuery();
             }
         }
