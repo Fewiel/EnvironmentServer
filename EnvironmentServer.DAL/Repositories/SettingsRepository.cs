@@ -21,7 +21,7 @@ namespace EnvironmentServer.DAL.Repositories
         {
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand($"select * from settings where key = '{key}';");
+                var Command = new MySqlCommand($"select * from settings where SettingKey = '{key}';");
                 Command.Connection = connection;
                 MySqlDataReader reader = Command.ExecuteReader();
 
