@@ -365,6 +365,9 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"userdel {user.Username} --force\"")
                 .ExecuteAsync();
+
+            Directory.Delete($"/home/{user.Username}", true);
+            DB.Logs.Add("DAL", "Delete user complete for " + user.Username);
         }
     }
 }
