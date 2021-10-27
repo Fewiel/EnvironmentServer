@@ -26,10 +26,10 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(long id)
+        public async Task<IActionResult> Index(long id)
         {
             var user = DB.Users.GetByID(id);
-            DB.Users.UpdateByAdmin(user, true);
+            await DB.Users.UpdateByAdminAsync(user, true);
             AddInfo("User updated");
             return RedirectToAction("Index");
         }
@@ -65,9 +65,9 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(User user)
+        public async Task<IActionResult> Update(User user)
         {
-            DB.Users.UpdateByAdmin(user, false);
+            await DB.Users.UpdateByAdminAsync(user, false);
             AddInfo("User updated");
             return RedirectToAction("Index");
         }
@@ -79,9 +79,16 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(User usr)
+        public async Task<IActionResult> Delete(User usr)
         {
-            DB.Users.Delete(usr);
+            await DB.Users.LockUserAsync(usr);
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "delete_user",
+                ExecutedById = GetSessionUser().ID,
+                Id_Variable = usr.ID
+            });
+            await DB.Users.DeleteAsync(usr);
             return RedirectToAction("Index");
         }
     }

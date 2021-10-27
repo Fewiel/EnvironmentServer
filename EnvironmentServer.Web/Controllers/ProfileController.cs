@@ -42,7 +42,7 @@ namespace EnvironmentServer.Web.Controllers
             var update_usr = new User { ID = usr.ID, Username = usr.Username, Email = usr.Email, 
                 Password = PasswordHasher.Hash(pvm.PasswordNew), IsAdmin = usr.IsAdmin };
 
-            DB.Users.Update(update_usr, pvm.PasswordNew);
+            DB.Users.UpdateAsync(update_usr, pvm.PasswordNew);
 
             AddInfo("Password changed");
             return RedirectToAction("Index", "Home");

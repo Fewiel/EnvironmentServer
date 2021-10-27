@@ -206,7 +206,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
             DB.Logs.Add("DAL", "New User added: " + user.Username);
         }
 
-        public async void Update(User user, string shellPassword)
+        public async Task UpdateAsync(User user, string shellPassword)
         {
             DB.Logs.Add("DAL", "Update user " + user.Username);
             using (var connection = DB.GetConnection())
@@ -235,7 +235,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 .ExecuteAsync();
         }
 
-        public async void UpdateByAdmin(User usr, bool newPassword)
+        public async Task UpdateByAdminAsync(User usr, bool newPassword)
         {
             DB.Logs.Add("DAL", "Admin Update user " + usr.Username);
 
@@ -287,12 +287,48 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
             }
         }
 
-        public async void Delete(User user)
+        public async Task LockUserAsync(User usr)
+        {
+            DB.Logs.Add("DAL", "Admin Update user " + usr.Username);
+
+            var user = usr;
+
+            var shellPassword = RandomPasswordString(32);
+
+            user.Password = shellPassword;
+
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand($"ALTER USER '{user.Username}'@'localhost' IDENTIFIED BY @password;");
+                Command.Parameters.AddWithValue("@password", shellPassword);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"echo \"{shellPassword}\" | passwd --stdin {user.Username}\"")
+                .ExecuteAsync();
+
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("UPDATE `users` SET "
+                     + "`Email` = @email, `Username` = @username, `Password` = @password, `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id");
+                Command.Parameters.AddWithValue("@id", user.ID);
+                Command.Parameters.AddWithValue("@email", user.Email);
+                Command.Parameters.AddWithValue("@username", user.Username);
+                Command.Parameters.AddWithValue("@password", user.Password);
+                Command.Parameters.AddWithValue("@isAdmin", user.IsAdmin);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+        }
+
+        public async Task DeleteAsync(User user)
         {
             foreach (var env in DB.Environments.GetForUser(user.ID))
                 await DB.Environments.DeleteAsync(env, user).ConfigureAwait(false);
 
-            DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
+            DB.Logs.Add("DAL", "Delete user php-fpm - " + user.Username);
             File.Delete($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/7.4/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf");
@@ -316,6 +352,12 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
             {
                 var Command = new MySqlCommand("DELETE FROM `users` WHERE `users`.`ID` = @id");
                 Command.Parameters.AddWithValue("@id", user.ID);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand($"DROP USER '{user.Username}'@'localhost';");
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
