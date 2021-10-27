@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Repositories;
+using EnvironmentServer.Mail;
 using MySql.Data.MySqlClient;
 
 namespace EnvironmentServer.DAL
@@ -20,6 +21,7 @@ namespace EnvironmentServer.DAL
         public EnvironmentSnapshotRepository Snapshot { get; }
         public CmdActionRepository CmdAction { get; }
         public LogRepository Logs { get; }
+        public Mailer Mail { get; }
 
         public Database(string connString)
         {
@@ -31,6 +33,7 @@ namespace EnvironmentServer.DAL
             Snapshot = new EnvironmentSnapshotRepository(this);
             CmdAction = new CmdActionRepository(this);
             Logs = new LogRepository(this);
+            Mail = new Mailer(this);
 
             if (Users.GetByUsername("Admin") == null)
             {
@@ -40,7 +43,7 @@ namespace EnvironmentServer.DAL
                     Email = "root@root.tld",
                     Username = "Admin",
                     Password = PasswordHasher.Hash("Admin"),
-                    IsAdmin = true                    
+                    IsAdmin = true
                 }, "Admin"));
             }
         }

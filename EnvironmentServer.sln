@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnvironmentServer.Web", "En
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnvironmentServer.DAL", "EnvironmentServer.DAL\EnvironmentServer.DAL.csproj", "{091700FA-507B-4529-9311-BEFF03A96453}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentServer.Daemon", "EnvironmentServer.Daemon\EnvironmentServer.Daemon.csproj", "{73DA4AC6-41B8-41B1-8847-F8B88CCE01B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnvironmentServer.Daemon", "EnvironmentServer.Daemon\EnvironmentServer.Daemon.csproj", "{73DA4AC6-41B8-41B1-8847-F8B88CCE01B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

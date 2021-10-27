@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,7 +29,10 @@ namespace EnvironmentServer.Web
         {
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
-            services.AddSingleton(new Database("server=127.0.0.1;database=EnvironmentServer;uid=adm;pwd=1594875!Adm;"));
+
+            var config = GetConfig();
+
+            services.AddSingleton(new Database($"server={config.Host};database={config.Database};uid={config.Username};pwd={config.Password};"));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //Sessions
@@ -65,6 +70,12 @@ namespace EnvironmentServer.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private DBConfig GetConfig()
+        {
+            var config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
+            return config;
         }
     }
 }

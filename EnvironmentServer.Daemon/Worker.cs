@@ -1,7 +1,9 @@
 ﻿using EnvironmentServer.Daemon.Actions;
 using EnvironmentServer.DAL;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,11 +15,12 @@ namespace EnvironmentServer.Daemon
         private readonly CancellationTokenSource cancellationToken;
         private readonly Task ActiveWorkerTask;
         private readonly Dictionary<string, ActionBase> Actions = new();
+        private readonly DBConfig Config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
 
         public Worker()
         {
             FillActions();
-            DB = new Database("server=127.0.0.1;database=EnvironmentServer;uid=adm;pwd=1594875!Adm;");
+            DB = new Database($"server={Config.Host};database={Config.Database};uid={Config.Username};pwd={Config.Password};");
             cancellationToken = new CancellationTokenSource();
             ActiveWorkerTask = Task.Factory.StartNew(DoWork, cancellationToken.Token);
         }

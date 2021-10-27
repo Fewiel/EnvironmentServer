@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Mail;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -200,6 +201,9 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service php8.1-fpm reload\"")
                 .ExecuteAsync();
+            DB.Mail.Send("Shopware Environment Server Account",
+                string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
+            DB.Logs.Add("DAL", "New User added: " + user.Username);
         }
 
         public async void Update(User user, string shellPassword)
