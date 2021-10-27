@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL
@@ -79,6 +80,7 @@ namespace EnvironmentServer.DAL
         /// <returns>Could be verified?</returns>
         public static bool Verify(string password, string hashedPassword)
         {
+            Thread.Sleep(300);
             // Extract iteration and Base64 string
             var splittedHashString = hashedPassword.Replace(HashTemplate, "").Split('$');
             var iterations = int.Parse(splittedHashString[3]);

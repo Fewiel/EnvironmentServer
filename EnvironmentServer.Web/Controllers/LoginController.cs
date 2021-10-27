@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
@@ -27,7 +28,7 @@ namespace EnvironmentServer.Web.Controllers
 
         [HttpPost, Route("/Login", Name = "login")]
         public IActionResult Login([FromForm]LoginViewModel lvm)
-        {
+        {            
             if (!ModelState.IsValid)
                 return View();
 
@@ -36,6 +37,7 @@ namespace EnvironmentServer.Web.Controllers
             {
                 DB.Logs.Add("Web", "Login failed for: " + lvm.Username + ". User not found.");
                 AddError("Wrong username or password");
+                Thread.Sleep(300);
                 return View();
             }
 
