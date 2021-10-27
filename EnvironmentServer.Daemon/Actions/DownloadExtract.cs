@@ -36,7 +36,7 @@ namespace EnvironmentServer.Daemon.Actions
             db.Logs.Add("Daemon", "Download File for: " + env.Name + " File: " + url);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"wget -c {url} -O dl.zip\"")
+                .WithArguments($"-c \"wget {url} -O dl.zip\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
