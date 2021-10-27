@@ -31,7 +31,7 @@ namespace EnvironmentServer.Web.Controllers
             var user = DB.Users.GetByID(id);
             DB.Users.UpdateByAdmin(user, true);
             AddInfo("User updated");
-            return View();
+            return RedirectToAction("Index");
         }
 
         public IActionResult Create()
@@ -69,6 +69,19 @@ namespace EnvironmentServer.Web.Controllers
         {
             DB.Users.UpdateByAdmin(user, false);
             AddInfo("User updated");
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Delete(long id)
+        {
+            return View(DB.Users.GetByID(id));
+        }
+
+        [HttpPost]
+        public IActionResult Delete(User usr)
+        {
+            DB.Users.Delete(usr);
             return RedirectToAction("Index");
         }
     }

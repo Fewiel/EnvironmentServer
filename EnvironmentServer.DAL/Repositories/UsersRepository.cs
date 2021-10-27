@@ -265,6 +265,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"echo \"{shellPassword}\" | passwd --stdin {user.Username}\"")
                     .ExecuteAsync();
+
+                DB.Mail.Send("Password reseted", string.Format(DB.Settings.Get("mail_account_password").Value, usr.Username, shellPassword), usr.Email);
             }
             else
             {
