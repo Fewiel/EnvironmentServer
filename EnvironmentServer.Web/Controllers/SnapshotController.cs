@@ -41,10 +41,11 @@ namespace EnvironmentServer.Web.Controllers
         {
             DB.CmdAction.CreateTask(new CmdAction
             {
-                Action = "snapshot_restore_latest",
-                Id_Variable = id,
+                Action = "snapshot_restore",
+                Id_Variable = DB.Snapshot.GetLatest(id).Id,
                 ExecutedById = GetSessionUser().ID
             });
+            AddInfo("Environment Snapshot will be restored, this can take a few seconds");
             return RedirectToAction("Index", "Home");
         }
 

@@ -7,7 +7,7 @@
 <h4>Editing User: @Model.Username</h4>
 
 <div class="d-flex align-items-center justify-content-center fullHeight">
-    <form method="post" asp-action="Registration" style="width: 400px;">
+    <form method="post" asp-action="Update" style="width: 400px;">
         <input type="hidden" asp-for="ID" />
         <div class="mb-3">
             <label asp-for="Email" class="form-label">E-Mail</label>
@@ -18,6 +18,6 @@
             <input class="form-check-input" type="checkbox" asp-for="IsAdmin">
             <label class="form-check-label" asp-for="IsAdmin">Admin</label>
         </div>
-        <button type="submit" class="btn btn-primary">Sign up</button>
+        <button type="submit" class="btn btn-primary">Update</button>
     </form>
 </div>
