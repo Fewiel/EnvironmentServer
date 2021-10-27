@@ -79,8 +79,9 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(User usr)
+        public async Task<IActionResult> DeleteConfirmed(long id)
         {
+            var usr = DB.Users.GetByID(id);
             await DB.Users.LockUserAsync(usr);
             DB.CmdAction.CreateTask(new CmdAction
             {
@@ -88,7 +89,6 @@ namespace EnvironmentServer.Web.Controllers
                 ExecutedById = GetSessionUser().ID,
                 Id_Variable = usr.ID
             });
-            await DB.Users.DeleteAsync(usr);
             return RedirectToAction("Index");
         }
     }
