@@ -9,7 +9,7 @@ namespace EnvironmentServer.Daemon.Actions
 {
     internal class UserDelete : ActionBase
     {
-        public override string ActionIdentifier => "user_delete";
+        public override string ActionIdentifier => "delete_user";
 
         public override async Task ExecuteAsync(Database db, long variableID, long userID)
         {
