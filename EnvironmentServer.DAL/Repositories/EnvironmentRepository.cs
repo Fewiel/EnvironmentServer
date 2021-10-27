@@ -265,6 +265,14 @@ namespace EnvironmentServer.DAL.Repositories
 
             using (var connection = DB.GetConnection())
             {
+                var Command = new MySqlCommand("DELETE FROM `environments_snapshots` WHERE `environments_snapshots`.`environments_Id_fk` = @id");
+                Command.Parameters.AddWithValue("@id", environment.ID);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+
+            using (var connection = DB.GetConnection())
+            {
                 var Command = new MySqlCommand("DROP DATABASE " + user.Username + "_" + environment.Name);
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
