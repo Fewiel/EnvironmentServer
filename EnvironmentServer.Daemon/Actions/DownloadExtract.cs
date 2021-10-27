@@ -59,6 +59,7 @@ namespace EnvironmentServer.Daemon.Actions
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
+            db.Mail.Send($"Download and Extract finished for {env.Name}!", string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.Name), user.Email);
         }
     }
 }

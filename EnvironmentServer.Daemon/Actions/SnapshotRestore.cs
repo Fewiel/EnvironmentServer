@@ -92,6 +92,7 @@ namespace EnvironmentServer.Daemon.Actions
                 Command.ExecuteNonQuery();
             }
             db.Logs.Add("Daemon", "SnapshotRestore - Done: " + env.Name);
+            db.Mail.Send($"Snapshot restored for {env.Name}!", string.Format(db.Settings.Get("mail_snapshot_restored").Value, user.Username, env.Name), user.Email);
         }
     }
 }

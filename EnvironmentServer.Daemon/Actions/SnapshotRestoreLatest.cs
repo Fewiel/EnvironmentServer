@@ -84,6 +84,7 @@ namespace EnvironmentServer.Daemon.Actions
                 Command.ExecuteNonQuery();
             }
             db.Logs.Add("Daemon", "SnapshotRestoreLatest - Done: " + env.Name);
+            db.Mail.Send($"Latest Snapshot restored for {env.Name}!", string.Format(db.Settings.Get("mail_snapshot_restored_latest").Value, user.Username, env.Name), user.Email);
         }
     }
 }

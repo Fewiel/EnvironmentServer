@@ -92,6 +92,8 @@ namespace EnvironmentServer.Daemon.Actions
                 Command.ExecuteNonQuery();
             }
             db.Logs.Add("Daemon", "SnapshotCreate - Done: " + env.Name);
+
+            db.Mail.Send($"Snapshot ready for {env.Name}!", string.Format(db.Settings.Get("mail_snapshot_create").Value, user.Username, env.Name), user.Email);
         }
     }
 }
