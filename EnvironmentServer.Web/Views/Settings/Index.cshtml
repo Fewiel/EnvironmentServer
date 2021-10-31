@@ -1,0 +1,49 @@
+﻿@model IEnumerable<EnvironmentServer.DAL.Models.Setting>
+@{
+    ViewData["Title"] = "Settings";
+    int i = 0;
+}
+
+
+@foreach (var setting in Model)
+{
+    if (i == 0)
+    {
+        <form method="post" class="row g-3" style="margin-top: 5px;">
+            <div class="col-4">
+                <input asp-for="@setting.DisplayName" type="text" placeholder="Display Name" class="form-control">
+                <input asp-for="@setting.Key" type="text" placeholder="Setting Key" class="form-control">
+            </div>
+            <div class="col-6">
+                <textarea asp-for="@setting.Value" rows="1" placeholder="Setting Value" class="form-control"></textarea>
+            </div>
+            <div class="col-2">
+                <button asp-action="Create" class="btn btn-primary mb-3">Create new</button>
+            </div>
+        </form>
+
+        <hr />
+    }
+    else
+    {
+        <form method="post" class="row g-3" style="margin-top: 5px;">
+            <input type="hidden" asp-for="@setting.ID" />
+            <input type="hidden" asp-for="@setting.Key" />
+            <div class="col-4">
+                <input asp-for="@setting.DisplayName" type="text" readonly class="form-control-plaintext" value="@setting.DisplayName">
+                <input asp-for="@setting.Key" type="text" readonly class="form-control-plaintext" value="@setting.Key">
+            </div>
+            <div class="col-6">
+                <textarea asp-for="@setting.Value" rows="@(setting.Value.Count(c => c == '\n') + 1)" class="form-control">@setting.Value</textarea>
+            </div>
+            <div class="col-2">
+                <div class="input-group">
+                    <button asp-action="Save" class="btn btn-primary mb-3">Save</button>
+                    <button asp-action="Delete" onclick="return confirm('Are you sure?')" class="btn btn-danger mb-3">Delete</button>
+                </div>
+            </div>
+        </form>
+    }
+
+    i++;
+}

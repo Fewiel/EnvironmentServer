@@ -45,6 +45,28 @@ namespace EnvironmentServer.DAL.Repositories
             return null;
         }
 
+        public IEnumerable<Setting> GetAll()
+        {
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand($"select * from settings;");
+                Command.Connection = connection;
+                MySqlDataReader reader = Command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    yield return new Setting
+                    {
+                        ID = reader.GetInt64(0),
+                        Key = reader.GetString(1),
+                        DisplayName = reader.GetString(2),
+                        Value = reader.GetString(3)
+                    };
+                }
+                reader.Close();
+            }
+        }
+
         public void Insert(Setting setting)
         {
             DB.Logs.Add("DAL", "Insert setting " + setting.Key);
