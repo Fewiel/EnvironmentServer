@@ -1,8 +1,10 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +22,7 @@ namespace EnvironmentServer.Daemon.Actions
             var snap = db.Snapshot.Get(variableID);
             var env = db.Environments.Get(snap.EnvironmentId);
             var dbString = user.Username + "_" + env.Name;
+            var config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
 
             using (var connection = db.GetConnection())
             {
@@ -71,7 +74,7 @@ namespace EnvironmentServer.Daemon.Actions
             }
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"mysql -u adm -p1594875!Adm " + dbString + " < db.sql\"")
+                .WithArguments($"-c \"mysql -u {config.Username} -p{config.Password} " + dbString + " < db.sql\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
