@@ -32,9 +32,9 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 
-php_admin_value[open_basedir] = /home/{0}
-php_admin_value[sys_temp_dir] = /home/{0}/php/tmp
-php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
+php_admin_value[open_basedir] = /home/{0}/files
+php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
+php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
         {
