@@ -81,7 +81,7 @@ namespace EnvironmentServer.Web.Controllers
             {
                 UserID = GetSessionUser().ID,
                 Name = cvm.EnvironmentName,
-                Address = cvm.EnvironmentName + "." + GetSessionUser().Username + ".shopware.env",
+                Address = cvm.EnvironmentName + "." + GetSessionUser().Username + DB.Settings.Get("domain").Value,
                 Version = (PhpVersion)cvm.Version
             };
 
