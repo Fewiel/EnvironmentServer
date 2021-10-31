@@ -36,6 +36,13 @@ namespace EnvironmentServer.DAL.Repositories
         AssignUserId {5} sftp_users
     </IfModule>
 
+<IfModule mod_fastcgi.c>
+	AddHandler php5-fcgi-handler .php
+	Action php5-fcgi-handler /php5-fcgi-uri
+    Alias /php5-fcgi-uri fcgi-application
+    FastCgiExternalServer fcgi-application -socket /var/run/php/{0}-{5}.sock -pass-header Authorization -idle-timeout 30000 -flush
+</IfModule>
+
     <IfModule mod_rewrite>
         RewriteEngine On
     </IfModule>

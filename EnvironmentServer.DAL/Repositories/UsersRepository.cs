@@ -21,7 +21,7 @@ namespace EnvironmentServer.DAL.Repositories
 user = {0}
 group = sftp_users
 
-listen = /home/{0}/php/{1}-{0}.sock
+listen = /run/php/{1}-{0}.sock
 
 listen.owner = {0}
 listen.group = sftp_users
@@ -32,11 +32,9 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 
-chroot = /home/{0}/files
-
-php_admin_value[open_basedir] = /
-php_admin_value[sys_temp_dir] = /php/tmp
-php_admin_value[upload_tmp_dir] = /php/tmp";
+php_admin_value[open_basedir] = /home/{0}
+php_admin_value[sys_temp_dir] = /home/{0}/php/tmp
+php_admin_value[upload_tmp_dir] = /home/{0}/php/tmp";
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
         {
