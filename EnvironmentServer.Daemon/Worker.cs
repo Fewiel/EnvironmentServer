@@ -55,6 +55,7 @@ namespace EnvironmentServer.Daemon
                 //Execute action
                 try
                 {
+                    Console.WriteLine("Run Task: " + task.Action);
                     await act.ExecuteAsync(DB, task.Id_Variable, task.ExecutedById);
                 }
                 catch (Exception ex)
