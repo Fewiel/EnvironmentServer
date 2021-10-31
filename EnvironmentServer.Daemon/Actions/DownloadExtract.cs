@@ -52,6 +52,10 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
+                .ExecuteAsync();
+
             using (var connection = db.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'False' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
