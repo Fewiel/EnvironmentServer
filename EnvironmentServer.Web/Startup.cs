@@ -30,7 +30,7 @@ namespace EnvironmentServer.Web
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
-            var config = GetConfig();
+            var config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
 
             services.AddSingleton(new Database($"server={config.Host};database={config.Database};uid={config.Username};pwd={config.Password};"));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -70,12 +70,6 @@ namespace EnvironmentServer.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-
-        private DBConfig GetConfig()
-        {
-            var config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
-            return config;
         }
     }
 }
