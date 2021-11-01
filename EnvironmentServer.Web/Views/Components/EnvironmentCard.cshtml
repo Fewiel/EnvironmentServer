@@ -38,8 +38,8 @@
                         <a class="me-auto" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>
                             <i class="bi bi-plus-circle" style="font-size: 30px;"></i>
                         </a>
-                        <a class="me-auto" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>
-                            <i class="bi bi-x-circle" style="font-size: 30px;"></i>
+                        <a class="me-auto" asp-controller="Env" asp-action="DeleteConfirmed" asp-route-id=@Model.ID>
+                            <i class="bi bi-x-circle" onclick="return confirm('Are you sure to delete your Environment?')" style="font-size: 30px;"></i>
                         </a>
                     </div>
                 }

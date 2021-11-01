@@ -5,6 +5,7 @@ using EnvironmentServer.DAL.Repositories;
 using EnvironmentServer.Web.ViewModels.Env;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -133,18 +134,7 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public ActionResult Delete(long id)
-        {
-            var env = DB.Environments.Get(id);
-            if (env == null)
-            {
-                AddError("Could not find Environment");
-                return RedirectToAction("Index", "Home");
-            }
-            return View(env);
-        }
-
-        public async Task<ActionResult> DeleteConfirmed(long id)
+        public IActionResult DeleteConfirmed(long id)
         {
             var env = DB.Environments.Get(id);
             if (env == null)
@@ -153,8 +143,21 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            await DB.Environments.DeleteAsync(env, GetSessionUser()).ConfigureAwait(false);
-            AddInfo("Environment sucessfull deleted");
+            DB.CmdAction.CreateTask(new CmdAction {
+            Action = "delete_environment",
+            Id_Variable = env.ID,
+            ExecutedById = GetSessionUser().ID
+            });
+
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'True' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
+                Command.Parameters.AddWithValue("@envid", env.ID);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
+
+            AddInfo("Delete in progress...");
             return RedirectToAction("Index", "Home");
         }
     }
