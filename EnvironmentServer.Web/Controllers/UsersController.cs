@@ -72,14 +72,9 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public IActionResult Delete(long id)
-        {
-            return View(DB.Users.GetByID(id));
-        }
 
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> Delete(long id)
         {
             var usr = DB.Users.GetByID(id);
             await DB.Users.LockUserAsync(usr);

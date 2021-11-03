@@ -292,7 +292,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
         public async Task LockUserAsync(User usr)
         {
-            DB.Logs.Add("DAL", "Admin Update user " + usr.Username);
+            DB.Logs.Add("DAL", "Lock user " + usr.Username);
 
             var user = usr;
 
