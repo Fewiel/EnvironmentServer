@@ -80,7 +80,8 @@ namespace EnvironmentServer.Daemon
                 new SnapshotRestoreLatest(),
                 new SnapshotRestore(),
                 new DownloadExtract(),
-                new UserDelete()
+                new UserDelete(),
+                new EnvironmentDelete()
             };
 
             foreach (var a in l)
