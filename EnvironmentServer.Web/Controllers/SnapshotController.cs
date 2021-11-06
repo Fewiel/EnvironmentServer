@@ -38,18 +38,6 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult RestoreLatest(long id)
-        {
-            DB.CmdAction.CreateTask(new CmdAction
-            {
-                Action = "snapshot_restore",
-                Id_Variable = DB.Snapshot.GetLatest(id).Id,
-                ExecutedById = GetSessionUser().ID
-            });
-            AddInfo("Environment Snapshot will be restored, this can take a few seconds");
-            return RedirectToAction("Index", "Home");
-        }
-
         public IActionResult RestoreConfirmed(long id)
         {
             DB.CmdAction.CreateTask(new CmdAction
