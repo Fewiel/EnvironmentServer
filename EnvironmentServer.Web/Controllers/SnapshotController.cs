@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -65,5 +66,13 @@ namespace EnvironmentServer.Web.Controllers
         {
             return View(DB.Snapshot.Get(id));
         }
+
+        public IActionResult Delete(long id)
+        {
+            DB.Snapshot.DeleteSnapshot(id);
+            AddInfo("Snapshot deleted!");
+            return RedirectToAction("Index");
+        }
+
     }
 }
