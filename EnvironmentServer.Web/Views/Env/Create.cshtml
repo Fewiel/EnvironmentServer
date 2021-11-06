@@ -10,6 +10,7 @@
             <label asp-for="EnvironmentName" class="form-label">Environment Name</label>
             <input asp-for="EnvironmentName" class="form-control" />
             <span asp-validation-for="EnvironmentName"></span>
+            <span>No special characters and spaces allowed</span>
         </div>
         <div class="mb-3">
             <label asp-for="SWVersion" class="form-label">Shopware Version (example: 6.4.4.1)</label>
