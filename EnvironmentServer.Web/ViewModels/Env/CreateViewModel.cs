@@ -14,6 +14,7 @@ namespace EnvironmentServer.Web.ViewModels.Env
         [MinLength(4), MaxLength(32), DataType(DataType.Text)]
         [RegularExpression(@"^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$", ErrorMessage = "Environment name not allowed")]
         public string EnvironmentName { get; set; }
+        [MinLength(1)]
         public string SWVersion { get; set; }
         public int Version { get; set; }
         public long TemplateID { get; set; }

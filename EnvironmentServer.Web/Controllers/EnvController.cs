@@ -86,8 +86,8 @@ namespace EnvironmentServer.Web.Controllers
                 Version = (PhpVersion)cvm.Version
             };
 
-            var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser()).ConfigureAwait(false);
-
+            var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(), cvm.SWVersion[0] == 6).ConfigureAwait(false);
+            
             //Issue #4 Download and extract
             if (!string.IsNullOrEmpty(cvm.File) && System.Uri.IsWellFormedUriString(cvm.File, System.UriKind.RelativeOrAbsolute))
             {

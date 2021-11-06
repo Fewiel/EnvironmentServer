@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.StringConstructors;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.IO;
@@ -14,40 +15,7 @@ namespace EnvironmentServer.DAL.Repositories
     public class EnvironmentRepository
     {
         private readonly Database DB;
-        private const string ApacheConf = @"
-<VirtualHost *:80>
-	<FilesMatch \.php>
-        SetHandler ""proxy:unix:/var/run/php/{0}-{5}.sock|fcgi://localhost/"" 
-    </FilesMatch>
-
-	ServerAdmin {1}
-    ServerName {2}
-	DocumentRoot {3}
-    <Directory {3}>
-        Options Indexes FollowSymLinks MultiViews
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    ErrorLog {4}/error.log
-    CustomLog {4}/access.log combined
-
-    <IfModule mpm_itk_module>
-        AssignUserId {5} sftp_users
-    </IfModule>
-
-<IfModule mod_fastcgi.c>
-	AddHandler php5-fcgi-handler .php
-	Action php5-fcgi-handler /php5-fcgi-uri
-    Alias /php5-fcgi-uri fcgi-application
-    FastCgiExternalServer fcgi-application -socket /var/run/php/{0}-{5}.sock -pass-header Authorization -idle-timeout 30000 -flush
-</IfModule>
-
-    <IfModule mod_rewrite>
-        RewriteEngine On
-    </IfModule>
-</VirtualHost>";
-
+        
         public EnvironmentRepository(Database db)
         {
             DB = db;
@@ -135,7 +103,7 @@ namespace EnvironmentServer.DAL.Repositories
             }
         }
 
-        public async Task<long> InsertAsync(Environment environment, User user)
+        public async Task<long> InsertAsync(Environment environment, User user, bool sw6)
         {
             DB.Logs.Add("DAL", "Insert Environment " + environment.Name + " for " + user.Username);
             var dbString = user.Username + "_" + environment.Name;
@@ -179,10 +147,18 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/logs/{environment.Name}\"")
                 .ExecuteAsync();
 
-            //Create Apache2 configuration
-            var docRoot = $"/home/{user.Username}/files/{environment.Name}";
+            //Create Apache2 configuration            
+            var docRoot = $"/home/{user.Username}/files/{environment.Name}{(sw6 ? "/public" : "")}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
-            var conf = string.Format(ApacheConf, environment.Version.AsString(), user.Email, environment.Address, docRoot, logRoot, user.Username);
+
+            var conf = ApacheConfConstructor.Construct
+                .WithVersion(environment.Version)
+                .WithEmail(user.Email)
+                .WithAddress(environment.Address)
+                .WithDocRoot(docRoot)
+                .WithLogRoot(logRoot)
+                .WithUsername(user.Username).Build();
+
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
@@ -192,13 +168,11 @@ namespace EnvironmentServer.DAL.Repositories
                 .ExecuteAsync();
 
             return lastID;
-
         }
 
         public async Task UpdatePhpAsync(long id, User user, PhpVersion version)
         {
             var environment = DB.Environments.Get(id);
-            //UPDATE `environments` SET `Version` = '2' WHERE `environments`.`ID` = 23;
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `environments` SET `Version` = @version WHERE `environments`.`ID` = @id;");
@@ -214,9 +188,21 @@ namespace EnvironmentServer.DAL.Repositories
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
-            var docRoot = $"/home/{user.Username}/files/{environment.Name}";
+
+            var envVersion = environment.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
+            var sw_version = envVersion == null ? "N/A" : envVersion.Value;
+
+            var docRoot = $"/home/{user.Username}/files/{environment.Name}{(sw_version[0] == '6' ? "/public" : "")}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
-            var conf = string.Format(ApacheConf, version.AsString(), user.Email, environment.Address, docRoot, logRoot, user.Username);
+
+            var conf = ApacheConfConstructor.Construct
+                .WithVersion(environment.Version)
+                .WithEmail(user.Email)
+                .WithAddress(environment.Address)
+                .WithDocRoot(docRoot)
+                .WithLogRoot(logRoot)
+                .WithUsername(user.Username).Build();
+
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
