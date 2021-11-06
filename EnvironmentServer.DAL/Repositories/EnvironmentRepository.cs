@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Ubiety.Dns.Core.Records.NotUsed;
 
 namespace EnvironmentServer.DAL.Repositories
 {
@@ -208,6 +209,17 @@ namespace EnvironmentServer.DAL.Repositories
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
+        }
+
+        public void SetTaskRunning(long id, bool running)
+        {
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand($"UPDATE environments_settings_values SET `Value` = '{running}' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
+                Command.Parameters.AddWithValue("@envid", id);
+                Command.Connection = connection;
+                Command.ExecuteNonQuery();
+            }
         }
 
         public async Task DeleteAsync(Environment environment, User user)

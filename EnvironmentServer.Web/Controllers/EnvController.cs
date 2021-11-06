@@ -53,7 +53,6 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(long id, [FromForm] UpdateViewModel cvm)
         {
-
             await DB.Environments.UpdatePhpAsync(id, GetSessionUser(), (PhpVersion)cvm.Version);
 
             AddInfo("Environment PhpVersion sucessfull updated");
@@ -68,7 +67,6 @@ namespace EnvironmentServer.Web.Controllers
 
             var tmp_env_list = DB.Environments.GetForUser(GetSessionUser().ID);
 
-            //Issue #10 Check for environment name
             foreach (var i in tmp_env_list)
             {
                 if (i.Name.ToLower() == cvm.EnvironmentName.ToLower())
@@ -87,19 +85,6 @@ namespace EnvironmentServer.Web.Controllers
             };
 
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(), cvm.SWVersion[0] == 6).ConfigureAwait(false);
-            
-            //Issue #4 Download and extract
-            if (!string.IsNullOrEmpty(cvm.File) && System.Uri.IsWellFormedUriString(cvm.File, System.UriKind.RelativeOrAbsolute))
-            {
-                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{cvm.EnvironmentName}/dl.txt", cvm.File);
-
-                DB.CmdAction.CreateTask(new CmdAction
-                {
-                    Action = "download_extract",
-                    Id_Variable = lastID,
-                    ExecutedById = GetSessionUser().ID
-                });
-            }
 
             var envSettingPersistent = new EnvironmentSettingValue()
             {
@@ -131,6 +116,19 @@ namespace EnvironmentServer.Web.Controllers
             DB.EnvironmentSettings.Insert(envSettingSWVersion);
             DB.EnvironmentSettings.Insert(envSettingTask);
 
+            if (!string.IsNullOrEmpty(cvm.File) && System.Uri.IsWellFormedUriString(cvm.File, System.UriKind.RelativeOrAbsolute))
+            {
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{cvm.EnvironmentName}/dl.txt", cvm.File);
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "download_extract",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+                DB.Environments.SetTaskRunning(lastID, true);
+            }
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -149,13 +147,7 @@ namespace EnvironmentServer.Web.Controllers
             ExecutedById = GetSessionUser().ID
             });
 
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'True' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
-                Command.Parameters.AddWithValue("@envid", env.ID);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            DB.Environments.SetTaskRunning(id, true);
 
             AddInfo("Delete in progress...");
             return RedirectToAction("Index", "Home");

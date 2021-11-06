@@ -25,15 +25,16 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create(long ID)
+        public IActionResult Create(long id)
         {
-            return View(new EnvironmentSnapshot { EnvironmentId = ID });
+            return View(new EnvironmentSnapshot { EnvironmentId = id });
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] EnvironmentSnapshot env_snap, long ID)
+        public IActionResult Create([FromForm] EnvironmentSnapshot env_snap, long id)
         {
-            DB.Snapshot.CreateSnapshot(env_snap.Name, ID, GetSessionUser().ID);
+            DB.Snapshot.CreateSnapshot(env_snap.Name, id, GetSessionUser().ID);
+            DB.Environments.SetTaskRunning(id, true);
             AddInfo("Environment Snapshot will be createt in a few seconds");
             return RedirectToAction("Index", "Home");
         }
@@ -46,6 +47,7 @@ namespace EnvironmentServer.Web.Controllers
                 Id_Variable = id,
                 ExecutedById = GetSessionUser().ID
             });
+            DB.Environments.SetTaskRunning(id, true);
             AddInfo("Environment Snapshot will be restored, this can take a few seconds");
             return RedirectToAction("Index", "Home");
         }

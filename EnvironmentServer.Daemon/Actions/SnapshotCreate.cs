@@ -87,13 +87,8 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
-            using (var connection = db.GetConnection())
-            {
-                var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'False' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
-                Command.Parameters.AddWithValue("@envid", env.ID);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            db.Environments.SetTaskRunning(env.ID, false);
+
             db.Logs.Add("Daemon", "SnapshotCreate - Done: " + env.Name);
 
             db.Mail.Send($"Snapshot ready for {env.Name}!", string.Format(db.Settings.Get("mail_snapshot_create").Value, user.Username, env.Name), user.Email);

@@ -24,14 +24,6 @@ namespace EnvironmentServer.Daemon.Actions
             var dbString = user.Username + "_" + env.Name;
             var config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
 
-            using (var connection = db.GetConnection())
-            {
-                var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'True' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
-                Command.Parameters.AddWithValue("@envid", env.ID);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
-
             db.Logs.Add("Daemon", "SnapshotRestore - Disable Site: " + env.Name);
             //Stop Website (a2dissite)
             await Cli.Wrap("/bin/bash")
@@ -91,13 +83,8 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
-            using (var connection = db.GetConnection())
-            {
-                var Command = new MySqlCommand("UPDATE environments_settings_values SET `Value` = 'False' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 4;");
-                Command.Parameters.AddWithValue("@envid", env.ID);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            db.Environments.SetTaskRunning(env.ID, false);
+
             db.Logs.Add("Daemon", "SnapshotRestore - Done: " + env.Name);
             db.Mail.Send($"Snapshot restored for {env.Name}!", string.Format(db.Settings.Get("mail_snapshot_restored").Value, user.Username, env.Name), user.Email);
         }
