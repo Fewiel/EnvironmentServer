@@ -112,10 +112,8 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("INSERT INTO `environments` (`ID`, `users_ID_fk`, `Name`, `Address`, `Version`) VALUES "
-                    + "(NULL, @userID, @name, @address, @version);");
+                    + $"(NULL, @userID, '{environment.Name}', '{environment.Address}', @version);");
                 Command.Parameters.AddWithValue("@userID", environment.UserID);
-                Command.Parameters.AddWithValue("@name", environment.Name);
-                Command.Parameters.AddWithValue("@address", environment.Address);
                 Command.Parameters.AddWithValue("@version", environment.Version);
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
