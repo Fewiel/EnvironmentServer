@@ -44,7 +44,7 @@ namespace EnvironmentServer.DAL.Repositories
         {
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand($"select * from schedule_actions were Action = '{action.Action}';");
+                var Command = new MySqlCommand($"select * from schedule_actions where Action = '{action.Action}';");
                 Command.Connection = connection;
                 MySqlDataReader reader = Command.ExecuteReader();
                 if (reader.Read())
