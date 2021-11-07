@@ -40,7 +40,7 @@ namespace EnvironmentServer.Daemon
                 var task = DB.CmdAction.GetFirstNonExecuted();
                 if (string.IsNullOrEmpty(task.Action))
                 {
-                    Thread.Sleep(0);
+                    Thread.Sleep(500);
                     continue;
                 }
 
