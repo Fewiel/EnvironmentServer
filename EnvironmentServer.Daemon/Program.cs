@@ -13,8 +13,10 @@ namespace EnvironmentServer.Daemon
 
         static void Main(string[] args)
         {
+            var hc = new HttpClient();
+            hc.DefaultRequestHeaders.Add("User-Agent", "Environment Server - Daemon");
             var sp = new ServiceCollection()
-                .AddSingleton(new HttpClient())
+                .AddSingleton(hc)
                 .AddSingleton(new Database($"server={Config.Host};database={Config.Database};uid={Config.Username};pwd={Config.Password};"))
                 .BuildServiceProvider();
 

@@ -36,8 +36,8 @@ namespace EnvironmentServer.Daemon.ScheduleActions
             {
                 db.TagCache.CreateIfNotExist(new Tag
                 {
-                    Name = r._ref.Replace("refs/tags/", "").TrimStart('v'),
-                    Hash = r._object.sha
+                    Name = r.Ref.Replace("refs/tags/", "").TrimStart('v'),
+                    Hash = r.Object.sha
                 });
             }
         }
@@ -45,10 +45,10 @@ namespace EnvironmentServer.Daemon.ScheduleActions
 
     internal class TagReference
     {
-        public string _ref { get; set; }
+        public string Ref { get; set; }
         public string node_id { get; set; }
         public string url { get; set; }
-        public Payload _object { get; set; }
+        public Payload Object { get; set; }
     }
 
     internal class Payload
