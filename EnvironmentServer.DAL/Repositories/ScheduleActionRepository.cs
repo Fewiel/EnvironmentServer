@@ -52,6 +52,7 @@ namespace EnvironmentServer.DAL.Repositories
                     reader.Close();
                     return;
                 }
+                reader.Close();
 
                 Command = new MySqlCommand($"INSERT INTO `schedule_actions` (`Action`, `Timing`, `Interval`) " +
                     $"VALUES ('{action.Action}', '{action.Timing}', '{action.Interval}');");
