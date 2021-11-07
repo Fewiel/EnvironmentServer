@@ -26,7 +26,8 @@ namespace EnvironmentServer.Daemon
             Setup();
             FillActions(sp);
             cancellationToken = new CancellationTokenSource();
-            ActiveWorkerTask = Task.Factory.StartNew(DoWork, cancellationToken.Token);
+            DoWork().GetAwaiter().GetResult();
+            //ActiveWorkerTask = Task.Factory.StartNew(DoWork, cancellationToken.Token);
         }
 
         public void StopWorker()
