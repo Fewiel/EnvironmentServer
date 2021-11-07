@@ -13,9 +13,14 @@
             <span>No special characters and spaces allowed</span>
         </div>
         <div class="mb-3">
-            <label asp-for="SWVersion" class="form-label">Shopware Version (example: 6.4.4.1)</label>
+            <label asp-for="SWVersion" class="form-label">Custom Version (example: 6.10.4.1)</label>
             <input asp-for="SWVersion" class="form-control" />
             <span asp-validation-for="SWVersion"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Existing Shopware Version</label>
+            <select asp-for="PreSelectedSWVersion" asp-items="Model.SWVersions" class="form-select"></select>
+            <span asp-validation-for="PreSelectedSWVersion" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label class="form-label">PHP Version</label>

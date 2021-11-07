@@ -32,7 +32,8 @@ namespace EnvironmentServer.Web.Controllers
             var createViewModel = new CreateViewModel()
             {
                 PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
-                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString()))
+                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
+                SWVersions = DB.TagCache.Get().Select(t => new SelectListItem(t.Name, t.Name))
             };
             return View(createViewModel);
         }

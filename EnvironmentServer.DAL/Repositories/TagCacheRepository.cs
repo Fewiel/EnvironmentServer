@@ -35,7 +35,7 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand($"select * from tag_cache;");
                 Command.Connection = connection;
                 MySqlDataReader reader = Command.ExecuteReader();
-                if (reader.Read())
+                while (reader.Read())
                 {
                     yield return new Tag
                     {
