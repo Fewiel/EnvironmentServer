@@ -68,7 +68,7 @@ namespace EnvironmentServer.Daemon
                     }
                 }
 
-                Thread.Yield();
+                Thread.Sleep(0);
             }
         }
 
