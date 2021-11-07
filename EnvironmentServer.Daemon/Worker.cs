@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.Daemon.Actions;
 using EnvironmentServer.DAL;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,12 +16,11 @@ namespace EnvironmentServer.Daemon
         private readonly CancellationTokenSource cancellationToken;
         private readonly Task ActiveWorkerTask;
         private readonly Dictionary<string, ActionBase> Actions = new();
-        private readonly DBConfig Config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
 
-        public Worker()
+        public Worker(ServiceProvider sp)
         {
             FillActions();
-            DB = new Database($"server={Config.Host};database={Config.Database};uid={Config.Username};pwd={Config.Password};");
+            DB = sp.GetService<Database>();
             cancellationToken = new CancellationTokenSource();
             ActiveWorkerTask = Task.Factory.StartNew(DoWork, cancellationToken.Token);
         }

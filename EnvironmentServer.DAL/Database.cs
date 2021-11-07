@@ -22,6 +22,8 @@ namespace EnvironmentServer.DAL
         public CmdActionRepository CmdAction { get; }
         public LogRepository Logs { get; }
         public Mailer Mail { get; }
+        public ScheduleActionRepository ScheduleAction { get; }
+        public TagCacheRepository TagCache { get; }
 
         public Database(string connString)
         {
@@ -34,6 +36,8 @@ namespace EnvironmentServer.DAL
             CmdAction = new CmdActionRepository(this);
             Logs = new LogRepository(this);
             Mail = new Mailer(this);
+            ScheduleAction = new ScheduleActionRepository(this);
+            TagCache = new TagCacheRepository(this);
 
             if (Users.GetByUsername("Admin") == null)
             {
