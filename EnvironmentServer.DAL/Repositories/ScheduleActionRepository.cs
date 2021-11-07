@@ -55,7 +55,7 @@ namespace EnvironmentServer.DAL.Repositories
                 reader.Close();
 
                 Command = new MySqlCommand($"INSERT INTO `schedule_actions` (`Action`, `Timing`, `Interval`) " +
-                    $"VALUES ('{action.Action}', '{action.Timing}', '{action.Interval}');");
+                    $"VALUES ('{action.Action}', {(int)action.Timing}, {action.Interval});");
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
@@ -65,7 +65,7 @@ namespace EnvironmentServer.DAL.Repositories
         {
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand($"UPDATE `schedule_actions` SET `Timing` = {action.Timing}, `Interval` = {action.Interval}, " +
+                var Command = new MySqlCommand($"UPDATE `schedule_actions` SET `Timing` = {(int)action.Timing}, `Interval` = {action.Interval}, " +
                     $"`LastExecuted` = {action.LastExecuted} WHERE `schedule_actions`.`Action` = {action.Action};");
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
