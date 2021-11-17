@@ -1,0 +1,18 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+
+@{
+    ViewData["Title"] = "Base Data - Environment Setup";
+}
+
+<div class="d-flex align-items-center justify-content-center fullHeight">
+    <form method="post" asp-action="MajorVersion" style="width: 400px;">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Environment Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name"></span>
+            <span style="margin-top: 10px;">No special chars and spaces allowed!</span>
+        </div>
+        <button type="submit" class="btn btn-primary float-end">Shopware Version ⮊</button>        
+    </form>
+</div>

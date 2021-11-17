@@ -46,5 +46,24 @@ namespace EnvironmentServer.DAL.Repositories
                 reader.Close();
             }
         }
+
+        public IEnumerable<Tag> GetForMajor(int v)
+        {
+            using (var connection = DB.GetConnection())
+            {
+                var Command = new MySqlCommand($"select * from tag_cache WHERE Name LIKE '{v}%';");
+                Command.Connection = connection;
+                MySqlDataReader reader = Command.ExecuteReader();
+                while (reader.Read())
+                {
+                    yield return new Tag
+                    {
+                        Name = reader.GetString(1),
+                        Hash = reader.GetString(2)
+                    };
+                }
+                reader.Close();
+            }
+        }
     }
 }
