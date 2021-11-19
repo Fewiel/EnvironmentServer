@@ -22,8 +22,13 @@ namespace EnvironmentServer.Daemon
 
             var w = new Worker(sp);
             var cw = new CronWorker(sp);
-            Console.WriteLine("Press Enter to stop deamon");
-            Console.ReadLine();
+            string cmd = "";
+            while (cmd != "1")
+            {
+                Console.WriteLine("Enter 1 to stop deamon");
+                cmd = Console.ReadLine();                    
+            }
+
             w.StopWorker();
             cw.StopWorker();
         }
