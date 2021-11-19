@@ -33,7 +33,7 @@ namespace EnvironmentServer.Web.Controllers
             {
                 PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
                     .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
-                SWVersions = DB.TagCache.Get().Select(t => new SelectListItem(t.Name, t.Name))
+                //SWVersions = DB.TagCache.Get().Select(t => new SelectListItem(t.Name, t.Name))
             };
             return View(createViewModel);
         }
