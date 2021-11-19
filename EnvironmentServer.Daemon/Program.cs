@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 
 namespace EnvironmentServer.Daemon
 {
@@ -26,7 +27,8 @@ namespace EnvironmentServer.Daemon
             while (cmd != "1")
             {
                 Console.WriteLine("Enter 1 to stop deamon");
-                cmd = Console.ReadLine();                    
+                cmd = Console.ReadLine();
+                Thread.Sleep(5000);
             }
 
             w.StopWorker();
