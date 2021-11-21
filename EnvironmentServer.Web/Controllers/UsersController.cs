@@ -72,6 +72,10 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult Delete()
+        {
+            return RedirectToAction("Index");
+        }
 
         [HttpPost]
         public async Task<IActionResult> Delete(long id)

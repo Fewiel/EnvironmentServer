@@ -17,11 +17,11 @@
             <input asp-for="SWVersion" class="form-control" />
             <span asp-validation-for="SWVersion"></span>
         </div>
-        <div class="mb-3">
+        @*<div class="mb-3">
             <label class="form-label">Existing Shopware Version</label>
             <select asp-for="PreSelectedSWVersion" asp-items="Model.SWVersions" class="form-select"></select>
             <span asp-validation-for="PreSelectedSWVersion" class="text-danger"></span>
-        </div>
+        </div>*@
         <div class="mb-3">
             <label class="form-label">PHP Version</label>
             <select asp-for="Version" asp-items="Model.PhpVersions" class="form-select"></select>
