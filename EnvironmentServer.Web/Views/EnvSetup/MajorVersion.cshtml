@@ -5,67 +5,67 @@
 }
 
 <h2>Predefined Versions</h2>
-<div class="row row-cols-md-4" style="margin-top: 15px;">
-    <div class="col-md-3 px-1"></div>
-    <form method="post" asp-action="MinorVersion">
-        <input type="hidden" asp-for="Name" />
-        <input type="hidden" asp-for="MajorShopwareVersion" value="5" />
-        <div class="col-md-3 px-1">
-            <div class="card mb-2 align-middle d-flex align-content-center" style="height: 370px;">
-                <a asp-controller="Env" asp-action="Create" class="text-decoration-none text-body fullHeight justify-content-center d-flex">
-                    <img src="~/img/sw5-signet.svg" width="100" height="100" style="padding-top: 15px;" />
-                </a>
-            </div>
-        </div>
-    </form>
-
-    <form method="post" asp-action="MinorVersion">
-        <input type="hidden" asp-for="Name" />
-        <input type="hidden" asp-for="MajorShopwareVersion" value="6" />
-        <div class="col-md-3 px-1">
-            <div class="card mb-2 align-middle d-flex align-content-center" style="height: 370px;">
-                <a asp-controller="Env" asp-action="Create" class="text-decoration-none text-body fullHeight justify-content-center d-flex">
-                    <i class="bi bi-plus-lg align-self-center" style="font-size: 50px"></i>
-                    <img src="~/img/sw6-signet.svg" width="100" height="100" style="padding-top: 15px;" />
-                </a>
-            </div>
-        </div>
-    </form>
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-3">
+        <form method="post" asp-action="MinorVersion">
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="MajorShopwareVersion" value="5" />
+            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                    <img src="~/img/sw5-signet.svg" class="card-img-top" style="padding: 20px; width: 300px; height: 300px;" />
+                </div>
+            </a>
+        </form>
+    </div>
+    <div class="col-3">
+        <form method="post" asp-action="MinorVersion">
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="MajorShopwareVersion" value="6" />
+            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                    <img src="~/img/sw6-signet.svg" class="card-img-top" style="padding: 20px; width: 300px; height: 300px;" />
+                </div>
+            </a>
+        </form>
+    </div>
 </div>
 
-<h2>Custom Versions (Expert Mode)</h2>
-<div class="row row-cols-md-4" style="margin-top: 15px;">
-    <div class="col-md-3 px-1"></div>
-    <form method="post" asp-action="MinorVersion">
-        <input type="hidden" asp-for="Name" />
-        <input type="hidden" asp-for="CustomSetupType" value="wget" />
-        <div class="col-md-3 px-1">
-            <div class="card mb-2 align-middle d-flex align-content-center" style="height: 370px;">
-                <a asp-controller="Env" asp-action="Create" class="text-decoration-none text-body fullHeight justify-content-center d-flex">
-                    <i class="bi bi-cloud-download align-self-center" style="font-size: 50px"></i>
+
+
+<h2>Expert Mode</h2>
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-3">
+        <form method="post" asp-action="MinorVersion">
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="CustomSetupType" value="wget" />
+            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                    <i class="bi bi-cloud-download align-self-center" style="font-size: 200px"></i>
                     <div class="card-body"><p class="card-text">Download & Extract</p></div>
-                </a>
-            </div>
-        </div>
-    </form>
-
-    <form method="post" asp-action="MinorVersion">
-        <input type="hidden" asp-for="Name" />
-        <input type="hidden" asp-for="CustomSetupType" value="git" />
-        <div class="col-md-3 px-1">
-            <div class="card mb-2 align-middle d-flex align-content-center" style="height: 370px;">
-                <a asp-controller="Env" asp-action="Create" class="text-decoration-none text-body fullHeight justify-content-center d-flex">
-                    <i class="bi bi-git align-self-center" style="font-size: 50px"></i>
+                </div>
+            </a>
+        </form>
+    </div>
+    <div class="col-3">
+        <form method="post" asp-action="MinorVersion">
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="CustomSetupType" value="git" />
+            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                     <i class="bi bi-github align-self-center" style="font-size: 200px"></i>
                     <div class="card-body"><p class="card-text">Clone Git Repository</p></div>
-                </a>
-            </div>
-        </div>
-    </form>
+                </div>
+            </a>
+        </form>
+    </div>
 </div>
+
 <form method="post" asp-action="MinorVersion">
     <input type="hidden" asp-for="Name" />
     <input type="hidden" asp-for="CustomSetupType" value="empty" />
-    <button asp-controller="Env" asp-action="Create" class="btn btn-link text-decoration-none text-body fullHeight justify-content-center d-flex">
-        <div class="card-body"><p class="card-text">Empty Webspace</p></div>
+    <button asp-controller="EnvSetup" asp-action="MinorVersion" class="btn btn-link text-decoration-none text-body">
+        Empty Webspace
     </button>
 </form>

@@ -15,10 +15,10 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
         public PhpVersion PhpVersion { get; set; }
 
         //View Data Single Use
-        public Tag ShopwareVersion { get; set; }
+        public string ShopwareVersion { get; set; }
+        public string ShopwareVersionHash { get; set; }
         public string WgetURL { get; set; }
         public string GitURL { get; set; }
-        public string GitHash { get; set; }
         public string CustomSetupType { get; set; }
 
         //Display Data

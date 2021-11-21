@@ -1,0 +1,49 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+@{
+    ViewData["Title"] = "Minor Version - Environment Setup";
+}
+
+<h2>Latest Shopware Version</h2>
+<div class="card">
+    <div class="card-header container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                Version: @Model.ShopwareVersions.First().Name
+            </div>
+            <div class="col-md-2 float-right">
+                <form method="post" asp-action="PhpVersion">
+                    <input type="hidden" asp-for="Name" />
+                    <input type="hidden" asp-for="MajorShopwareVersion" />
+                    <input type="hidden" asp-for="ShopwareVersionHash" value=@Model.ShopwareVersions.First().Hash />
+                    <input type="hidden" asp-for="ShopwareVersion" value=@Model.ShopwareVersions.First().Name />
+                    <button type="submit" class="btn btn-primary float-end">Select ⮊</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<h2>Older Shopware Version</h2>
+@{
+    foreach (var v in @Model.ShopwareVersions.Skip(1))
+    {
+        <div class="card">
+            <div class="card-header container-fluid">
+                <div class="row">
+                    <div class="col-md-10">
+                        Version: @v.Name
+                    </div>
+                    <div class="col-md-2 float-right">
+                        <form method="post" asp-action="PhpVersion">
+                            <input type="hidden" asp-for="Name" />
+                            <input type="hidden" asp-for="MajorShopwareVersion" />
+                            <input type="hidden" asp-for="ShopwareVersionHash" value=@v.Hash />
+                            <input type="hidden" asp-for="ShopwareVersion" value=@v.Name />                            
+                            <button type="submit" class="btn btn-primary float-end">Select ⮊</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

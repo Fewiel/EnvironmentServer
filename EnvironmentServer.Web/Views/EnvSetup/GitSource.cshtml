@@ -1,0 +1,17 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+@{
+    ViewData["Title"] = "Git Informations - Environment Setup";
+}
+<div class="d-flex align-items-center justify-content-center fullHeight">
+    <form method="post" asp-action="PhpVersion">
+        <input type="hidden" asp-for="Name" />
+        <div class="mb-3">
+            <label asp-for="GitURL" class="form-label">Git Link</label>
+            <input asp-for="GitURL" class="form-control" />
+            <span asp-validation-for="GitURL"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Next</button>
+    </form>
+</div>
+

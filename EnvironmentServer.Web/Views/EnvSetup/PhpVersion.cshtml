@@ -1,0 +1,32 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+@{
+    ViewData["Title"] = "Php Version - Environment Setup";
+}
+<h2>Php Version</h2>
+@{
+    foreach (var v in @Model.PhpVersions)
+    {
+        <div class="card">
+            <div class="card-header container-fluid">
+                <div class="row">
+                    <div class="col-md-10">
+                        Version: @v
+                    </div>
+                    <div class="col-md-2 float-right">
+                        <form method="post" asp-action="Finalize">
+                            <input type="hidden" asp-for="Name" />
+                            <input type="hidden" asp-for="WgetURL" />
+                            <input type="hidden" asp-for="GitURL" />
+                            <input type="hidden" asp-for="MajorShopwareVersion" />
+                            <input type="hidden" asp-for="ShopwareVersion" />
+                            <input type="hidden" asp-for="ShopwareVersionHash" />
+                            <input type="hidden" asp-for="PhpVersion" value=@v />
+                            <button type="submit" class="btn btn-primary">Select</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}     
