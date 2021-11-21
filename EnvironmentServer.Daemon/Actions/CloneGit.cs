@@ -34,13 +34,29 @@ namespace EnvironmentServer.Daemon.Actions
             var repo = url.Substring(0, url.IndexOf("/commit/"));
             var hash = url.Substring(url.LastIndexOf('/') + 1);
 
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"git remote add origin {repo}\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"git fetch origin {hash}\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"git reset --hard FETCH_HEAD\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
                 .ExecuteAsync();
 
             db.Environments.SetTaskRunning(env.ID, false);
 
-            db.Mail.Send($"Setup ready for {env.Name}!", string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.Name), user.Email);
+            db.Mail.Send($"Setup ready for {env.Name}!", string.Format(db.Settings.Get("mail_setup_finished").Value, user.Username, env.Name), user.Email);
         }
     }
 }

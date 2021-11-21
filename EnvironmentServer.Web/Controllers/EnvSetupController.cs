@@ -115,7 +115,6 @@ namespace EnvironmentServer.Web.Controllers
             DB.EnvironmentSettings.Insert(envSettingSWVersion);
             DB.EnvironmentSettings.Insert(envSettingTask);
 
-
             if (!string.IsNullOrEmpty(esv.WgetURL) && System.Uri.IsWellFormedUriString(esv.WgetURL, System.UriKind.RelativeOrAbsolute))
             {
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt", esv.WgetURL);
@@ -128,9 +127,6 @@ namespace EnvironmentServer.Web.Controllers
                 });
                 DB.Environments.SetTaskRunning(lastID, true);
             }
-
-            //6 https://github.com/shopware/platform/commit/
-            //5 https://github.com/shopware/shopware/commit/
 
             if (!string.IsNullOrEmpty(esv.ShopwareVersionHash))
             {
