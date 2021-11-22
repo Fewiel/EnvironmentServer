@@ -16,13 +16,13 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
 
         //View Data Single Use
         public string ShopwareVersion { get; set; }
-        public string ShopwareVersionHash { get; set; }
+        public string ShopwareVersionDownload { get; set; }
         public string WgetURL { get; set; }
         public string GitURL { get; set; }
         public string CustomSetupType { get; set; }
 
         //Display Data
         public IEnumerable<PhpVersion> PhpVersions { get; set; }
-        public IEnumerable<Tag> ShopwareVersions { get; set; }
+        public IEnumerable<ShopwareVersionInfo> ShopwareVersions { get; set; }
     }
 }

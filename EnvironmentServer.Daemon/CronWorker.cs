@@ -76,7 +76,7 @@ namespace EnvironmentServer.Daemon
         {
             var actionList = new List<string>
             {
-                "tags_refresh"
+                "feed_refresh"
             };
 
             foreach (var a in actionList)
@@ -132,7 +132,7 @@ namespace EnvironmentServer.Daemon
         {
             var l = new List<ScheduledActionBase>
             {
-                new TagsRefresh(sp)
+                new FeedRefresh(sp)
             };
 
             foreach (var a in l)

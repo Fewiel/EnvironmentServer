@@ -30,7 +30,7 @@
                     <a>@usr.IsAdmin</a>
                 </td>
                 <td>
-                    <a asp-action="Index" asp-route-id="@usr.ID">Reset Password</a>
+                    <a asp-action="ResetPassword" onclick="return confirm('Are you sure?')" asp-route-id="@usr.ID">Reset Password</a>
                     <a asp-action="Update" asp-route-id="@usr.ID">Update</a>
                     <a asp-action="Delete" onclick="return confirm('Are you sure?')" asp-route-id="@usr.ID">Delete</a>
                 </td>

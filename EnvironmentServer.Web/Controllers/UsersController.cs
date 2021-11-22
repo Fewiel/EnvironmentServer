@@ -26,11 +26,11 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(long id)
+        public async Task<IActionResult> ResetPassword(long id)
         {
             var user = DB.Users.GetByID(id);
             await DB.Users.UpdateByAdminAsync(user, true);
-            AddInfo("User updated");
+            AddInfo("User password reseted");
             return RedirectToAction("Index");
         }
 
@@ -67,10 +67,14 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(User user)
         {
-            await DB.Users.UpdateByAdminAsync(user, false);
+            var usr = DB.Users.GetByID(user.ID);
+            usr.IsAdmin = user.IsAdmin;
+            usr.Email = user.Email;
+            await DB.Users.UpdateByAdminAsync(usr, false);
             AddInfo("User updated");
             return RedirectToAction("Index");
         }
+
 
         public IActionResult Delete()
         {

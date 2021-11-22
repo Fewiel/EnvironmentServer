@@ -23,10 +23,12 @@ namespace EnvironmentServer.DAL
         public LogRepository Logs { get; }
         public Mailer Mail { get; }
         public ScheduleActionRepository ScheduleAction { get; }
-        public TagCacheRepository TagCache { get; }
+        public ShopwareVersionInfoRepository ShopwareVersionInfos { get; }
 
         public Database(string connString)
         {
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
             ConnString = connString;
             Settings = new SettingsRepository(this);
             Users = new UsersRepository(this);
@@ -37,7 +39,7 @@ namespace EnvironmentServer.DAL
             Logs = new LogRepository(this);
             Mail = new Mailer(this);
             ScheduleAction = new ScheduleActionRepository(this);
-            TagCache = new TagCacheRepository(this);
+            ShopwareVersionInfos = new ShopwareVersionInfoRepository(this);
 
             if (Users.GetByUsername("Admin") == null)
             {

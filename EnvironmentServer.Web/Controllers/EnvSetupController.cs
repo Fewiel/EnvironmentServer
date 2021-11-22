@@ -48,7 +48,7 @@ namespace EnvironmentServer.Web.Controllers
             if (esv.CustomSetupType == "wget")
                 return RedirectToAction(nameof(WGetSource), esv);
 
-            esv.ShopwareVersions = DB.TagCache.GetForMajor(esv.MajorShopwareVersion);
+            esv.ShopwareVersions = DB.ShopwareVersionInfos.GetForMajor(esv.MajorShopwareVersion);
             return View(esv);
         }
 
@@ -128,12 +128,18 @@ namespace EnvironmentServer.Web.Controllers
                 DB.Environments.SetTaskRunning(lastID, true);
             }
 
-            if (!string.IsNullOrEmpty(esv.ShopwareVersionHash))
+            if (!string.IsNullOrEmpty(esv.ShopwareVersionDownload))
             {
-                esv.GitURL = (esv.MajorShopwareVersion == 6
-                    ? "https://github.com/shopware/platform/commit/"
-                    : "https://github.com/shopware/shopware/commit/")
-                    + esv.ShopwareVersionHash;
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt", 
+                    esv.ShopwareVersionDownload);
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "download_extract",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+                DB.Environments.SetTaskRunning(lastID, true);
             }
 
             if (!string.IsNullOrEmpty(esv.GitURL) && System.Uri.IsWellFormedUriString(esv.GitURL, System.UriKind.RelativeOrAbsolute))

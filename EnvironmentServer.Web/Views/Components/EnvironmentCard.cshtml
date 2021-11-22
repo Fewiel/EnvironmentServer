@@ -23,8 +23,8 @@
                 <p class="card-text">SW Version: @sw_version</p>
                 <p class="card-text">PHP Version: @Model.Version.AsString()</p>
                 <div class="d-flex" style="padding-top: 10px;">
-                    <a class="btn btn-primary me-auto" href="http://@Model.Address/">Frontend</a>
-                    <a class="btn btn-primary" href="http://@Model.Address/@(sw_version[0] == '5' ? "backend" : "admin")">@(sw_version[0] == '5' ? "Backend" : "Admin")</a>
+                    <a class="btn btn-primary me-auto" href="http://@Model.Address/" target="_blank">Frontend</a>
+                    <a class="btn btn-primary" href="http://@Model.Address/@(sw_version[0] == '5' ? "backend" : "admin")" target="_blank">@(sw_version[0] == '5' ? "Backend" : "Admin")</a>
                 </div>
                 @if (!taskRunning)
                 {

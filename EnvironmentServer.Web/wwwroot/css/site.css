@@ -28,3 +28,7 @@
     background-color: #333333;
     transform: scale(1.025);
 }
+
+.accordion-button::after {
+    display: none !important;
+}
