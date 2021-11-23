@@ -82,6 +82,9 @@ namespace EnvironmentServer.Web.Controllers
                 Version = esv.PhpVersion
             };
 
+            if (esv.MajorShopwareVersion == 0)
+                esv.ShopwareVersion = "Custom";
+
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(),
                 esv.MajorShopwareVersion == 6).ConfigureAwait(false);
 
@@ -101,7 +104,7 @@ namespace EnvironmentServer.Web.Controllers
             {
                 EnvironmentID = lastID,
                 EnvironmentSettingID = 3,
-                Value = esv.MajorShopwareVersion.ToString()
+                Value = esv.ShopwareVersion
             };
             var envSettingTask = new EnvironmentSettingValue()
             {
