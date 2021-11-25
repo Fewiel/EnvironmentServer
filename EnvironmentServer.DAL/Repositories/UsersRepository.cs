@@ -1,4 +1,5 @@
 ﻿using CliWrap;
+using Dapper;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Mail;
@@ -231,9 +232,22 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 Command.ExecuteNonQuery();
             }
 
+            using (var connection = DB.GetConnection())
+            {
+                connection.Execute("UPDATE mysql.user SET Super_Priv='Y' WHERE user=@user;",
+                    new {
+                        user = user.Username
+                    });
+            }
+
+            using (var connection = DB.GetConnection())
+            {
+                connection.Execute("FLUSH PRIVILEGES;");
+            }
+
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"echo \'{user.Username}:{shellPassword}\' | sudo chpasswd\"")
-                .ExecuteAsync();
+            .WithArguments($"-c \"echo \'{user.Username}:{shellPassword}\' | sudo chpasswd\"")
+            .ExecuteAsync();
         }
 
         public async Task UpdateByAdminAsync(User usr, bool newPassword)
