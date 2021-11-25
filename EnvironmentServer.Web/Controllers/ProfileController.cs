@@ -33,6 +33,12 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index", "Profile");
             }
 
+            if (pvm.Password[0] == '#')
+            {
+                AddError("No special char as first char allowed");
+                return View();
+            }
+
             if (pvm.PasswordNew != pvm.PasswordNewRetype)
             {
                 AddInfo("New password did not match");

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
@@ -49,6 +50,12 @@ namespace EnvironmentServer.Web.Controllers
             {
                 DB.Logs.Add("Web", "Registration failed for: " + rvm.Username + ". Username already taken.");
                 AddError("Username already taken.");
+                return View();
+            }
+
+            if (rvm.Password[0] == '#')
+            {
+                AddError("No special char as first char allowed");
                 return View();
             }
 

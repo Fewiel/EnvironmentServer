@@ -155,11 +155,13 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Logs.Add("DAL", "Start Useradd: " + user.Username);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"")
-                .ExecuteAsync();
+                .WithArguments($"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"")                
+                .ExecuteAsync();     
+            
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
                 .ExecuteAsync();
+            
             DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
 
