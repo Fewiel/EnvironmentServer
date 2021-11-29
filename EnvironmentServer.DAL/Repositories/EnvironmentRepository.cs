@@ -186,12 +186,10 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.ExecuteNonQuery();
             }
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
+            Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"");
+            Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"");
 
             var envVersion = environment.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
             var sw_version = envVersion == null ? "N/A" : envVersion.Value;
