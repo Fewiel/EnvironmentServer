@@ -198,7 +198,7 @@ namespace EnvironmentServer.DAL.Repositories
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
 
             var conf = ApacheConfConstructor.Construct
-                .WithVersion(environment.Version)
+                .WithVersion(version)
                 .WithEmail(user.Email)
                 .WithAddress(environment.Address)
                 .WithDocRoot(docRoot)
