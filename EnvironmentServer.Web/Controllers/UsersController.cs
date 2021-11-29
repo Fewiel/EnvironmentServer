@@ -40,6 +40,12 @@ namespace EnvironmentServer.Web.Controllers
             return View();
         }
 
+        public async Task<IActionResult> RegenerateAsync()
+        {
+            await DB.Users.RegenerateConfig();
+            return RedirectToAction("Index");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] RegistrationViewModel rvm)
         {
@@ -82,13 +88,6 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
-
-        public IActionResult Delete()
-        {
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
         public async Task<IActionResult> Delete(long id)
         {
             var usr = DB.Users.GetByID(id);
