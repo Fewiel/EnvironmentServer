@@ -208,15 +208,12 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithUsername(user.Username).Build();
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
-                .ExecuteAsync().Task
-                .ContinueWith(t => Cli.Wrap("/bin/bash")
-                    .WithArguments("-c \"service apache2 reload\"")
-                    .ExecuteAsync());            
+            Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"");
+            Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"");
+            Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"");
         }
 
         public void SetTaskRunning(long id, bool running)
