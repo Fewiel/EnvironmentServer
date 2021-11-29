@@ -213,6 +213,9 @@ namespace EnvironmentServer.DAL.Repositories
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
                 .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
         }
 
         public void SetTaskRunning(long id, bool running)
