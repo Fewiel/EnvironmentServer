@@ -16,7 +16,7 @@ namespace EnvironmentServer.DAL.Repositories
     public class EnvironmentRepository
     {
         private readonly Database DB;
-        
+
         public EnvironmentRepository(Database db)
         {
             DB = db;
@@ -160,6 +160,9 @@ namespace EnvironmentServer.DAL.Repositories
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
@@ -204,10 +207,10 @@ namespace EnvironmentServer.DAL.Repositories
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
+                .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
+                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
                 .ExecuteAsync();
         }
 
