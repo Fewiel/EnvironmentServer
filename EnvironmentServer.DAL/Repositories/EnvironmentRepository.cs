@@ -174,6 +174,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public async Task UpdatePhpAsync(long id, User user, PhpVersion version)
         {
+            DB.Logs.Add("DAL", $"Update PHP Version of ID {id} to {version}");
             var environment = DB.Environments.Get(id);
             using (var connection = DB.GetConnection())
             {
