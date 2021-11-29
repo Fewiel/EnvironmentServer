@@ -186,10 +186,12 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.ExecuteNonQuery();
             }
 
-            Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"");
-            Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"");
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
 
             var envVersion = environment.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
             var sw_version = envVersion == null ? "N/A" : envVersion.Value;
@@ -206,12 +208,15 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithUsername(user.Username).Build();
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
-            Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"");
-            Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"");
-            Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"");
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
+            var cmd = await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
+                .ExecuteAsync();            
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
         }
 
         public void SetTaskRunning(long id, bool running)
