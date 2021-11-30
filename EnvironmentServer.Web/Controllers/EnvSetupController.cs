@@ -24,6 +24,12 @@ namespace EnvironmentServer.Web.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction("BaseData", esv);
 
+            if (string.IsNullOrEmpty(esv.Name))
+            {
+                AddError("Please enter a name - lower case, no special chars, no spaces");
+                return RedirectToAction("BaseData", esv);
+            }
+
             var tmp_env_list = DB.Environments.GetForUser(GetSessionUser().ID);
 
             foreach (var i in tmp_env_list)

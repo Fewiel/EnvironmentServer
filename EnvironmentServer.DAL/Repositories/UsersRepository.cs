@@ -186,6 +186,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
             var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
             File.WriteAllText($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf", conf);
+            conf = string.Format(phpfpm, user.Username, "php7.2-fpm");
+            File.WriteAllText($"/etc/php/7.2/fpm/pool.d/{user.Username}.conf", conf);
             conf = string.Format(phpfpm, user.Username, "php7.4-fpm");
             File.WriteAllText($"/etc/php/7.4/fpm/pool.d/{user.Username}.conf", conf);
             conf = string.Format(phpfpm, user.Username, "php8.0-fpm");
@@ -195,6 +197,9 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service php5.6-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php7.2-fpm reload\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service php7.4-fpm reload\"")
@@ -208,6 +213,57 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
             DB.Logs.Add("DAL", "New User added: " + user.Username);
+        }
+
+        public async Task RegenerateConfig()
+        {
+
+            foreach (var user in DB.Users.GetUsers())
+            {
+                try
+                {
+                    var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
+                    File.WriteAllText($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf", conf);
+                    conf = string.Format(phpfpm, user.Username, "php7.2-fpm");
+                    File.WriteAllText($"/etc/php/7.2/fpm/pool.d/{user.Username}.conf", conf);
+                    conf = string.Format(phpfpm, user.Username, "php7.4-fpm");
+                    File.WriteAllText($"/etc/php/7.4/fpm/pool.d/{user.Username}.conf", conf);
+                    conf = string.Format(phpfpm, user.Username, "php8.0-fpm");
+                    File.WriteAllText($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf", conf);
+                    conf = string.Format(phpfpm, user.Username, "php8.1-fpm");
+                    File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf);
+
+                    foreach (var env in DB.Environments.GetForUser(user.ID))
+                    {
+                        await DB.Environments.UpdatePhpAsync(env.ID, user, env.Version);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DB.Logs.Add("DAL", ex.ToString());
+                }
+            }           
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php5.6-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php7.2-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php7.4-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php8.0-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php8.1-fpm reload\"")
+                .ExecuteAsync();
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
+
         }
 
         public async Task UpdateAsync(User user, string shellPassword)
@@ -349,12 +405,16 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             DB.Logs.Add("DAL", "Delete user php-fpm - " + user.Username);
             File.Delete($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf");
+            File.Delete($"/etc/php/7.2/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/7.4/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf");
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service php5.6-fpm reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service php7.2-fpm reload\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service php7.4-fpm reload\"")

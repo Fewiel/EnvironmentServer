@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Ubiety.Dns.Core.Records.NotUsed;
 
@@ -16,7 +17,7 @@ namespace EnvironmentServer.DAL.Repositories
     public class EnvironmentRepository
     {
         private readonly Database DB;
-        
+
         public EnvironmentRepository(Database db)
         {
             DB = db;
@@ -160,6 +161,9 @@ namespace EnvironmentServer.DAL.Repositories
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
+                .WithArguments("-c \"service apache2 reload\"")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
@@ -171,6 +175,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public async Task UpdatePhpAsync(long id, User user, PhpVersion version)
         {
+            DB.Logs.Add("DAL", $"Update PHP Version of ID {id} to {version}");
             var environment = DB.Environments.Get(id);
             using (var connection = DB.GetConnection())
             {
@@ -195,7 +200,7 @@ namespace EnvironmentServer.DAL.Repositories
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
 
             var conf = ApacheConfConstructor.Construct
-                .WithVersion(environment.Version)
+                .WithVersion(version)
                 .WithEmail(user.Email)
                 .WithAddress(environment.Address)
                 .WithDocRoot(docRoot)
@@ -204,8 +209,11 @@ namespace EnvironmentServer.DAL.Repositories
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
+                .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
+            var cmd = await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
+                .ExecuteAsync();            
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
