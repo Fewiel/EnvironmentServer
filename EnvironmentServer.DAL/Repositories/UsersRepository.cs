@@ -67,12 +67,10 @@ fi
 
 mkdir $CHROOT/lib/terminfo
 mkdir $CHROOT/lib/terminfo/x
-mkdir {0}/home/{1}
 cp /lib/terminfo/x/xterm $CHROOT/lib/terminfo/x/
 
 chown -R {1}:sftp_users {0}/*
 chown {1}:root {0}/files
-chown -R {1}:{1} {0}/home/*
 
 chsh --shell /bin/bash {1}";
 
@@ -265,7 +263,7 @@ chsh --shell /bin/bash {1}";
             File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi} /etc/hosts\"")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown} /etc/hosts\"")
                 .ExecuteAsync();
         }
 
@@ -274,25 +272,32 @@ chsh --shell /bin/bash {1}";
             var path = "/home/" + user;
             var shell = string.Format(chroot, path, user);
 
-            if (Directory.Exists("lib"))
-                Directory.Delete("lib");
+            if (Directory.Exists(path + "/lib"))
+                Directory.Delete(path + "/lib");
 
-            if (Directory.Exists("lib64"))
-                Directory.Delete("lib64");
+            if (Directory.Exists(path + "/lib64"))
+                Directory.Delete(path + "/lib64");
 
-            if (Directory.Exists("usr"))
-                Directory.Delete("usr");
+            if (Directory.Exists(path + "/usr"))
+                Directory.Delete(path + "/usr");
 
-            if (Directory.Exists("etc"))
-                Directory.Delete("etc");
+            if (Directory.Exists(path + "/etc"))
+                Directory.Delete(path + "/etc");
 
-            if (Directory.Exists("bin"))
-                Directory.Delete("bin");
+            if (Directory.Exists(path + "/bin"))
+                Directory.Delete(path + "/bin");
+
+            if (!Directory.Exists(path + "/home"))
+                Directory.CreateDirectory(path + "/home");
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown {user}:{user} {path}/home\"")
+                .ExecuteAsync();
 
             File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi} /etc/hosts\"")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown} /etc/hosts\"")
                 .ExecuteAsync();
         }
 
