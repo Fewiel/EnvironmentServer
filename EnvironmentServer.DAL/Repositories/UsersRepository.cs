@@ -273,19 +273,19 @@ chsh --shell /bin/bash {1}";
             var shell = string.Format(chroot, path, user);
 
             if (Directory.Exists(path + "/lib"))
-                Directory.Delete(path + "/lib");
+                Directory.Delete(path + "/lib", true);
 
             if (Directory.Exists(path + "/lib64"))
-                Directory.Delete(path + "/lib64");
+                Directory.Delete(path + "/lib64", true);
 
             if (Directory.Exists(path + "/usr"))
-                Directory.Delete(path + "/usr");
+                Directory.Delete(path + "/usr", true);
 
             if (Directory.Exists(path + "/etc"))
-                Directory.Delete(path + "/etc");
+                Directory.Delete(path + "/etc", true);
 
             if (Directory.Exists(path + "/bin"))
-                Directory.Delete(path + "/bin");
+                Directory.Delete(path + "/bin", true);
 
             if (!Directory.Exists(path + "/home"))
                 Directory.CreateDirectory(path + "/home");
