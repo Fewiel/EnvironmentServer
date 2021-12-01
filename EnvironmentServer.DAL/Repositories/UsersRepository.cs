@@ -67,10 +67,12 @@ fi
 
 mkdir $CHROOT/lib/terminfo
 mkdir $CHROOT/lib/terminfo/x
+mkdir {0}/home/{1}
 cp /lib/terminfo/x/xterm $CHROOT/lib/terminfo/x/
 
 chown -R {1}:sftp_users {0}/*
 chown {1}:root {0}/files
+chown -R {1}:{1} {0}/home/*
 
 chsh --shell /bin/bash {1}";
 
@@ -255,7 +257,6 @@ chsh --shell /bin/bash {1}";
             DB.Logs.Add("DAL", "New User added: " + user.Username);            
         }
 
-
         private async Task SetupChrootForUserAsync(string user)
         {
             var path = "/home/" + user;
@@ -263,11 +264,9 @@ chsh --shell /bin/bash {1}";
             File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/vi /usr/bin/nano /etc/hosts\"")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php,unzip,nano,vi} /etc/hosts\"")
                 .ExecuteAsync();
-
         }
-
 
         public async Task RegenerateConfig()
         {
