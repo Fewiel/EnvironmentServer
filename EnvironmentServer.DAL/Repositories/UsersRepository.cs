@@ -70,6 +70,7 @@ mkdir $CHROOT/lib/terminfo/x
 cp /lib/terminfo/x/xterm $CHROOT/lib/terminfo/x/
 
 chown -R {1}:sftp_users {0}/*
+chown {1}:root {0}/files
 
 chsh --shell /bin/bash {1}";
 
