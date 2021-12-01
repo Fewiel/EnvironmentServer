@@ -36,6 +36,43 @@ pm.max_spare_servers = 3
 php_admin_value[open_basedir] = /home/{0}/files
 php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
 php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
+
+        private const string chroot = @"#!/bin/bash
+# This script can be used to create simple chroot environment
+# Written by LinuxCareer.com <http://linuxcareer.com/>
+# (c) 2013 LinuxCareer under GNU GPL v3.0+
+
+#!/bin/bash
+
+CHROOT={0}
+USER={1}
+if [ -f $CHROOT]; then
+mkdir $CHROOT
+fi
+
+for i in $(ldd $* | grep -v dynamic | cut -d "" "" -f 3 | sed 's/://' | sort | uniq )
+  do
+    cp --parents $i $CHROOT
+  done
+
+# ARCH amd64
+if [ -f /lib64/ld-linux-x86-64.so.2 ]; then
+cp --parents /lib64/ld-linux-x86-64.so.2 /$CHROOT
+fi
+
+# ARCH i386
+if [ -f  /lib/ld-linux.so.2 ]; then
+cp --parents /lib/ld-linux.so.2 /$CHROOT
+fi
+
+mkdir $CHROOT/lib/terminfo
+mkdir $CHROOT/lib/terminfo/x
+cp /lib/terminfo/x/xterm $CHROOT/lib/terminfo/x/
+
+chown -R {1}:sftp_users {0}/*
+
+chsh --shell /bin/bash {1}";
+
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
         {
@@ -155,7 +192,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Logs.Add("DAL", "Start Useradd: " + user.Username);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"useradd -p $(openssl passwd -1 {shellPassword}) {user.Username}\"")                
+                .WithArguments($"-c \"useradd -p $(openssl passwd -1 $'{shellPassword}') {user.Username}\"")                
                 .ExecuteAsync();     
             
             await Cli.Wrap("/bin/bash")
@@ -212,8 +249,24 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 .ExecuteAsync();
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
-            DB.Logs.Add("DAL", "New User added: " + user.Username);
+
+            await SetupChrootForUserAsync(user.Username);
+            DB.Logs.Add("DAL", "New User added: " + user.Username);            
         }
+
+
+        private async Task SetupChrootForUserAsync(string user)
+        {
+            var path = "/home/" + user;
+            var shell = string.Format(chroot, path, user);
+            File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/vi /usr/bin/nano /etc/hosts\"")
+                .ExecuteAsync();
+
+        }
+
 
         public async Task RegenerateConfig()
         {
@@ -304,7 +357,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             }
 
             await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"echo \'{user.Username}:{shellPassword}\' | sudo chpasswd\"")
+            .WithArguments($"-c \"echo '{user.Username}:$'{shellPassword}'' | sudo chpasswd\"")
             .ExecuteAsync();
         }
 
@@ -336,7 +389,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 }
 
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"echo \'{user.Username}:{shellPassword}\' | sudo chpasswd\"")
+                    .WithArguments($"-c \"echo '{user.Username}:$'{shellPassword}'' | sudo chpasswd\"")
                     .ExecuteAsync();
 
                 DB.Mail.Send("Password reseted", string.Format(DB.Settings.Get("mail_account_password").Value, usr.Username, shellPassword), usr.Email);
@@ -381,7 +434,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             }
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"echo \'{user.Username}:{shellPassword}\' | sudo chpasswd\"")
+                .WithArguments($"-c \"echo '{user.Username}:$'{shellPassword}'' | sudo chpasswd\"")
                 .ExecuteAsync();
 
             using (var connection = DB.GetConnection())
