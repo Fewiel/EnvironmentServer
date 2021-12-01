@@ -101,7 +101,7 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        public Task<IActionResult> UpdateChroot()
+        public IActionResult UpdateChroot()
         {            
             DB.CmdAction.CreateTask(new CmdAction
             {
