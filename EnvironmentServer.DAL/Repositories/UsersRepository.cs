@@ -261,6 +261,34 @@ chsh --shell /bin/bash {1}";
         {
             var path = "/home/" + user;
             var shell = string.Format(chroot, path, user);
+
+            File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi} /etc/hosts\"")
+                .ExecuteAsync();
+        }
+
+        public async Task UpdateChrootForUserAsync(string user)
+        {
+            var path = "/home/" + user;
+            var shell = string.Format(chroot, path, user);
+
+            if (Directory.Exists("lib"))
+                Directory.Delete("lib");
+
+            if (Directory.Exists("lib64"))
+                Directory.Delete("lib64");
+
+            if (Directory.Exists("usr"))
+                Directory.Delete("usr");
+
+            if (Directory.Exists("etc"))
+                Directory.Delete("etc");
+
+            if (Directory.Exists("bin"))
+                Directory.Delete("bin");
+
             File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
             await Cli.Wrap("/bin/bash")

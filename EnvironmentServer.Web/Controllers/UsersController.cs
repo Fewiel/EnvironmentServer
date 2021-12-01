@@ -100,5 +100,16 @@ namespace EnvironmentServer.Web.Controllers
             });
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> UpdateChroot()
+        {            
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "update_chroot",
+                ExecutedById = GetSessionUser().ID,
+                Id_Variable = 0
+            });
+            return RedirectToAction("Index");
+        }
     }
 }
