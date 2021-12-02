@@ -422,7 +422,7 @@ chsh --shell /bin/bash {1}";
                 }
 
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"echo '{user.Username}:$'{shellPassword}'' | sudo chpasswd\"")
+                    .WithArguments($"-c \"echo '{user.Username}:{shellPassword}' | sudo chpasswd\"")
                     .ExecuteAsync();
 
                 DB.Mail.Send("Password reseted", string.Format(DB.Settings.Get("mail_account_password").Value, usr.Username, shellPassword), usr.Email);
@@ -467,7 +467,7 @@ chsh --shell /bin/bash {1}";
             }
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"echo '{user.Username}:$'{shellPassword}'' | sudo chpasswd\"")
+                .WithArguments($"-c \"echo '{user.Username}:{shellPassword}' | sudo chpasswd\"")
                 .ExecuteAsync();
 
             using (var connection = DB.GetConnection())
