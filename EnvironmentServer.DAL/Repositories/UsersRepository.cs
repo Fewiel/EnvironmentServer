@@ -193,13 +193,13 @@ chsh --shell /bin/bash {1}";
             DB.Logs.Add("DAL", "Start Useradd: " + user.Username);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"useradd -p $(openssl passwd -1 $'{shellPassword}') {user.Username}\"")                
-                .ExecuteAsync();     
-            
+                .WithArguments($"-c \"useradd -p $(openssl passwd -1 $'{shellPassword}') {user.Username}\"")
+                .ExecuteAsync();
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
                 .ExecuteAsync();
-            
+
             DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
 
@@ -251,8 +251,17 @@ chsh --shell /bin/bash {1}";
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
 
+            using (var connection = DB.GetConnection())
+            {
+                connection.Execute("UPDATE mysql.user SET Super_Priv='Y';");
+            }
+            using (var connection = DB.GetConnection())
+            {
+                connection.Execute("FLUSH PRIVILEGES;");
+            }
+
             await SetupChrootForUserAsync(user.Username);
-            DB.Logs.Add("DAL", "New User added: " + user.Username);            
+            DB.Logs.Add("DAL", "New User added: " + user.Username);
         }
 
         private async Task SetupChrootForUserAsync(string user)
@@ -328,7 +337,7 @@ chsh --shell /bin/bash {1}";
                 {
                     DB.Logs.Add("DAL", ex.ToString());
                 }
-            }           
+            }
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service php5.6-fpm reload\"")
@@ -379,7 +388,8 @@ chsh --shell /bin/bash {1}";
             using (var connection = DB.GetConnection())
             {
                 connection.Execute("UPDATE mysql.user SET Super_Priv='Y' WHERE user=@user;",
-                    new {
+                    new
+                    {
                         user = user.Username
                     });
             }
