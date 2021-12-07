@@ -400,7 +400,7 @@ chsh --shell /bin/bash {1}";
             }
 
             await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"echo '{user.Username}:$'{shellPassword}'' | sudo chpasswd\"")
+            .WithArguments($"-c \"echo '{user.Username}:{shellPassword}' | sudo chpasswd\"")
             .ExecuteAsync();
         }
 
