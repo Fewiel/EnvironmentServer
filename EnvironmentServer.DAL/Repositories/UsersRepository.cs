@@ -381,7 +381,7 @@ chsh --shell /bin/bash {1}";
 
             using (var connection = DB.GetConnection())
             {
-                connection.Execute("ALTER USER @user@'localhost' IDENTIFIED BY @password;", new
+                connection.Execute("ALTER USER @user\\@'localhost' IDENTIFIED BY @password;", new
                 {
                     user = user.Username,
                     password = shellPassword
@@ -430,7 +430,7 @@ chsh --shell /bin/bash {1}";
 
                 using (var connection = DB.GetConnection())
                 {
-                    connection.Execute("ALTER USER @user@'localhost' IDENTIFIED BY @password;", new
+                    connection.Execute("ALTER USER @user\\@'localhost' IDENTIFIED BY @password;", new
                     {
                         user = user.Username,
                         password = shellPassword
@@ -477,7 +477,7 @@ chsh --shell /bin/bash {1}";
 
             using (var connection = DB.GetConnection())
             {
-                connection.Execute("ALTER USER @user@'localhost' IDENTIFIED BY @password;", new
+                connection.Execute("ALTER USER @user\\@'localhost' IDENTIFIED BY @password;", new
                 {
                     user = user.Username,
                     password = shellPassword
