@@ -29,7 +29,7 @@ namespace EnvironmentServer.Web.Controllers
             var usr = GetSessionUser();
 
             if (!ModelState.IsValid)
-                return View();
+                return RedirectToAction("Index", "Profile");
 
             if (!PasswordHasher.Verify(pvm.Password, usr.Password))
             {
@@ -37,16 +37,16 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index", "Profile");
             }
 
-            if (pvm.Password[0] == '#')
-            {
-                AddError("No special char as first char allowed");
-                return View();
-            }
+            //if (pvm.Password[0] == '#')
+            //{
+            //    AddError("No special char as first char allowed");
+            //    return RedirectToAction("Index", "Profile");
+            //}
 
             if (pvm.Password.Length <= 6)
             {
                 AddError("Password must have at least 6 characters");
-                return View();
+                return RedirectToAction("Index", "Profile");
             }
 
             if (pvm.PasswordNew != pvm.PasswordNewRetype)
