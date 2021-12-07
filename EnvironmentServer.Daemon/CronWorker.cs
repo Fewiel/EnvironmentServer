@@ -97,12 +97,12 @@ namespace EnvironmentServer.Daemon
             {
                 case Timing.Custom: return a.LastExecuted.AddSeconds(a.Interval) < DateTime.Now;
                 case Timing.Seconds: return a.LastExecuted.AddSeconds(1) < DateTime.Now;
-                case Timing.Minutes: return a.LastExecuted.AddMinutes(1) < DateTime.Now && DateTime.Now.Second > a.Interval;
-                case Timing.Hours: return a.LastExecuted.AddHours(1) < DateTime.Now && DateTime.Now.Minute > a.Interval;
-                case Timing.Days: return a.LastExecuted.AddDays(1) < DateTime.Now && DateTime.Now.Hour > a.Interval;
-                case Timing.Weeks: return a.LastExecuted.AddDays(7) < DateTime.Now && DateTime.Now.Day > a.Interval;
-                case Timing.Months: return a.LastExecuted.AddMonths(1) < DateTime.Now && DateTime.Now.Day / 7 > a.Interval;
-                case Timing.Years: return a.LastExecuted.AddYears(1) < DateTime.Now && DateTime.Now.Month > a.Interval;
+                case Timing.Minutes: return a.LastExecuted.AddMinutes(1) < DateTime.Now && DateTime.Now.Second >= a.Interval;
+                case Timing.Hours: return a.LastExecuted.AddHours(1) < DateTime.Now && DateTime.Now.Minute >= a.Interval;
+                case Timing.Days: return a.LastExecuted.AddDays(1) < DateTime.Now && DateTime.Now.Hour >= a.Interval;
+                case Timing.Weeks: return a.LastExecuted.AddDays(7) < DateTime.Now && DateTime.Now.Day >= a.Interval;
+                case Timing.Months: return a.LastExecuted.AddMonths(1) < DateTime.Now && DateTime.Now.Day / 7 >= a.Interval;
+                case Timing.Years: return a.LastExecuted.AddYears(1) < DateTime.Now && DateTime.Now.Month >= a.Interval;
                 default: return false;
             }
         }

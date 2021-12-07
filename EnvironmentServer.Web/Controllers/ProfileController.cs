@@ -55,7 +55,7 @@ namespace EnvironmentServer.Web.Controllers
             await DB.Users.UpdateAsync(update_usr, pvm.PasswordNew);
 
             AddInfo("Password changed");
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Logout", "Login");
         }
     }
 }

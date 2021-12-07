@@ -25,7 +25,7 @@ namespace EnvironmentServer.DAL.Repositories
                 var Command = new MySqlCommand($"select * from schedule_actions where `Interval` > " + (includeDisabled ? "-2;" : "-1;"));
                 Command.Connection = connection;
                 MySqlDataReader reader = Command.ExecuteReader();
-                if (reader.Read())
+                while (reader.Read())
                 {
                     yield return new ScheduleAction
                     {
