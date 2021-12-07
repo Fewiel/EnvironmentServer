@@ -184,9 +184,9 @@ chsh --shell /bin/bash {1}";
                          isAdmin = user.IsAdmin
                      });
 
-                connection.Execute("create user @user@'localhost' identified by @password;", new
+                connection.Execute("create user @user identified by @password;", new
                 {
-                    user = user.Username,
+                    user = user.Username + "@localhost",
                     password = shellPassword
                 });
 
@@ -381,9 +381,9 @@ chsh --shell /bin/bash {1}";
 
             using (var connection = DB.GetConnection())
             {
-                connection.Execute("ALTER USER @user\\@'localhost' IDENTIFIED BY @password;", new
+                connection.Execute("ALTER USER @user IDENTIFIED BY @password;", new
                 {
-                    user = user.Username,
+                    user = user.Username + "@localhost",
                     password = shellPassword
                 });
             }
@@ -430,9 +430,9 @@ chsh --shell /bin/bash {1}";
 
                 using (var connection = DB.GetConnection())
                 {
-                    connection.Execute("ALTER USER @user\\@'localhost' IDENTIFIED BY @password;", new
+                    connection.Execute("ALTER USER @user IDENTIFIED BY @password;", new
                     {
-                        user = user.Username,
+                        user = user.Username + "@localhost",
                         password = shellPassword
                     });
                 }
@@ -477,9 +477,9 @@ chsh --shell /bin/bash {1}";
 
             using (var connection = DB.GetConnection())
             {
-                connection.Execute("ALTER USER @user\\@'localhost' IDENTIFIED BY @password;", new
+                connection.Execute("ALTER USER @user IDENTIFIED BY @password;", new
                 {
-                    user = user.Username,
+                    user = user.Username + "@'localhost'",
                     password = shellPassword
                 });
             }
@@ -541,9 +541,9 @@ chsh --shell /bin/bash {1}";
             }
             using (var connection = DB.GetConnection())
             {
-                connection.Execute("DROP USER @user@'localhost';", new
+                connection.Execute("DROP USER @user;", new
                 {
-                    user = user.Username
+                    user = user.Username + "@localhost"
                 });
             }
 
