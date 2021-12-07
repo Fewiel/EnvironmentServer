@@ -14,7 +14,7 @@ internal class SelfUpdate : ScheduledActionBase
     public override async Task ExecuteAsync(Database db)
     {
         await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash {db.Settings.Get("self_update_path").Value}\"")
+                .WithArguments($"-c \"bash {db.Settings.Get("self_update_path").Value} | at now\"")
                 .ExecuteAsync();
     }
 }
