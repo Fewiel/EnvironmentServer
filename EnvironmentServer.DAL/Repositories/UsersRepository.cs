@@ -403,8 +403,11 @@ chsh --shell /bin/bash {1}";
                 connection.Execute("FLUSH PRIVILEGES;");
             }
 
+            var s = $"-c \"echo -e '{user.Username}:{EscapeShellPassword(shellPassword)}' | chpasswd\"";
+            Console.WriteLine(s);
+
             await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"echo -e '{user.Username}:{EscapeShellPassword(shellPassword)}' | chpasswd\"")
+            .WithArguments(s)
             .ExecuteAsync();
         }
 
