@@ -406,7 +406,7 @@ chsh --shell /bin/bash {1}";
             //echo -e "'NEWPASS'\n'NEWPASS'" | passwd USERNAME
 
             await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"echo -e \"'{shellPassword}'\n'{shellPassword}'\" | sudo passwd {user.Username}\"")
+            .WithArguments($"-c \"echo -e \"'{shellPassword}'\\n'{shellPassword}'\" | sudo passwd {user.Username}\"")
             .ExecuteAsync();
         }
 
