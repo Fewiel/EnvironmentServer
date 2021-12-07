@@ -82,7 +82,8 @@ namespace EnvironmentServer.Daemon
                 new DownloadExtract(),
                 new UserDelete(),
                 new EnvironmentDelete(),
-                new CloneGit()
+                new CloneGit(),
+                new UpdateChroot()
             };
 
             foreach (var a in l)

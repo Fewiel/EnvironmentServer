@@ -19,13 +19,17 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Index()
         {
+            AddError("If you change your Password - Please keep in mind: Login Password = Database/FTP/SSH Password - You need to change your DB passwords in all Environments as well. (config.php, .env)");
             return View();
         }
 
-        public IActionResult ChangePassword([FromForm] ProfileViewModel pvm)
+        public async Task<IActionResult> ChangePasswordAsync([FromForm] ProfileViewModel pvm)
         {
 
             var usr = GetSessionUser();
+
+            if (!ModelState.IsValid)
+                return View();
 
             if (!PasswordHasher.Verify(pvm.Password, usr.Password))
             {
@@ -39,6 +43,12 @@ namespace EnvironmentServer.Web.Controllers
                 return View();
             }
 
+            if (pvm.Password.Length <= 6)
+            {
+                AddError("Password must have at least 6 characters");
+                return View();
+            }
+
             if (pvm.PasswordNew != pvm.PasswordNewRetype)
             {
                 AddInfo("New password did not match");
@@ -48,7 +58,7 @@ namespace EnvironmentServer.Web.Controllers
             var update_usr = new User { ID = usr.ID, Username = usr.Username, Email = usr.Email, 
                 Password = PasswordHasher.Hash(pvm.PasswordNew), IsAdmin = usr.IsAdmin };
 
-            DB.Users.UpdateAsync(update_usr, pvm.PasswordNew);
+            await DB.Users.UpdateAsync(update_usr, pvm.PasswordNew);
 
             AddInfo("Password changed");
             return RedirectToAction("Index", "Home");

@@ -36,6 +36,44 @@ pm.max_spare_servers = 3
 php_admin_value[open_basedir] = /home/{0}/files
 php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
 php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
+
+        private const string chroot = @"#!/bin/bash
+# This script can be used to create simple chroot environment
+# Written by LinuxCareer.com <http://linuxcareer.com/>
+# (c) 2013 LinuxCareer under GNU GPL v3.0+
+
+#!/bin/bash
+
+CHROOT={0}
+USER={1}
+if [ -f $CHROOT]; then
+mkdir $CHROOT
+fi
+
+for i in $(ldd $* | grep -v dynamic | cut -d "" "" -f 3 | sed 's/://' | sort | uniq )
+  do
+    cp --parents $i $CHROOT
+  done
+
+# ARCH amd64
+if [ -f /lib64/ld-linux-x86-64.so.2 ]; then
+cp --parents /lib64/ld-linux-x86-64.so.2 /$CHROOT
+fi
+
+# ARCH i386
+if [ -f  /lib/ld-linux.so.2 ]; then
+cp --parents /lib/ld-linux.so.2 /$CHROOT
+fi
+
+mkdir $CHROOT/lib/terminfo
+mkdir $CHROOT/lib/terminfo/x
+cp /lib/terminfo/x/xterm $CHROOT/lib/terminfo/x/
+
+chown -R {1}:sftp_users {0}/*
+chown {1}:root {0}/files
+
+chsh --shell /bin/bash {1}";
+
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
         {
@@ -158,12 +196,11 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"useradd -p $(openssl passwd -1 $'{shellPassword}') {user.Username}\"")                
-                .ExecuteAsync();     
-            
+                .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
                 .ExecuteAsync();
-            
+
             DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
 
@@ -214,7 +251,64 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 .ExecuteAsync();
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
+
+            using (var connection = DB.GetConnection())
+            {
+                connection.Execute("UPDATE mysql.user SET Super_Priv='Y';");
+            }
+            using (var connection = DB.GetConnection())
+            {
+                connection.Execute("FLUSH PRIVILEGES;");
+            }
+
+            await SetupChrootForUserAsync(user.Username);
             DB.Logs.Add("DAL", "New User added: " + user.Username);
+        }
+
+        private async Task SetupChrootForUserAsync(string user)
+        {
+            var path = "/home/" + user;
+            var shell = string.Format(chroot, path, user);
+
+            File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown} /etc/hosts\"")
+                .ExecuteAsync();
+        }
+
+        public async Task UpdateChrootForUserAsync(string user)
+        {
+            var path = "/home/" + user;
+            var shell = string.Format(chroot, path, user);
+
+            if (Directory.Exists(path + "/lib"))
+                Directory.Delete(path + "/lib", true);
+
+            if (Directory.Exists(path + "/lib64"))
+                Directory.Delete(path + "/lib64", true);
+
+            if (Directory.Exists(path + "/usr"))
+                Directory.Delete(path + "/usr", true);
+
+            if (Directory.Exists(path + "/etc"))
+                Directory.Delete(path + "/etc", true);
+
+            if (Directory.Exists(path + "/bin"))
+                Directory.Delete(path + "/bin", true);
+
+            if (!Directory.Exists(path + "/home"))
+                Directory.CreateDirectory(path + "/home");
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown {user}:{user} {path}/home\"")
+                .ExecuteAsync();
+
+            File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown} /etc/hosts\"")
+                .ExecuteAsync();
         }
 
         public async Task RegenerateConfig()
@@ -244,7 +338,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 {
                     DB.Logs.Add("DAL", ex.ToString());
                 }
-            }           
+            }
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service php5.6-fpm reload\"")
@@ -297,7 +391,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             using (var connection = DB.GetConnection())
             {
                 connection.Execute("UPDATE mysql.user SET Super_Priv='Y' WHERE user=@user;",
-                    new {
+                    new
+                    {
                         user = user.Username
                     });
             }
@@ -308,7 +403,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             }
 
             //echo -e "'NEWPASS'\n'NEWPASS'" | passwd USERNAME
-
 
             await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"echo -e \"'{shellPassword}'\n'{shellPassword}'\" | sudo passwd {user.Username}\"")
@@ -344,7 +438,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 }
 
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"echo \'{user.Username}:{shellPassword}\' | sudo chpasswd\"")
+                    .WithArguments($"-c \"echo '{user.Username}:{shellPassword}' | sudo chpasswd\"")
                     .ExecuteAsync();
 
                 DB.Mail.Send("Password reseted", string.Format(DB.Settings.Get("mail_account_password").Value, usr.Username, shellPassword), usr.Email);
@@ -391,7 +485,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             }
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"echo \'{user.Username}:{shellPassword}\' | sudo chpasswd\"")
+                .WithArguments($"-c \"echo '{user.Username}:{shellPassword}' | sudo chpasswd\"")
                 .ExecuteAsync();
 
             using (var connection = DB.GetConnection())
