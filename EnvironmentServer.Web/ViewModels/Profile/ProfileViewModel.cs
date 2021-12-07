@@ -12,11 +12,11 @@ namespace EnvironmentServer.Web.ViewModels.Profile
         public string Password { get; set; }
 
         [MinLength(6), DataType(DataType.Password)]
-        [RegularExpression(@"^[^'"" $´`]*$", ErrorMessage = "Password may not contain: ^'\"$´`[SPACE]")]
+        [RegularExpression(@"^[^'"" ´`]*$", ErrorMessage = "Password may not contain: ^'\"´`[SPACE]")]
         public string PasswordNew { get; set; }
 
         [MinLength(6), DataType(DataType.Password)]
-        [RegularExpression(@"^[^'"" $´`]*$", ErrorMessage = "Password may not contain: ^'\"$´`[SPACE]")]
+        [RegularExpression(@"^[^'"" ´`]*$", ErrorMessage = "Password may not contain: ^'\"´`[SPACE]")]
         public string PasswordNewRetype { get; set; }
     }
 }
