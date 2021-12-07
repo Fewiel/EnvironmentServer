@@ -383,7 +383,7 @@ chsh --shell /bin/bash {1}";
             {
                 connection.Execute("ALTER USER @user IDENTIFIED BY @password;", new
                 {
-                    user = user.Username + "@localhost",
+                    user = user.Username,
                     password = shellPassword
                 });
             }
