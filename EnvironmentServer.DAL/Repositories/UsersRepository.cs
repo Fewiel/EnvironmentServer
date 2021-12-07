@@ -403,10 +403,8 @@ chsh --shell /bin/bash {1}";
                 connection.Execute("FLUSH PRIVILEGES;");
             }
 
-            //echo -e "'NEWPASS'\n'NEWPASS'" | passwd USERNAME
-
             await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"echo -e \"'{shellPassword}'\\n'{shellPassword}'\" | sudo passwd {user.Username}\"")
+            .WithArguments($"-c \"echo -e '{user.Username}:{EscapeShellPassword(shellPassword)}' | chpasswd\"")
             .ExecuteAsync();
         }
 
@@ -439,7 +437,7 @@ chsh --shell /bin/bash {1}";
                 }
 
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"echo '{user.Username}:{shellPassword}' | sudo chpasswd\"")
+                    .WithArguments($"-c \"echo -e '{user.Username}:{EscapeShellPassword(shellPassword)}' | chpasswd\"")
                     .ExecuteAsync();
 
                 DB.Mail.Send("Password reseted", string.Format(DB.Settings.Get("mail_account_password").Value, usr.Username, shellPassword), usr.Email);
@@ -486,7 +484,7 @@ chsh --shell /bin/bash {1}";
             }
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"echo '{user.Username}:{shellPassword}' | sudo chpasswd\"")
+                .WithArguments($"-c \"echo -e '{user.Username}:{EscapeShellPassword(shellPassword)}' | chpasswd\"")
                 .ExecuteAsync();
 
             using (var connection = DB.GetConnection())
@@ -552,5 +550,7 @@ chsh --shell /bin/bash {1}";
             Directory.Delete($"/home/{user.Username}", true);
             DB.Logs.Add("DAL", "Delete user complete for " + user.Username);
         }
+
+        public static string EscapeShellPassword(string password) => password.Replace("$", "\\$").Replace("#", "\\#");        
     }
 }
