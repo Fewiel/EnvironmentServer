@@ -21,7 +21,7 @@ namespace EnvironmentServer.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
 #if DEBUG
-                    webBuilder.UseUrls("http://127.0.0.1:5000");
+                    webBuilder.UseUrls("http://0.0.0.0:5000");
 #else
                     webBuilder.UseUrls("http://0.0.0.0:5000");
 #endif
