@@ -37,7 +37,7 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index", "Profile");
             }
 
-            if (pvm.Password.Length < 6)
+            if (pvm.PasswordNew.Length < 6)
             {
                 AddError("Password must have at least 6 characters");
                 return RedirectToAction("Index", "Profile");
