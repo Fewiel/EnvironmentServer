@@ -21,6 +21,14 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public IActionResult MajorVersion([FromForm] EnvSetupViewModel esv)
         {
+           
+
+            if (esv.Name != DB.Environments.FixEnvironmentName(esv.Name))
+            {
+                AddError("Your environment name was fixed - No spaces and capital letters allowed");
+                return RedirectToAction("BaseData", esv);
+            } 
+            
             if (!ModelState.IsValid)
                 return RedirectToAction("BaseData", esv);
 
