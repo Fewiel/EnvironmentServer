@@ -3,6 +3,7 @@ using EnvironmentServer.DAL;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,31 +20,37 @@ namespace EnvironmentServer.Daemon.Actions
             var env = db.Environments.Get(variableID);
 
             var url = System.IO.File.ReadAllText($"/home/{user.Username}/files/{env.Name}/dl.txt");
+            var filename = url.Substring(url.LastIndexOf('/') + 1);
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"rm dl.txt\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .ExecuteAsync();
+                .ExecuteAsync();                       
 
-            db.Logs.Add("Daemon", "Download File for: " + env.Name + " File: " + url);
-
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"wget {url} -O dl.zip\"")
+            if (File.Exists("/tmp/" + filename))
+            {
+                db.Logs.Add("Daemon", "File found for: " + env.Name + " File: " + url);
+                db.Logs.Add("Daemon", "Unzip File for: " + env.Name);
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"unzip /tmp/{filename}\"")
+                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                    .ExecuteAsync();
+            }
+            else
+            {
+                db.Logs.Add("Daemon", "Download File for: " + env.Name + " File: " + url);
+                await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"wget {url} -O /tmp/{filename}\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "Unzip File for: " + env.Name);
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"unzip dl.zip\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .ExecuteAsync();
-
-            db.Logs.Add("Daemon", "Unzip File Done for: " + env.Name);
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"rm dl.zip\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .ExecuteAsync();
-
+                db.Logs.Add("Daemon", "Unzip File for: " + env.Name);
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"unzip /tmp/{filename}\"")
+                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                    .ExecuteAsync();
+            }
+            
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
                 .ExecuteAsync();
