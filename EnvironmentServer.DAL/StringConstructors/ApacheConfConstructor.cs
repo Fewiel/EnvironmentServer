@@ -10,6 +10,8 @@ namespace EnvironmentServer.DAL.StringConstructors
         private string DocRoot;
         private string LogRoot;
         private string Username;
+        private string SSLCertFile;
+        private string SSLKeyFile;
 
         public static ApacheConfConstructor Construct => new();
 
@@ -49,6 +51,18 @@ namespace EnvironmentServer.DAL.StringConstructors
             return this;
         }
 
+        public ApacheConfConstructor WithSSLCertFile(string certfile)
+        {
+            SSLCertFile = certfile;
+            return this;
+        }
+
+        public ApacheConfConstructor WithSSLKeyFile(string keyfile)
+        {
+            SSLKeyFile = keyfile;
+            return this;
+        }
+
         public string Build()
         {
             return $@"
@@ -59,6 +73,51 @@ namespace EnvironmentServer.DAL.StringConstructors
 
 	ServerAdmin {Email}
     ServerName {Address}
+	DocumentRoot {DocRoot}
+    <Directory {DocRoot}>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog {LogRoot}/error.log
+    CustomLog {LogRoot}/access.log combined
+
+    <IfModule mpm_itk_module>
+        AssignUserId {Username} sftp_users
+    </IfModule>
+
+<IfModule mod_fastcgi.c>
+	AddHandler php-fcgi-handler .php
+	Action php-fcgi-handler /php-fcgi-uri
+    Alias /php-fcgi-uri fcgi-application
+    FastCgiExternalServer fcgi-application -socket /var/run/php/{Version.AsString()}-{Username}.sock -pass-header Authorization -idle-timeout 30000 -flush
+</IfModule>
+
+    <IfModule mod_rewrite>
+        RewriteEngine On
+    </IfModule>
+</VirtualHost>";
+        }
+
+        public string BuildSSL()
+        {
+            return $@"
+<VirtualHost *:80>
+   ServerName {Address}
+   Redirect permanent / https://{Address}
+</VirtualHost>
+
+<VirtualHost *:443>
+	<FilesMatch \.php>
+        SetHandler ""proxy:unix:/var/run/php/{Version.AsString()}-{Username}.sock|fcgi://localhost/"" 
+    </FilesMatch>
+
+	ServerAdmin {Email}
+    ServerName {Address}
+        SSLEngine on
+        SSLCertificateFile {SSLCertFile}
+        SSLCertificateKeyFile {SSLKeyFile}
 	DocumentRoot {DocRoot}
     <Directory {DocRoot}>
         Options Indexes FollowSymLinks MultiViews

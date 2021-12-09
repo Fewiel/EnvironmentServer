@@ -84,7 +84,7 @@ namespace EnvironmentServer.Web.Controllers
             {
                 UserID = GetSessionUser().ID,
                 Name = esv.Name,
-                Address = esv.Name.ToLower() + "." + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
+                Address = esv.Name.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion
             };
 
