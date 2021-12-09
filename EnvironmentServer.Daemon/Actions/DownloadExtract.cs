@@ -25,14 +25,16 @@ namespace EnvironmentServer.Daemon.Actions
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"rm dl.txt\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .ExecuteAsync();                       
+                .ExecuteAsync();
+            if (!Directory.Exists("/root/env/dl-cache"))
+                Directory.CreateDirectory("/root/env/dl-cache/");
 
-            if (File.Exists("/tmp/" + filename))
+            if (File.Exists("/root/env/dl-cache/" + filename))
             {
                 db.Logs.Add("Daemon", "File found for: " + env.Name + " File: " + url);
                 db.Logs.Add("Daemon", "Unzip File for: " + env.Name);
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"unzip /tmp/{filename}\"")
+                    .WithArguments($"-c \"unzip /root/env/dl-cache/{filename}\"")
                     .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                     .ExecuteAsync();
             }
@@ -40,13 +42,13 @@ namespace EnvironmentServer.Daemon.Actions
             {
                 db.Logs.Add("Daemon", "Download File for: " + env.Name + " File: " + url);
                 await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"wget {url} -O /tmp/{filename}\"")
+                .WithArguments($"-c \"wget {url} -O /root/env/dl-cache/{filename}\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
                 db.Logs.Add("Daemon", "Unzip File for: " + env.Name);
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"unzip /tmp/{filename}\"")
+                    .WithArguments($"-c \"unzip /root/env/dl-cache/{filename}\"")
                     .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                     .ExecuteAsync();
             }
