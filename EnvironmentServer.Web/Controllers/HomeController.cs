@@ -24,6 +24,12 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Index()
         {
+            if (PasswordHasher.Verify("darkstar", GetSessionUser().Password))
+            {
+                AddError("Please change your Passwort! Do not use darkstar as password!");
+                return RedirectToAction("Index", "Profile");
+            }
+
             var dash = new DashboardModel() { Environments = DB.Environments.GetForUser(GetSessionUser().ID) };
             return View(dash);
         }

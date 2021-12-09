@@ -28,7 +28,9 @@ namespace EnvironmentServer.Web.Controllers
 
         [HttpPost, Route("/Login", Name = "login")]
         public IActionResult Login([FromForm]LoginViewModel lvm)
-        {            
+        {
+            Thread.Sleep(300);
+
             if (!ModelState.IsValid)
                 return View();
 
@@ -37,7 +39,6 @@ namespace EnvironmentServer.Web.Controllers
             {
                 DB.Logs.Add("Web", "Login failed for: " + lvm.Username + ". User not found.");
                 AddError("Wrong username or password");
-                Thread.Sleep(300);
                 return View();
             }
 
