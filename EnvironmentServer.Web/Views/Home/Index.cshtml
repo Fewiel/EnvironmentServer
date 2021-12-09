@@ -7,6 +7,13 @@
 }
 
 <div class="row row-cols-md-4" style="margin-top: 15px;">
+    <div class="col-md-3 px-1">
+        <div class="card mb-2 align-middle d-flex align-content-center" style="height: 370px;">
+            <p style="text-align: center;">Information</p>
+            <p style="text-align: center;"><strong>SSH/SFTP</strong><br />IP: shopdev.de<br />Port: 22<br />User: &lt;username&gt;<br />Passwort: YourPassword</p>
+            <p style="text-align: center;"><strong>PhpMyAdmin</strong><br /><a href="http://shopdev.de/pma">http://shopdev.de/pma</a></p>
+        </div>
+    </div>
 
     @{
         var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
