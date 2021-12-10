@@ -10,5 +10,5 @@ const CopyToClipboard = (text) => {
     temp.select();
     document.execCommand("copy");
     document.body.removeChild(temp);
-    alert("Password copied to your clipboard!");
+    alert("Copied to your clipboard!");
 };
