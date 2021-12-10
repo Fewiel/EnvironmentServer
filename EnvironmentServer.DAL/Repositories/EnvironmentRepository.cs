@@ -183,7 +183,10 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithAddress(environment.Address)
                 .WithDocRoot(docRoot)
                 .WithLogRoot(logRoot)
-                .WithUsername(user.Username).Build();
+                .WithSSLCertFile(DB.Settings.Get("SSLCertificateFile").Value)
+                .WithSSLKeyFile(DB.Settings.Get("SSLCertificateKeyFile").Value)
+                .WithSSLChainFile(DB.Settings.Get("SSLCertificateChainFile").Value)
+                .WithUsername(user.Username).BuildSSL();
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
@@ -231,7 +234,10 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithAddress(environment.Address)
                 .WithDocRoot(docRoot)
                 .WithLogRoot(logRoot)
-                .WithUsername(user.Username).Build();
+                .WithSSLCertFile(DB.Settings.Get("SSLCertificateFile").Value)
+                .WithSSLKeyFile(DB.Settings.Get("SSLCertificateKeyFile").Value)
+                .WithSSLChainFile(DB.Settings.Get("SSLCertificateChainFile").Value)
+                .WithUsername(user.Username).BuildSSL();
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")

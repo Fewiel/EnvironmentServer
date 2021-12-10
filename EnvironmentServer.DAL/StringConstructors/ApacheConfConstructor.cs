@@ -12,6 +12,7 @@ namespace EnvironmentServer.DAL.StringConstructors
         private string Username;
         private string SSLCertFile;
         private string SSLKeyFile;
+        private string SSLChainFile;
 
         public static ApacheConfConstructor Construct => new();
 
@@ -63,6 +64,12 @@ namespace EnvironmentServer.DAL.StringConstructors
             return this;
         }
 
+        public ApacheConfConstructor WithSSLChainFile(string chainfile)
+        {
+            SSLChainFile = chainfile;
+            return this;
+        }
+
         public string Build()
         {
             return $@"
@@ -109,15 +116,17 @@ namespace EnvironmentServer.DAL.StringConstructors
 </VirtualHost>
 
 <VirtualHost *:443>
+    LoadModule ssl_module /usr/lib64/apache2-prefork/mod_ssl.so
+
 	<FilesMatch \.php>
         SetHandler ""proxy:unix:/var/run/php/{Version.AsString()}-{Username}.sock|fcgi://localhost/"" 
     </FilesMatch>
 
 	ServerAdmin {Email}
     ServerName {Address}
-        SSLEngine on
         SSLCertificateFile {SSLCertFile}
         SSLCertificateKeyFile {SSLKeyFile}
+        SSLCertificateChainFile {SSLChainFile}
 	DocumentRoot {DocRoot}
     <Directory {DocRoot}>
         Options Indexes FollowSymLinks MultiViews

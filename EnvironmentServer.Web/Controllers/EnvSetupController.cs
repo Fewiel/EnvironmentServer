@@ -20,8 +20,7 @@ namespace EnvironmentServer.Web.Controllers
 
         [HttpPost]
         public IActionResult MajorVersion([FromForm] EnvSetupViewModel esv)
-        {
-           
+        {          
 
             if (esv.Name != DB.Environments.FixEnvironmentName(esv.Name))
             {
