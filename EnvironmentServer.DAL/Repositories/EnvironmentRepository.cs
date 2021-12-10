@@ -130,7 +130,7 @@ namespace EnvironmentServer.DAL.Repositories
             using (var connection = DB.GetConnection())
             {
                 lastID = connection.QuerySingle<int>("INSERT INTO `environments` (`ID`, `users_ID_fk`, `Name`, `Address`, `Version`, `DBPassword`) " +
-                    "OUTPUT INSERTED.ID VALUES (NULL, @userID, @envName, @envAddress, @version, @dbpassword);", new
+                    "VALUES (NULL, @userID, @envName, @envAddress, @version, @dbpassword); SELECT LAST_INSERT_ID();", new
                     {
                         userID = environment.UserID,
                         envName = environment.Name,
