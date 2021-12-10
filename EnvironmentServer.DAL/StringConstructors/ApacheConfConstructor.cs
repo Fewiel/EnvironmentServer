@@ -12,6 +12,7 @@ namespace EnvironmentServer.DAL.StringConstructors
         private string Username;
         private string SSLCertFile;
         private string SSLKeyFile;
+        private string SSLChainFile;
 
         public static ApacheConfConstructor Construct => new();
 
@@ -60,6 +61,12 @@ namespace EnvironmentServer.DAL.StringConstructors
         public ApacheConfConstructor WithSSLKeyFile(string keyfile)
         {
             SSLKeyFile = keyfile;
+            return this;
+        }
+
+        public ApacheConfConstructor WithSSLChainFile(string chainfile)
+        {
+            SSLChainFile = chainfile;
             return this;
         }
 
@@ -116,8 +123,8 @@ namespace EnvironmentServer.DAL.StringConstructors
 	ServerAdmin {Email}
     ServerName {Address}
         SSLEngine on
-        SSLCertificateFile {SSLCertFile}
-        SSLCertificateKeyFile {SSLKeyFile}
+        SSLCertificateFile {SSLKeyFile}
+        SSLCertificateChainFile {SSLChainFile}
 	DocumentRoot {DocRoot}
     <Directory {DocRoot}>
         Options Indexes FollowSymLinks MultiViews
