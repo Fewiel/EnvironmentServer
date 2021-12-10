@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Repositories;
 using EnvironmentServer.Mail;
@@ -27,7 +30,10 @@ namespace EnvironmentServer.DAL
 
         public Database(string connString)
         {
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            var map = new CustomPropertyTypeMap(typeof(Models.Environment), (type, columnName)
+            => type.GetProperties().FirstOrDefault(prop => GetDescriptionFromAttribute(prop) == columnName.ToLower()));
+            Dapper.SqlMapper.SetTypeMap(typeof(Models.Environment), map);
 
             ConnString = connString;
             Settings = new SettingsRepository(this);
@@ -52,6 +58,16 @@ namespace EnvironmentServer.DAL
                     IsAdmin = true
                 }, "Admin"));
             }
+
+            Migrations.EnvironmentDBPasswordMigration.Migrate(this);
+        }
+
+        static string GetDescriptionFromAttribute(MemberInfo member)
+        {
+            if (member == null) return null;
+
+            var attrib = (DescriptionAttribute)Attribute.GetCustomAttribute(member, typeof(DescriptionAttribute), false);
+            return (attrib?.Description ?? member.Name).ToLower();
         }
 
         public MySqlConnection GetConnection()

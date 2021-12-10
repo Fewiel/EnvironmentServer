@@ -1,5 +1,12 @@
 ﻿@using EnvironmentServer.DAL.Enums
+@using EnvironmentServer.Web.Extensions
+@using Microsoft.AspNetCore.Http
 @model EnvironmentServer.DAL.Models.Environment
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
+}
 
 @{
     var envVersion = Model.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
@@ -20,11 +27,13 @@
             </p>
             <div class="card-body">
                 <h5 class="card-title">@Model.Name</h5>
-                <p class="card-text">SW Version: @sw_version</p>
-                <p class="card-text">PHP Version: @Model.Version.AsString()</p>
+                <span class="card-text">SW Version: @sw_version</span><br />
+                <span class="card-text">PHP Version: @Model.Version.AsString()</span><br />
+                <span class="card-text">DB-User: @(usr.Username + "_" + @Model.Name)</span><br />
+                <span class="card-text">DB-Password: </span><a href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy password</a><br />
                 <div class="d-flex" style="padding-top: 10px;">
-                    <a class="btn btn-primary me-auto" href="http://@Model.Address/" target="_blank">Frontend</a>
-                    <a class="btn btn-primary" href="http://@Model.Address/@(sw_version[0] == '5' ? "backend" : "admin")" target="_blank">@(sw_version[0] == '5' ? "Backend" : "Admin")</a>
+                    <a class="btn btn-primary me-auto" href="https://@Model.Address/" target="_blank">Frontend</a>
+                    <a class="btn btn-primary" href="https://@Model.Address/@(sw_version[0] == '5' ? "backend" : "admin")" target="_blank">@(sw_version[0] == '5' ? "Backend" : "Admin")</a>
                 </div>
                 @if (!taskRunning)
                 {

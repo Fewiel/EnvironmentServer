@@ -1,4 +1,5 @@
 ﻿using CliWrap;
+using Dapper;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.StringConstructors;
@@ -61,6 +62,17 @@ namespace EnvironmentServer.DAL.Repositories
                 reader.Close();
             }
         }
+        public IEnumerable<Environment> GetAll()
+        {
+            using (var connection = DB.GetConnection())
+            {
+                foreach (var env in connection.Query<Environment>("select * from environments;"))
+                {
+                    env.Settings = new List<EnvironmentSettingValue>(GetSettingValues(env.ID));
+                    yield return env;
+                }
+            }
+        }
 
         private Environment FromReader(MySqlDataReader reader)
         {
@@ -71,6 +83,7 @@ namespace EnvironmentServer.DAL.Repositories
                 Name = reader.GetString(2),
                 Address = reader.GetString(3),
                 Version = (PhpVersion)reader.GetInt32(4),
+                DBPassword = reader.GetString(5),
                 Settings = new List<EnvironmentSettingValue>(GetSettingValues(reader.GetInt64(0)))
             };
         }
@@ -110,24 +123,37 @@ namespace EnvironmentServer.DAL.Repositories
             DB.Logs.Add("DAL", "Insert Environment " + environment.Name + " for " + user.Username);
             var dbString = user.Username + "_" + environment.Name;
             long lastID;
+
+            var dbPassword = UsersRepository.RandomPasswordString(16);
+
             //Create database for environment
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand("INSERT INTO `environments` (`ID`, `users_ID_fk`, `Name`, `Address`, `Version`) VALUES "
-                    + $"(NULL, @userID, '{environment.Name}', '{environment.Address}', @version);");
-                Command.Parameters.AddWithValue("@userID", environment.UserID);
-                Command.Parameters.AddWithValue("@version", environment.Version);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-                lastID = Command.LastInsertedId;
+                lastID = connection.QuerySingle<int>("INSERT INTO `environments` (`ID`, `users_ID_fk`, `Name`, `Address`, `Version`, `DBPassword`) " +
+                    "OUTPUT INSERTED.[ID] VALUES (NULL, @userID, @envName, @envAddress, @version, @dbpassword);", new
+                    {
+                        userID = environment.UserID,
+                        envName = environment.Name,
+                        envAddress = environment.Address,
+                        version = environment.Version,
+                        dbpassword = dbPassword
+                    });
 
-                Command = new MySqlCommand("create database " + dbString + ";");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
+                connection.Execute("create database @db;", new
+                {
+                    db = dbString
+                });
 
-                Command = new MySqlCommand("grant all on " + dbString + ".* to '" + user.Username + "'@'localhost';");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
+                connection.Execute($"create user {MySqlHelper.EscapeString(dbString)}@'localhost' identified by @password;", new
+                {
+                    password = dbPassword
+                });
+
+                connection.Execute($"grant all on {MySqlHelper.EscapeString(dbString)}.* to '{MySqlHelper.EscapeString(dbString)}'@'localhost';");
+
+
+                connection.Execute("UPDATE mysql.user SET Super_Priv='Y';");
+                connection.Execute("FLUSH PRIVILEGES;");
             }
 
             //Create environment dir            
@@ -213,7 +239,7 @@ namespace EnvironmentServer.DAL.Repositories
                 .ExecuteAsync();
             var cmd = await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
-                .ExecuteAsync();            
+                .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
