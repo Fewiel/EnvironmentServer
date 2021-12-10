@@ -17,7 +17,7 @@
 }
 
 <div class="col-md-3 px-1">
-    <div class="card mb-2" style="min-height: 400px;">
+    <div class="card mb-2" style="min-height: 420px;">
         <a asp-controller="Item" class="text-decoration-none text-body">
             <p class="text-center">
                 <img src="~/img/sw@(sw_version[0])-signet.svg" width="100" height="100" style="padding-top: 15px;" />
@@ -29,8 +29,8 @@
                 <h5 class="card-title">@Model.Name</h5>
                 <span class="card-text">SW Version: @sw_version</span><br />
                 <span class="card-text">PHP Version: @Model.Version.AsString()</span><br />
-                <span class="card-text">DB-Name: @(usr.Username + "_" + @Model.Name)</span><a href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.Name)');return false;">Copy</a><br />
-                <span class="card-text">DB-User: @(usr.Username + "_" + @Model.Name)</span><a href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.Name)');return false;">Copy</a><br />
+                <span class="card-text">DB-Name: @(usr.Username + "_" + @Model.Name)</span><a href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.Name)');return false;"> Copy</a><br />
+                <span class="card-text">DB-User: @(usr.Username + "_" + @Model.Name)</span><a href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.Name)');return false;"> Copy</a><br />
                 <span class="card-text">DB-Password: </span><a href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy password</a><br />
                 <div class="d-flex" style="padding-top: 10px;">
                     <a class="btn btn-primary me-auto" href="https://@Model.Address/" target="_blank">Frontend</a>

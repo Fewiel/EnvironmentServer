@@ -151,6 +151,7 @@ namespace EnvironmentServer.DAL.Repositories
 
                 connection.Execute($"grant all on {MySqlHelper.EscapeString(dbString)}.* to '{MySqlHelper.EscapeString(dbString)}'@'localhost';");
 
+                connection.Execute($"grant all on {MySqlHelper.EscapeString(dbString)}.* to '{MySqlHelper.EscapeString(user.Username)}'@'localhost';");
 
                 connection.Execute("UPDATE mysql.user SET Super_Priv='Y';");
                 connection.Execute("FLUSH PRIVILEGES;");

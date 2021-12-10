@@ -59,7 +59,7 @@ namespace EnvironmentServer.DAL
                 }, "Admin"));
             }
 
-            Migrations.EnvironmentDBPasswordMigration.Migrate(this);
+            //Migrations.EnvironmentDBPasswordMigration.Migrate(this);
         }
 
         static string GetDescriptionFromAttribute(MemberInfo member)
