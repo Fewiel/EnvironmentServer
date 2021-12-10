@@ -139,10 +139,7 @@ namespace EnvironmentServer.DAL.Repositories
                         dbpassword = dbPassword
                     });
 
-                connection.Execute("create database @db;", new
-                {
-                    db = dbString
-                });
+                connection.Execute($"create database {MySqlHelper.EscapeString(dbString)};");
 
                 connection.Execute($"create user {MySqlHelper.EscapeString(dbString)}@'localhost' identified by @password;", new
                 {
