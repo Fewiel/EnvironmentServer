@@ -18,8 +18,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         public IActionResult Index()
-        {
-            AddError("If you change your Password - Please keep in mind: Login Password = Database/FTP/SSH Password - You need to change your DB passwords in all Environments as well. (config.php, .env)");
+        {            
             return View();
         }
 

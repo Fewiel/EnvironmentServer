@@ -288,13 +288,17 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
-
+            var dbString = user.Username + "_" + environment.Name;
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand("DROP DATABASE " + user.Username + "_" + environment.Name);
+                var Command = new MySqlCommand("DROP DATABASE " + dbString + ";");
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
+
+
+            using (var connection = DB.GetConnection())
+                connection.Execute($"delete user {MySqlHelper.EscapeString(dbString)}@'localhost';");
 
             Directory.Delete($"/home/{user.Username}/files/{environment.Name}", true);
             Directory.Delete($"/home/{user.Username}/files/logs/{environment.Name}", true);
