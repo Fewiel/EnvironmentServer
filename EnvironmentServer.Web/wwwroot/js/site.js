@@ -3,11 +3,12 @@
 
 // Write your JavaScript code.
 
-function CopyToClipboard(id) {
-    var r = document.createRange();
-    r.selectNode(document.getElementById(id));
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(r);
-    document.execCommand('copy');
-    window.getSelection().removeAllRanges();
-}
+const CopyToClipboard = (text) => {
+    const temp = document.createElement("input");    
+    temp.setAttribute("value", text);
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+    alert("Password copied to your clipboard!");
+};
