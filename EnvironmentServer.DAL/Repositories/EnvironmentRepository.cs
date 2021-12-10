@@ -298,7 +298,7 @@ namespace EnvironmentServer.DAL.Repositories
 
 
             using (var connection = DB.GetConnection())
-                connection.Execute($"delete user {MySqlHelper.EscapeString(dbString)}@'localhost';");
+                connection.Execute($"drop user {MySqlHelper.EscapeString(dbString)}@'localhost';");
 
             Directory.Delete($"/home/{user.Username}/files/{environment.Name}", true);
             Directory.Delete($"/home/{user.Username}/files/logs/{environment.Name}", true);
