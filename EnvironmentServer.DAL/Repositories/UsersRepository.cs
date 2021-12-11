@@ -272,7 +272,7 @@ chsh --shell /bin/bash {1}";
             File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git} /usr/share/zoneinfo /etc/hosts\"")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/sbin/{phpenmod,phpdismod} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git} /usr/share/zoneinfo /etc/hosts\"")
                 .ExecuteAsync();
         }
 
