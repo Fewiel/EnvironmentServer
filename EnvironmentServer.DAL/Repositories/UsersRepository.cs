@@ -65,9 +65,11 @@ if [ -f  /lib/ld-linux.so.2 ]; then
 cp --parents /lib/ld-linux.so.2 /$CHROOT
 fi
 
+cp -r /usr/lib/php $CHROOT/usr/lib/
+
 mkdir $CHROOT/lib/terminfo
 mkdir $CHROOT/lib/terminfo/x
-cp /lib/terminfo/x/xterm $CHROOT/lib/terminfo/x/
+cp -r /lib/terminfo/x/xterm $CHROOT/lib/terminfo/x/
 
 chown -R {1}:sftp_users {0}/*
 chown {1}:root {0}/files
@@ -272,7 +274,7 @@ chsh --shell /bin/bash {1}";
             File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/lib/php /usr/sbin/{phpenmod,phpdismod} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git} /usr/share/zoneinfo /etc/hosts\"")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/sbin/{phpenmod,phpdismod,expr,phpquery} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git} /usr/share/zoneinfo /etc/hosts\"")
                 .ExecuteAsync();
         }
 
@@ -306,7 +308,7 @@ chsh --shell /bin/bash {1}";
             File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/lib/php /usr/sbin/{phpenmod,phpdismod} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git} /usr/share/zoneinfo /etc/hosts\"")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/sbin/{phpenmod,phpdismod,expr,phpquery} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git} /usr/share/zoneinfo /etc/hosts\"")
                 .ExecuteAsync();
         }
 
