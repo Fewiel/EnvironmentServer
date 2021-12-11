@@ -53,7 +53,10 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Registration() => View();
+        public IActionResult Registration()
+        {
+            return RedirectToRoute("login");
+        }
 
         [HttpPost]
         public async Task<IActionResult> Registration([FromForm]RegistrationViewModel rvm)
