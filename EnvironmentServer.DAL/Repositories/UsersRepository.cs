@@ -279,7 +279,7 @@ chsh --shell /bin/bash {1}";
                 .ExecuteAsync();
         }
 
-        public async Task UpdateChrootForUserAsync(string user)
+        public Task UpdateChrootForUserAsync(string user)
         {
             var path = "/home/" + user;
             //var shell = string.Format(chroot, path, user);
@@ -299,9 +299,6 @@ chsh --shell /bin/bash {1}";
             if (Directory.Exists(path + "/bin"))
                 Directory.Delete(path + "/bin", true);
 
-            if (!Directory.Exists(path + "/home"))
-                Directory.CreateDirectory(path + "/home");
-
             ////await Cli.Wrap("/bin/bash")
             //    .WithArguments($"-c \"chown {user}:{user} {path}/home\"")
             //    .ExecuteAsync();
@@ -311,6 +308,7 @@ chsh --shell /bin/bash {1}";
             //await Cli.Wrap("/bin/bash")
             //    .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/sbin/{phpenmod,phpdismod,phpquery} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git,expr,sort,find,sed,ln,dirname} /etc/hosts\"")
             //    .ExecuteAsync();
+            return Task.CompletedTask;
         }
 
         public async Task RegenerateConfig()
