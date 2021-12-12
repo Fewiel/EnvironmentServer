@@ -30,7 +30,7 @@ public class TokenRepository
     public bool Use(Guid guid, long userid)
     {
         using var connection = DB.GetConnection();
-        var token = connection.QuerySingle<Token>("Select * from `token` where Guid = @guid and UserID = @userid and Used = 0;", new
+        var token = connection.QuerySingleOrDefault<Token>("Select * from `token` where Guid = @guid and UserID = @userid and Used = 0;", new
         {
             guid = guid,
             userid = userid

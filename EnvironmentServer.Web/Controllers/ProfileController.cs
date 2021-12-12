@@ -24,8 +24,8 @@ namespace EnvironmentServer.Web.Controllers
 
         public async Task<IActionResult> VerifySSHAsync(string token)
         {
-            var usr = GetSessionUser();
-            if (string.IsNullOrEmpty(token) || !Guid.TryParse(token, out Guid guid))
+            var usr = GetSessionUser();            
+            if (usr == null || string.IsNullOrEmpty(token) || !Guid.TryParse(token, out Guid guid))
                 return RedirectToAction("Index", "Home");
 
             if (!DB.Tokens.Use(guid, usr.ID))
