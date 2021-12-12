@@ -37,45 +37,6 @@ php_admin_value[open_basedir] = /home/{0}/files
 php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
 php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
-        private const string chroot = @"#!/bin/bash
-# This script can be used to create simple chroot environment
-# Written by LinuxCareer.com <http://linuxcareer.com/>
-# (c) 2013 LinuxCareer under GNU GPL v3.0+
-
-#!/bin/bash
-
-CHROOT={0}
-USER={1}
-if [ -f $CHROOT]; then
-mkdir $CHROOT
-fi
-
-for i in $(ldd $* | grep -v dynamic | cut -d "" "" -f 3 | sed 's/://' | sort | uniq )
-  do
-    cp --parents $i $CHROOT
-  done
-
-# ARCH amd64
-if [ -f /lib64/ld-linux-x86-64.so.2 ]; then
-cp --parents /lib64/ld-linux-x86-64.so.2 /$CHROOT
-fi
-
-# ARCH i386
-if [ -f  /lib/ld-linux.so.2 ]; then
-cp --parents /lib/ld-linux.so.2 /$CHROOT
-fi
-
-cp -r /usr/lib/php $CHROOT/usr/lib/
-cp -r /usr/share/zoneinfo $CHROOT/usr/share/
-
-mkdir $CHROOT/lib/terminfo
-mkdir $CHROOT/lib/terminfo/x
-cp -r /lib/terminfo/x/xterm $CHROOT/lib/terminfo/x/
-
-chown -R {1}:sftp_users {0}/*
-chown {1}:root {0}/files
-
-chsh --shell /bin/bash {1}";
 
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
@@ -263,26 +224,12 @@ chsh --shell /bin/bash {1}";
                 connection.Execute("FLUSH PRIVILEGES;");
             }
 
-            //await SetupChrootForUserAsync(user.Username);
             DB.Logs.Add("DAL", "New User added: " + user.Username);
         }
 
-        private async Task SetupChrootForUserAsync(string user)
+        public async Task UpdateChrootForUserAsync(string user)
         {
             var path = "/home/" + user;
-            var shell = string.Format(chroot, path, user);
-
-            File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
-
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git,sort,find,sed,ln,dirname} /etc/hosts\"")
-                .ExecuteAsync();
-        }
-
-        public Task UpdateChrootForUserAsync(string user)
-        {
-            var path = "/home/" + user;
-            //var shell = string.Format(chroot, path, user);
 
             if (Directory.Exists(path + "/lib"))
                 Directory.Delete(path + "/lib", true);
@@ -299,16 +246,16 @@ chsh --shell /bin/bash {1}";
             if (Directory.Exists(path + "/bin"))
                 Directory.Delete(path + "/bin", true);
 
-            ////await Cli.Wrap("/bin/bash")
-            //    .WithArguments($"-c \"chown {user}:{user} {path}/home\"")
-            //    .ExecuteAsync();
+            if (Directory.Exists(path + "/home"))
+                Directory.Delete(path + "/home", true);
 
-            //File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown {user}:sftp_users {path}\"")
+                .ExecuteAsync();
 
-            //await Cli.Wrap("/bin/bash")
-            //    .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/sbin/{phpenmod,phpdismod,phpquery} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git,expr,sort,find,sed,ln,dirname} /etc/hosts\"")
-            //    .ExecuteAsync();
-            return Task.CompletedTask;
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chmod 700 /home/{user}\"")
+                .ExecuteAsync();
         }
 
         public async Task RegenerateConfig()
