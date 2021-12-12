@@ -1,11 +1,13 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Mail
@@ -13,6 +15,10 @@ namespace EnvironmentServer.Mail
     public class Mailer
     {
         private Database DB;
+        private BlockingCollection<MailMessage> MessageQueue = new();
+        private int Port;
+        private bool Ssl;
+        private Thread Worker;
 
         public Mailer(Database db)
         {
@@ -21,6 +27,7 @@ namespace EnvironmentServer.Mail
 
         public bool Send(string subject, string body, string recipient)
         {
+
             if (!bool.TryParse(DB.Settings.Get("smtp_ssl").Value, out var ssl))
             {
                 DB.Logs.Add("Mailer", "Error - TryParse smtp_ssl");
@@ -33,12 +40,9 @@ namespace EnvironmentServer.Mail
                 return false;
             }
 
-            var smtpClient = new SmtpClient(DB.Settings.Get("smtp_host").Value)
-            {
-                Port = port,
-                Credentials = new NetworkCredential(DB.Settings.Get("smtp_user").Value, DB.Settings.Get("smtp_password").Value),
-                EnableSsl = ssl                
-            };
+            Port = port;
+            Ssl = ssl;
+            StartQueue();
 
             var mailMessage = new MailMessage
             {
@@ -50,10 +54,34 @@ namespace EnvironmentServer.Mail
 
             mailMessage.To.Add(new MailAddress(recipient));
 
-            smtpClient.Send(mailMessage);
+            MessageQueue.Add(mailMessage);
 
+            //smtpClient.Send(mailMessage);
             return true;
         }
 
-    }
+        private void SendQueue()
+        {
+            while (true)
+            {
+                var mm = MessageQueue.Take();
+                var smtpClient = new SmtpClient(DB.Settings.Get("smtp_host").Value)
+                {
+                    Port = Port,
+                    Credentials = new NetworkCredential(DB.Settings.Get("smtp_user").Value, DB.Settings.Get("smtp_password").Value),
+                    EnableSsl = Ssl
+                };
+                smtpClient.Send(mm);
+            }
+        }
+
+        private void StartQueue()
+        {
+            if (Worker != null)
+                return;
+
+            Worker = new Thread(SendQueue);
+            Worker.Start();
+        }
+    }    
 }
