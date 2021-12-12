@@ -19,7 +19,7 @@ public class TokenRepository
         var newGuid = Guid.NewGuid();
         using var connection = DB.GetConnection();
         connection.Execute("INSERT INTO `token` (`ID`, `Guid`, `UserID`, `Used`, `Created`) " +
-            "VALUES ('NULL', @guid, @userid, '0', CURRENT_TIMESTAMP);", new
+            "VALUES (NULL, @guid, @userid, '0', CURRENT_TIMESTAMP);", new
             {
                 guid = newGuid,
                 userid = userID
