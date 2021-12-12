@@ -45,7 +45,7 @@ namespace EnvironmentServer.Mail
                 From = new MailAddress(DB.Settings.Get("smtp_mail").Value, "Shopware Environment Server"),
                 Subject = subject,
                 Body = body,
-                IsBodyHtml = false,
+                IsBodyHtml = true,
             };
 
             mailMessage.To.Add(new MailAddress(recipient));
