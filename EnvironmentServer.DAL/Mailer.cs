@@ -37,7 +37,7 @@ namespace EnvironmentServer.Mail
             {
                 Port = port,
                 Credentials = new NetworkCredential(DB.Settings.Get("smtp_user").Value, DB.Settings.Get("smtp_password").Value),
-                EnableSsl = ssl
+                EnableSsl = ssl                
             };
 
             var mailMessage = new MailMessage

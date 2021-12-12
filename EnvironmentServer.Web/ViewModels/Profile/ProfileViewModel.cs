@@ -8,6 +8,8 @@ namespace EnvironmentServer.Web.ViewModels.Profile
 {
     public class ProfileViewModel
     {
+        public string SSHPublicKey { get; set; }
+
         [MinLength(4), DataType(DataType.Password)]
         public string Password { get; set; }
 

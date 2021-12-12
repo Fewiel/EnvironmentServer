@@ -18,7 +18,33 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         public IActionResult Index()
-        {            
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> VerifySSHAsync(string token)
+        {
+            var usr = GetSessionUser();
+            if (string.IsNullOrEmpty(token) || !Guid.TryParse(token, out Guid guid))
+                return RedirectToAction("Index", "Home");
+
+            if (!DB.Tokens.Use(guid, usr.ID))
+            {
+                AddError("Invalid token!");
+                return RedirectToAction("Index", "Home");
+            }
+
+            await DB.Users.SetSSHKeyAsync(usr);
+            AddInfo("SSH key was successfully inserted. You can now log in to SSH via SSH key.");
+            return RedirectToAction("Index", "Home");
+        }
+        public IActionResult ChangeSSH([FromForm] ProfileViewModel pvm)
+        {
+            var usr = GetSessionUser();
+            DB.Users.UpdateSSHKey(pvm.SSHPublicKey, usr.ID);
+            DB.Logs.Add("Web", "Change SSH Public Key for : " + usr.Username);
+            DB.Users.SendSSHConfirmation(usr);
+            AddInfo("SSH Key Updated - Please check your mail to confirm your action!");
             return View();
         }
 
@@ -48,8 +74,14 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index", "Profile");
             }
 
-            var update_usr = new User { ID = usr.ID, Username = usr.Username, Email = usr.Email, 
-                Password = PasswordHasher.Hash(pvm.PasswordNew), IsAdmin = usr.IsAdmin };
+            var update_usr = new User
+            {
+                ID = usr.ID,
+                Username = usr.Username,
+                Email = usr.Email,
+                Password = PasswordHasher.Hash(pvm.PasswordNew),
+                IsAdmin = usr.IsAdmin
+            };
 
             await DB.Users.UpdateAsync(update_usr, pvm.PasswordNew);
 

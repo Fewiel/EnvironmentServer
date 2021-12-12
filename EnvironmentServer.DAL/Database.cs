@@ -27,6 +27,7 @@ namespace EnvironmentServer.DAL
         public Mailer Mail { get; }
         public ScheduleActionRepository ScheduleAction { get; }
         public ShopwareVersionInfoRepository ShopwareVersionInfos { get; }
+        public TokenRepository Tokens { get; }
 
         public Database(string connString)
         {
@@ -46,6 +47,7 @@ namespace EnvironmentServer.DAL
             Mail = new Mailer(this);
             ScheduleAction = new ScheduleActionRepository(this);
             ShopwareVersionInfos = new ShopwareVersionInfoRepository(this);
+            Tokens = new TokenRepository(this);
 
             if (Users.GetByUsername("Admin") == null)
             {
@@ -58,8 +60,6 @@ namespace EnvironmentServer.DAL
                     IsAdmin = true
                 }, "Admin"));
             }
-
-            //Migrations.EnvironmentDBPasswordMigration.Migrate(this);
         }
 
         static string GetDescriptionFromAttribute(MemberInfo member)

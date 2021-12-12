@@ -53,93 +53,39 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
         public IEnumerable<User> GetUsers()
         {
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("select * from users;");
-                Command.Connection = connection;
-                MySqlDataReader reader = Command.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    yield return new User
-                    {
-                        ID = reader.GetInt64(0),
-                        Email = reader.GetString(1),
-                        Username = reader.GetString(2),
-                        Password = reader.GetString(3),
-                        IsAdmin = reader.GetBoolean(4)
-                    };
-                }
-                reader.Close();
-            }
+            using var connection = DB.GetConnection();
+            return connection.Query<User>("select * from users;");
         }
 
         public User GetByID(long ID)
         {
-            using (var connection = DB.GetConnection())
+            using var connection = DB.GetConnection();
+            var user = connection.QuerySingle<User>("select * from users where ID = @id;", new
             {
-                var Command = new MySqlCommand("select * from users where ID = @id;");
-                Command.Parameters.AddWithValue("@id", ID);
-                Command.Connection = connection;
-                MySqlDataReader reader = Command.ExecuteReader();
+                id = ID
+            });
 
-                while (reader.Read())
-                {
-                    var setting = new User
-                    {
-                        ID = reader.GetInt64(0),
-                        Email = reader.GetString(1),
-                        Username = reader.GetString(2),
-                        Password = reader.GetString(3),
-                        IsAdmin = reader.GetBoolean(4)
-                    };
-
-                    reader.Close();
-                    return setting;
-                }
-
-                reader.Close();
-            }
-
-            return null;
+            return user;
         }
 
         public User GetByUsername(string username)
         {
-            using (var connection = DB.GetConnection())
+
+            using var connection = DB.GetConnection();
+            var user = connection.QuerySingle<User>("select * from users where Username = @username;", new
             {
-                var Command = new MySqlCommand("select * from users where Username = @username;");
-                Command.Parameters.AddWithValue("@username", username);
-                Command.Connection = connection;
-                MySqlDataReader reader = Command.ExecuteReader();
+                username = username
+            });
 
-                while (reader.Read())
-                {
-                    var setting = new User
-                    {
-                        ID = reader.GetInt64(0),
-                        Email = reader.GetString(1),
-                        Username = reader.GetString(2),
-                        Password = reader.GetString(3),
-                        IsAdmin = reader.GetBoolean(4)
-                    };
-
-                    reader.Close();
-                    return setting;
-                }
-
-                reader.Close();
-            }
-
-            return null;
+            return user;
         }
 
         public async Task InsertAsync(User user, string shellPassword)
         {
             DB.Logs.Add("DAL", "Insert user " + user.Username);
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`) "
+            using var connection = DB.GetConnection();
+
+            connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`) "
                      + "VALUES (NULL, @email, @username, @password, @isAdmin)", new
                      {
                          email = user.Email,
@@ -148,17 +94,15 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                          isAdmin = user.IsAdmin
                      });
 
-                connection.Execute($"create user {MySqlHelper.EscapeString(user.Username)}@'localhost' identified by @password;", new
-                {
-                    password = shellPassword
-                });
-
-            }
+            connection.Execute($"create user {MySqlHelper.EscapeString(user.Username)}@'localhost' identified by @password;", new
+            {
+                password = shellPassword
+            });
 
             DB.Logs.Add("DAL", "Start Useradd: " + user.Username);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"useradd -p $(openssl passwd -1 $'{shellPassword}') {user.Username}\"")                
+                .WithArguments($"-c \"useradd -p $(openssl passwd -1 $'{shellPassword}') {user.Username}\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
@@ -215,14 +159,9 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
 
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute("UPDATE mysql.user SET Super_Priv='Y';");
-            }
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute("FLUSH PRIVILEGES;");
-            }
+            connection.Execute("UPDATE mysql.user SET Super_Priv='Y';");
+
+            connection.Execute("FLUSH PRIVILEGES;");
 
             DB.Logs.Add("DAL", "New User added: " + user.Username);
         }
@@ -230,24 +169,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         public async Task UpdateChrootForUserAsync(string user)
         {
             var path = "/home/" + user;
-
-            if (Directory.Exists(path + "/lib"))
-                Directory.Delete(path + "/lib", true);
-
-            if (Directory.Exists(path + "/lib64"))
-                Directory.Delete(path + "/lib64", true);
-
-            if (Directory.Exists(path + "/usr"))
-                Directory.Delete(path + "/usr", true);
-
-            if (Directory.Exists(path + "/etc"))
-                Directory.Delete(path + "/etc", true);
-
-            if (Directory.Exists(path + "/bin"))
-                Directory.Delete(path + "/bin", true);
-
-            if (Directory.Exists(path + "/home"))
-                Directory.Delete(path + "/home", true);
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"chown {user}:sftp_users {path}\"")
@@ -312,48 +233,35 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         public async Task UpdateAsync(User user, string shellPassword)
         {
             DB.Logs.Add("DAL", "Update user " + user.Username);
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute("UPDATE `users` SET "
-                    + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                    " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
-                    {
-                        id = user.ID,
-                        email = user.Email,
-                        username = user.Username,
-                        password = user.Password,
-                        isAdmin = user.IsAdmin
-                    });
-            }
+            using var connection = DB.GetConnection();
 
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
+            connection.Execute("UPDATE `users` SET "
+                + "`Email` = @email, `Username` = @username, `Password` = @password," +
+                " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
                 {
-                    password = shellPassword
+                    id = user.ID,
+                    email = user.Email,
+                    username = user.Username,
+                    password = user.Password,
+                    isAdmin = user.IsAdmin
                 });
-            }
 
-
-            
-
-            using (var connection = DB.GetConnection())
+            connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
             {
-                connection.Execute("UPDATE mysql.user SET Super_Priv='Y' WHERE user=@user;",
-                    new
-                    {
-                        user = user.Username
-                    });
-            }
+                password = shellPassword
+            });
 
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute("FLUSH PRIVILEGES;");
-            }
+            connection.Execute("UPDATE mysql.user SET Super_Priv='Y' WHERE user=@user;",
+                new
+                {
+                    user = user.Username
+                });
+
+            connection.Execute("FLUSH PRIVILEGES;");
 
             await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"echo -e '{user.Username}:{shellPassword}' | chpasswd\"")
-            .ExecuteAsync();
+                .WithArguments($"-c \"echo -e '{user.Username}:{shellPassword}' | chpasswd\"")
+                .ExecuteAsync();
         }
 
         public async Task UpdateByAdminAsync(User usr, bool newPassword)
@@ -375,14 +283,14 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     Password = PasswordHasher.Hash(shellPassword)
                 };
 
-                using (var connection = DB.GetConnection())
+                using var connection = DB.GetConnection();
+
+                connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
                 {
-                    connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
-                    {
-                        user = user.Username + "@localhost",
-                        password = shellPassword
-                    });
-                }
+                    user = user.Username + "@localhost",
+                    password = shellPassword
+                });
+
 
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"echo -e '{user.Username}:{shellPassword}' | chpasswd\"")
@@ -395,19 +303,18 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 user = usr;
             }
 
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute("UPDATE `users` SET "
-                    + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                    " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
-                    {
-                        id = user.ID,
-                        email = user.Email,
-                        username = user.Username,
-                        password = user.Password,
-                        isAdmin = user.IsAdmin
-                    });
-            }
+            using var connection = DB.GetConnection();
+
+            connection.Execute("UPDATE `users` SET "
+                + "`Email` = @email, `Username` = @username, `Password` = @password," +
+                " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
+                {
+                    id = user.ID,
+                    email = user.Email,
+                    username = user.Username,
+                    password = user.Password,
+                    isAdmin = user.IsAdmin
+                });
 
             DB.Mail.Send("Account updated", string.Format(DB.Settings.Get("mail_account_update").Value, user.Username, user.Email, user.IsAdmin), user.Email);
         }
@@ -422,32 +329,28 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             user.Password = shellPassword;
 
-            using (var connection = DB.GetConnection())
+            using var connection = DB.GetConnection();
+
+            connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
             {
-                connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
-                {
-                    user = user.Username + "@'localhost'",
-                    password = shellPassword
-                });
-            }
+                user = user.Username + "@'localhost'",
+                password = shellPassword
+            });
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"echo -e '{user.Username}:{shellPassword}' | chpasswd\"")
                 .ExecuteAsync();
 
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute("UPDATE `users` SET "
-                     + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                     " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
-                     {
-                         id = user.ID,
-                         email = user.Email,
-                         username = user.Username,
-                         password = user.Password,
-                         isAdmin = user.IsAdmin
-                     });
-            }
+            connection.Execute("UPDATE `users` SET "
+                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
+                 " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
+                 {
+                     id = user.ID,
+                     email = user.Email,
+                     username = user.Username,
+                     password = user.Password,
+                     isAdmin = user.IsAdmin
+                 });
         }
 
         public async Task DeleteAsync(User user)
@@ -479,17 +382,13 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 .ExecuteAsync();
 
             DB.Logs.Add("DAL", "Delete user " + user.Username);
-            using (var connection = DB.GetConnection())
+            using var connection = DB.GetConnection();
+            connection.Execute("DELETE FROM `users` WHERE `users`.`ID` = @id", new
             {
-                connection.Execute("DELETE FROM `users` WHERE `users`.`ID` = @id", new
-                {
-                    id = user.ID
-                });
-            }
-            using (var connection = DB.GetConnection())
-            {
-                connection.Execute($"DROP USER {MySqlHelper.EscapeString(user.Username)}@'localhost';");
-            }
+                id = user.ID
+            });
+
+            connection.Execute($"DROP USER {MySqlHelper.EscapeString(user.Username)}@'localhost';");
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"userdel {user.Username} --force\"")
@@ -497,6 +396,32 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             Directory.Delete($"/home/{user.Username}", true);
             DB.Logs.Add("DAL", "Delete user complete for " + user.Username);
-        }       
+        }
+
+        public void UpdateSSHKey(string key, long userid)
+        {
+            using var connection = DB.GetConnection();
+            connection.Execute("UPDATE `users` SET "
+                     + "`SSHPublicKey` = @key where `ID` = @id", new
+                     {
+                         id = userid,
+                         key = key
+                     });
+        }
+
+        public async Task SetSSHKeyAsync(User user)
+        {
+            File.WriteAllText($"/home/{user.Username}/.ssh/authorized_keys", user.SSHPublicKey);
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/.ssh\"")
+                .ExecuteAsync();
+        }
+
+        public void SendSSHConfirmation(User user)
+        {
+            var token = DB.Tokens.Generate(user.ID);
+            DB.Mail.Send("Shopware Environment Server Account",
+                string.Format(DB.Settings.Get("mail_account_sshkey").Value, user.Username, token.ToString()), user.Email);
+        }
     }
 }

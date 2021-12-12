@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Dapper;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,14 +20,18 @@ namespace EnvironmentServer.DAL.Repositories
         public void Add(string source, string message)
         {
             //INSERT INTO `logs` (`Id`, `Source`, `Message`, `Timestamp`) VALUES (NULL, 'Server', 'Test', NOW());
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("INSERT INTO `logs` (`Id`, `Source`, `Message`, `Timestamp`) VALUES (NULL, @src, @msg, NOW());");
-                Command.Parameters.AddWithValue("@msg", message);
-                Command.Parameters.AddWithValue("@src", source);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            using var connection = DB.GetConnection();
+            var Command = new MySqlCommand("INSERT INTO `logs` (`Id`, `Source`, `Message`, `Timestamp`) VALUES (NULL, @src, @msg, NOW());");
+            Command.Parameters.AddWithValue("@msg", message);
+            Command.Parameters.AddWithValue("@src", source);
+            Command.Connection = connection;
+            Command.ExecuteNonQuery();
+        }
+
+        public void DeleteOld()
+        {
+            using var connection = DB.GetConnection();
+            connection.Execute($"DELETE * FROM `logs` where Timestamp < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY));");
         }
     }
 }
