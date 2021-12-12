@@ -42,7 +42,6 @@ namespace EnvironmentServer.Mail
 
             Port = port;
             Ssl = ssl;
-            StartQueue();
 
             var mailMessage = new MailMessage
             {
@@ -54,34 +53,17 @@ namespace EnvironmentServer.Mail
 
             mailMessage.To.Add(new MailAddress(recipient));
 
-            MessageQueue.Add(mailMessage);
-
-            //smtpClient.Send(mailMessage);
-            return true;
-        }
-
-        private void SendQueue()
-        {
-            while (true)
+            Task.Factory.StartNew(() =>
             {
-                var mm = MessageQueue.Take();
                 var smtpClient = new SmtpClient(DB.Settings.Get("smtp_host").Value)
                 {
                     Port = Port,
                     Credentials = new NetworkCredential(DB.Settings.Get("smtp_user").Value, DB.Settings.Get("smtp_password").Value),
                     EnableSsl = Ssl
                 };
-                smtpClient.Send(mm);
-            }
-        }
-
-        private void StartQueue()
-        {
-            if (Worker != null)
-                return;
-
-            Worker = new Thread(SendQueue);
-            Worker.Start();
+                smtpClient.Send(mailMessage);
+            });
+            return true;
         }
     }    
 }
