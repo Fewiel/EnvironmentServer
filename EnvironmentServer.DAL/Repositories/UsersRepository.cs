@@ -269,6 +269,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Logs.Add("DAL", "Admin Update user " + usr.Username);
 
             var user = new User();
+            using var connection = DB.GetConnection();
 
             if (newPassword)
             {
@@ -283,7 +284,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     Password = PasswordHasher.Hash(shellPassword)
                 };
 
-                using var connection = DB.GetConnection();
+
 
                 connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
                 {
@@ -302,8 +303,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             {
                 user = usr;
             }
-
-            using var connection = DB.GetConnection();
 
             connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
