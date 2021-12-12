@@ -53,7 +53,6 @@ namespace EnvironmentServer.Web.Controllers
 
             if (!allowNotLoggedIn && !IsLoggedIn())
             {
-                AddError("Please login to view this page.");
                 context.Result = new RedirectToRouteResult("login", new { controller = "Login" });
                 return;
             }
