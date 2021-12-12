@@ -66,6 +66,7 @@ cp --parents /lib/ld-linux.so.2 /$CHROOT
 fi
 
 cp -r /usr/lib/php $CHROOT/usr/lib/
+cp -r /usr/share/zoneinfo $CHROOT/usr/share/
 
 mkdir $CHROOT/lib/terminfo
 mkdir $CHROOT/lib/terminfo/x
@@ -206,10 +207,10 @@ chsh --shell /bin/bash {1}";
             Directory.CreateDirectory($"/home/{user.Username}");
 
             await Cli.Wrap("/bin/bash")
-               .WithArguments($"-c \"chown root /home/{user.Username}\"")
+               .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}\"")
                .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 755 /home/{user.Username}\"")
+                .WithArguments($"-c \"chmod 700 /home/{user.Username}\"")
                 .ExecuteAsync();
 
             DB.Logs.Add("DAL", "Create user files folder: " + user.Username);
@@ -262,7 +263,7 @@ chsh --shell /bin/bash {1}";
                 connection.Execute("FLUSH PRIVILEGES;");
             }
 
-            await SetupChrootForUserAsync(user.Username);
+            //await SetupChrootForUserAsync(user.Username);
             DB.Logs.Add("DAL", "New User added: " + user.Username);
         }
 
@@ -274,14 +275,14 @@ chsh --shell /bin/bash {1}";
             File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/sbin/{phpenmod,phpdismod,phpquery} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git,expr,sort,find,sed,ln,dirname} /usr/share/zoneinfo /etc/hosts\"")
+                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git,sort,find,sed,ln,dirname} /etc/hosts\"")
                 .ExecuteAsync();
         }
 
         public async Task UpdateChrootForUserAsync(string user)
         {
             var path = "/home/" + user;
-            var shell = string.Format(chroot, path, user);
+            //var shell = string.Format(chroot, path, user);
 
             if (Directory.Exists(path + "/lib"))
                 Directory.Delete(path + "/lib", true);
@@ -301,15 +302,15 @@ chsh --shell /bin/bash {1}";
             if (!Directory.Exists(path + "/home"))
                 Directory.CreateDirectory(path + "/home");
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user}:{user} {path}/home\"")
-                .ExecuteAsync();
+            ////await Cli.Wrap("/bin/bash")
+            //    .WithArguments($"-c \"chown {user}:{user} {path}/home\"")
+            //    .ExecuteAsync();
 
-            File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
+            //File.WriteAllText("/tmp/chroot_" + user + ".sh", shell);
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/sbin/{phpenmod,phpdismod,phpquery} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git,expr,sort,find,sed,ln,dirname} /usr/share/zoneinfo /etc/hosts\"")
-                .ExecuteAsync();
+            //await Cli.Wrap("/bin/bash")
+            //    .WithArguments($"-c \"bash /tmp/chroot_" + user + ".sh /bin/{ls,cat,echo,rm,bash,sh} /usr/sbin/{phpenmod,phpdismod,phpquery} /usr/bin/{php*,unzip,nano,vi,mkdir,zip,tar,chmod,chown,env,mysql,mysqldump,git,expr,sort,find,sed,ln,dirname} /etc/hosts\"")
+            //    .ExecuteAsync();
         }
 
         public async Task RegenerateConfig()
