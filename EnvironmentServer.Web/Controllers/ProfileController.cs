@@ -45,7 +45,7 @@ namespace EnvironmentServer.Web.Controllers
             DB.Logs.Add("Web", "Change SSH Public Key for : " + usr.Username);
             DB.Users.SendSSHConfirmation(usr);
             AddInfo("SSH Key Updated - Please check your mail to confirm your action!");
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> ChangePasswordAsync([FromForm] ProfileViewModel pvm)
