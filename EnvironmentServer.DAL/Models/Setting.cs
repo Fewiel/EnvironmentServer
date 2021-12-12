@@ -12,5 +12,6 @@ namespace EnvironmentServer.DAL.Models
         public string Key { get; set; }
         public string DisplayName { get; set; }
         public string Value { get; set; }
+        public string DisplayType { get; set; } = "text";
     }
 }

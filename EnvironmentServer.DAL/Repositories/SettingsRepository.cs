@@ -32,7 +32,8 @@ namespace EnvironmentServer.DAL.Repositories
                         ID = reader.GetInt64(0),
                         Key = reader.GetString(1),
                         DisplayName = reader.GetString(2),
-                        Value = reader.GetString(3)
+                        Value = reader.GetString(3),
+                        DisplayType = reader.GetString(4)
                     };
 
                     reader.Close();
@@ -60,7 +61,8 @@ namespace EnvironmentServer.DAL.Repositories
                         ID = reader.GetInt64(0),
                         Key = reader.GetString(1),
                         DisplayName = reader.GetString(2),
-                        Value = reader.GetString(3)
+                        Value = reader.GetString(3),
+                        DisplayType = reader.GetString(4)
                     };
                 }
                 reader.Close();

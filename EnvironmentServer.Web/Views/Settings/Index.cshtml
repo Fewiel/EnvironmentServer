@@ -34,7 +34,14 @@
                 <input asp-for="@setting.Key" type="text" readonly class="form-control-plaintext" value="@setting.Key">
             </div>
             <div class="col-6">
-                <textarea asp-for="@setting.Value" rows="@(setting.Value.Count(c => c == '\n') + 1)" class="form-control">@setting.Value</textarea>
+                @if (setting.DisplayType == "text")
+                {
+                    <textarea asp-for="@setting.Value" rows="@(setting.Value.Count(c => c == '\n') + 1)" class="form-control">@setting.Value</textarea>
+                }
+                else
+                {
+                    <input type="@setting.DisplayType" asp-for="@setting.Value" placeholder="Setting Value" class="form-control" />
+                }
             </div>
             <div class="col-2">
                 <div class="input-group">
