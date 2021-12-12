@@ -4,7 +4,7 @@
     ViewData["Title"] = "Profile";
 }
 
-<div class="d-flex align-items-center justify-content-center fullHeight">
+<div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
     <form method="post" asp-action="ChangeSSH" style="width: 400px;">
         <div class="mb-3">
             <label asp-for="SSHPublicKey" class="form-label">SSH Public Key</label>
