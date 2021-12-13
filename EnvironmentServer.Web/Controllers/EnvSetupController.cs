@@ -20,17 +20,16 @@ namespace EnvironmentServer.Web.Controllers
 
         [HttpPost]
         public IActionResult MajorVersion([FromForm] EnvSetupViewModel esv)
-        {          
+        {
+            if (!ModelState.IsValid || string.IsNullOrEmpty(esv.Name))
+                return RedirectToAction("BaseData", esv);
 
             if (esv.Name != DB.Environments.FixEnvironmentName(esv.Name))
             {
                 esv.Name = DB.Environments.FixEnvironmentName(esv.Name);
                 AddError("Your environment name was fixed - No spaces and capital letters allowed");
                 return RedirectToAction("BaseData", esv);
-            } 
-            
-            if (!ModelState.IsValid)
-                return RedirectToAction("BaseData", esv);
+            }
 
             if (string.IsNullOrEmpty(esv.Name))
             {
@@ -147,7 +146,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (!string.IsNullOrEmpty(esv.ShopwareVersionDownload))
             {
-                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt", 
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt",
                     esv.ShopwareVersionDownload);
 
                 DB.CmdAction.CreateTask(new CmdAction
