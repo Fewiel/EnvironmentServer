@@ -60,7 +60,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         public User GetByID(long ID)
         {
             using var connection = DB.GetConnection();
-            var user = connection.QuerySingle<User>("select * from users where ID = @id;", new
+            var user = connection.QuerySingleOrDefault<User>("select * from users where ID = @id;", new
             {
                 id = ID
             });
@@ -72,7 +72,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         {
 
             using var connection = DB.GetConnection();
-            var user = connection.QuerySingle<User>("select * from users where Username = @username;", new
+            var user = connection.QuerySingleOrDefault<User>("select * from users where Username = @username;", new
             {
                 username = username
             });
