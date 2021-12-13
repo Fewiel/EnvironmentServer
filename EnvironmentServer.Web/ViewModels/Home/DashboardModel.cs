@@ -8,5 +8,6 @@ namespace EnvironmentServer.Web.ViewModels.Home
     public class DashboardModel
     {
         public IEnumerable<Environment> Environments { get; set; }
+        public string Htaccess { get; set; }
     }
 }
