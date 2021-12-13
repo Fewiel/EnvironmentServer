@@ -50,6 +50,7 @@ public class TokenRepository
     public void DeleteOldTokens()
     {
         using var connection = DB.GetConnection();
-        connection.Execute($"DELETE * FROM `token` where Created < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 4 HOUR));");
+        connection.Execute($"UPDATE `token` SET `Used` = '1' where Created < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 4 HOUR));");
+        connection.Execute($"DELETE FROM `token` where Created < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 48 HOUR));");
     }
 }

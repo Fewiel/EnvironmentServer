@@ -6,20 +6,21 @@
     ViewData["Title"] = "Home Page";
 }
 
+@{
+    var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
+}
+
 <div class="row row-cols-md-4" style="margin-top: 15px;">
     <div class="col-md-3 px-1">
         <div class="card mb-2 align-middle d-flex align-content-center" style="height: 420px; padding: 15px;">
             <h2 style="text-align: left;">Informations</h2>
-            <p style="text-align: left;"><strong>SSH/SFTP</strong><br />IP: shopdev.de<br />Port: 22<br />User: &lt;YourUsername&gt;<br />You need to setup a Public-Key in your Profile</p>
+            <p style="text-align: left;"><strong>SSH/SFTP</strong><br />IP: shopdev.de<br />Port: 22<br />User: @usr.Username<br />You need to setup a Public-Key in your Profile</p>
             <p style="text-align: left;"><strong>PhpMyAdmin</strong><br /><a href="https://shopdev.de/pma">https://shopdev.de/pma</a></p>
             <p style="text-align: left;">.htaccess Login: @Model.Htaccess</p>
             <p style="text-align: left;">You can use your Environment Account login credentials to view all your databases at once</p>
         </div>
     </div>
 
-    @{
-        var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
-    }
     @foreach (var e in Model.Environments)
     {
         <partial name="/Views/Components/EnvironmentCard.cshtml" model=e />

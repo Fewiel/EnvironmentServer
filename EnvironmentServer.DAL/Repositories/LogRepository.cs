@@ -31,7 +31,7 @@ namespace EnvironmentServer.DAL.Repositories
         public void DeleteOld()
         {
             using var connection = DB.GetConnection();
-            connection.Execute($"DELETE * FROM `logs` where Timestamp < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY));");
+            connection.Execute($"DELETE FROM `logs` where Timestamp < UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY));");
         }
     }
 }
