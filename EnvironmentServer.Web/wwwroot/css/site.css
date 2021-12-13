@@ -32,3 +32,11 @@
 .accordion-button::after {
     display: none !important;
 }
+
+.no-scrollbars {
+    scrollbar-width: none;
+}
+
+.no-scrollbars::-webkit-scrollbar {
+    width: 0 !important;
+}
