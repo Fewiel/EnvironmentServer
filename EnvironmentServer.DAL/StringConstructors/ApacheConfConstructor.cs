@@ -111,9 +111,37 @@ namespace EnvironmentServer.DAL.StringConstructors
         {
             return $@"
 <VirtualHost *:80>
-   ServerName {Address}
-   Redirect permanent / https://{Address}/
+	<FilesMatch \.php>
+        SetHandler ""proxy:unix:/var/run/php/{Version.AsString()}-{Username}.sock|fcgi://localhost/"" 
+    </FilesMatch>
+
+	ServerAdmin {Email}
+    ServerName {Address}
+	DocumentRoot {DocRoot}
+    <Directory {DocRoot}>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog {LogRoot}/error.log
+    CustomLog {LogRoot}/access.log combined
+
+    <IfModule mpm_itk_module>
+        AssignUserId {Username} sftp_users
+    </IfModule>
 </VirtualHost>
+
+<IfModule mod_fastcgi.c>
+	AddHandler php-fcgi-handler .php
+	Action php-fcgi-handler /php-fcgi-uri
+    Alias /php-fcgi-uri fcgi-application
+    FastCgiExternalServer fcgi-application -socket /var/run/php/{Version.AsString()}-{Username}.sock -pass-header Authorization -idle-timeout 30000 -flush
+</IfModule>
+
+    <IfModule mod_rewrite>
+        RewriteEngine On
+    </IfModule>
 
 <VirtualHost *:443>
     LoadModule ssl_module /usr/lib64/apache2-prefork/mod_ssl.so
