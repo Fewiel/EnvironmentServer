@@ -28,7 +28,7 @@ listen.owner = {0}
 listen.group = sftp_users
 
 pm = dynamic
-pm.max_children = 5
+pm.max_children = 20
 pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
