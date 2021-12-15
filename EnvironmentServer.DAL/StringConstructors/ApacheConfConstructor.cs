@@ -112,7 +112,7 @@ namespace EnvironmentServer.DAL.StringConstructors
             return $@"
 <VirtualHost *:80>
    ServerName {Address}
-   Redirect permanent / https://{Address}
+   Redirect permanent / https://{Address}/
 </VirtualHost>
 
 <VirtualHost *:443>
