@@ -115,7 +115,7 @@ namespace EnvironmentServer.DAL.StringConstructors
         ServerName {Address}
         RewriteEngine On
         RewriteCond %{{HTTPS}} !=on
-        RewriteRule ^/?(.*) https://%{{SERVER_NAME}}/$1 [R=301,L]
+        RewriteRule (.*) https://%{{HTTP_HOST}}%{{REQUEST_URI}} [L,R=301]
 </VirtualHost>
 
 <VirtualHost *:443>
