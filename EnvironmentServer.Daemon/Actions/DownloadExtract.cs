@@ -17,10 +17,12 @@ namespace EnvironmentServer.Daemon.Actions
         public override async Task ExecuteAsync(Database db, long variableID, long userID)
         {
             var user = db.Users.GetByID(userID);
-            var env = db.Environments.Get(variableID);
+            var env = db.Environments.Get(variableID);            
 
             var url = System.IO.File.ReadAllText($"/home/{user.Username}/files/{env.Name}/dl.txt");
             var filename = url.Substring(url.LastIndexOf('/') + 1);
+
+            db.Logs.Add("Daemon", "download_extract for: " + env.Name + ", " + user.Username + " LINK: " + url);
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"rm dl.txt\"")
