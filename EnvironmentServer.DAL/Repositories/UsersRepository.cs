@@ -410,10 +410,12 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
         public async Task SetSSHKeyAsync(User user)
         {
-            Directory.CreateDirectory($"/home/{user.Username}/.ssh");
-            File.WriteAllText($"/home/{user.Username}/.ssh/authorized_keys", user.SSHPublicKey);
+            var usr = DB.Users.GetByID(user.ID);
+
+            Directory.CreateDirectory($"/home/{usr.Username}/.ssh");
+            File.WriteAllText($"/home/{usr.Username}/.ssh/authorized_keys", usr.SSHPublicKey);
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/.ssh\"")
+                .WithArguments($"-c \"chown -R {usr.Username}:sftp_users /home/{usr.Username}/.ssh\"")
                 .ExecuteAsync();
         }
 
