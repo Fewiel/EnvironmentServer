@@ -1,7 +1,5 @@
 ﻿using CliWrap;
 using Dapper;
-using Ductus.FluentDocker.Commands;
-using Ductus.FluentDocker.Services;
 using EnvironmentServer.DAL.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,12 +53,11 @@ internal class EnvironmentESRepository
         }
 
         var envName = DB.Environments.Get(id).Name;
+        var dID = "es_docker_" + envName;
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"docker run --name {dID} -p {port}:{port} -p {port + 100}:{port + 100} -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
+            .ExecuteAsync();
 
-        var hosts = new Hosts().Discover();
-        var _docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == envName);
-        var result = _docker.Host.Version(_docker.Certificates);
-        var dID = _docker.Host.Run("elasticsearch:" + esVersion, null, _docker.Certificates).Data;
-        var ps = _docker.Host.Ps(null, _docker.Certificates).Data;
 
         using var connection = DB.GetConnection();
         connection.Execute("INSERT INTO `environments_es` (`ID`, `EnvironmentID`, `ESVersion`, `Port`, `DockerID`, `Active`) " +
@@ -71,5 +68,46 @@ internal class EnvironmentESRepository
                 esPort = port,
                 dockerID = dID
             });
+    }
+
+    public async Task StartContainer(string dockerID)
+    {
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"docker start {dockerID}\"")
+            .ExecuteAsync();
+
+        using var connection = DB.GetConnection();
+        connection.Execute("UPDATE `environments_es` SET `Active` = '1' WHERE `environments_es`.`DockerID` = @dID;", new
+        {
+            dID = dockerID
+        });
+    }
+
+    public async Task StopContainer(string dockerID)
+    {
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"docker kill {dockerID}\"")
+            .ExecuteAsync();
+
+        using var connection = DB.GetConnection();
+        connection.Execute("UPDATE `environments_es` SET `Active` = '0' WHERE `environments_es`.`DockerID` = @dID;", new
+        {
+            dID = dockerID
+        });
+    }
+
+    public async Task StopAll()
+    {
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"docker kill $(docker ps -q)\"")
+            .ExecuteAsync();
+
+        using var connection = DB.GetConnection();
+        connection.Execute("UPDATE `environments_es` SET `Active` = '0';");
+    }
+
+    public async Task Cleanup()
+    {
+
     }
 }
