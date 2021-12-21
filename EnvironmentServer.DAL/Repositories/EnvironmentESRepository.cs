@@ -53,7 +53,7 @@ internal class EnvironmentESRepository
         }
 
         var envName = DB.Environments.Get(id).Name;
-        var dID = "es_docker_" + envName;
+        var dID = "es_docker_" + envName + "_uid_" + DB.Environments.Get(id).UserID;
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"docker run --name {dID} -p {port}:{port} -p {port + 100}:{port + 100} -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
             .ExecuteAsync();
@@ -108,6 +108,14 @@ internal class EnvironmentESRepository
 
     public async Task Cleanup()
     {
-
+        using var connection = DB.GetConnection();
+        var es_list = connection.Query<EnvironmentES>("Select * from `environments_es` where LastUse < DATE(DATE_SUB(NOW(), INTERVAL 60 DAY));");
+        foreach (var es in es_list)
+        {
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
+                .ExecuteAsync();
+            connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
+        }
     }
 }

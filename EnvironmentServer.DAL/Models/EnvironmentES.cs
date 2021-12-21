@@ -1,4 +1,6 @@
-﻿namespace EnvironmentServer.DAL.Models;
+﻿using System;
+
+namespace EnvironmentServer.DAL.Models;
 
 public class EnvironmentES
 {
@@ -8,4 +10,5 @@ public class EnvironmentES
     public int Port { get; set; }
     public string DockerID { get; set; }
     public bool Active { get; set; }
+    public DateTime LastUse { get; set; }
 }
