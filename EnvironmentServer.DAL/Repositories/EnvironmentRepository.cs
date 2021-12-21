@@ -304,6 +304,6 @@ namespace EnvironmentServer.DAL.Repositories
             Directory.Delete($"/home/{user.Username}/files/logs/{environment.Name}", true);
         }
 
-        public string FixEnvironmentName(string name) => name.ToLower().Replace(" ", "_");
+        public string FixEnvironmentName(string name) => name.ToLower().Replace(" ", "_").Replace(".", "_").Replace("-", "_");
     }
 }

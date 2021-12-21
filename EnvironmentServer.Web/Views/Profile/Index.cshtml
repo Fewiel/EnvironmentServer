@@ -5,11 +5,13 @@
 }
 
 <div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
+    <div class="alert alert-info">SSH key is needed only for SSH connection.</div>
     <form method="post" asp-action="ChangeSSH" style="width: 400px;">
         <div class="mb-3">
             <label asp-for="SSHPublicKey" class="form-label">SSH Public Key</label>
             <input asp-for="SSHPublicKey" class="form-control" />
             <span asp-validation-for="SSHPublicKey"></span>
+            <span>Use OpenSSH format (ssh-rsa AAAAB3NzaC1...)</span>
         </div>
         <button type="submit" class="btn btn-primary">Set/Change SSH Public Key</button>
     </form>
