@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
@@ -40,6 +41,12 @@ namespace EnvironmentServer.Web.Controllers
         }
         public IActionResult ChangeSSH([FromForm] ProfileViewModel pvm)
         {
+            if (string.IsNullOrEmpty(pvm.SSHPublicKey) || !Regex.Match(pvm.SSHPublicKey, "ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)").Success)
+            {
+                AddError("Please enter valid SSH Key - Use OpenSSH format e.g. \"ssh-rsa AAAA...\"");
+                return RedirectToAction("Index", "Profile");
+            }
+
             var usr = GetSessionUser();
             DB.Users.UpdateSSHKey(pvm.SSHPublicKey, usr.ID);
             DB.Logs.Add("Web", "Change SSH Public Key for : " + usr.Username);
