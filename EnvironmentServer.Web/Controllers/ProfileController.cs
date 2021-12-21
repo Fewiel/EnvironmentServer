@@ -41,7 +41,7 @@ namespace EnvironmentServer.Web.Controllers
         }
         public IActionResult ChangeSSH([FromForm] ProfileViewModel pvm)
         {
-            if (string.IsNullOrEmpty(pvm.SSHPublicKey) || !Regex.Match(pvm.SSHPublicKey, "ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)").Success)
+            if (string.IsNullOrEmpty(pvm.SSHPublicKey) || !Regex.Match(pvm.SSHPublicKey, "ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3}( [^@]+@[^@]+)?").Success)
             {
                 AddError("Please enter valid SSH Key - Use OpenSSH format e.g. \"ssh-rsa AAAA...\"");
                 return RedirectToAction("Index", "Profile");
