@@ -26,7 +26,7 @@ public class EnvironmentESRepository
     public EnvironmentES GetByID(long id)
     {
         using var connection = DB.GetConnection();
-        return connection.QuerySingle<EnvironmentES>("Select * from `environments_es` where ID = @id", new
+        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where ID = @id", new
         {
             id = id
         });
@@ -35,7 +35,7 @@ public class EnvironmentESRepository
     public EnvironmentES GetByEnvironmentID(long id)
     {
         using var connection = DB.GetConnection();
-        return connection.QuerySingle<EnvironmentES>("Select * from `environments_es` where EnvironmentID = @id", new
+        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where EnvironmentID = @id", new
         {
             id = id
         });
