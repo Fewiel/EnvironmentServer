@@ -17,7 +17,7 @@
         <br />
         <div class="mb-3">
             <label asp-for="ElasticSearch.ESVersion" class="form-label">ElasticSearch Version</label>
-            <input asp-for="ElasticSearch.ESVersion" value="ElasticSearch.ESVersion" placeholder="For SW5: 6.8.1, For SW6: 7.5.2" class="form-control" />
+            <input asp-for="ElasticSearch.ESVersion" value=@Model.ElasticSearch.ESVersion placeholder="For SW5: 6.8.1, For SW6: 7.5.2" class="form-control" />
             <span asp-validation-for="ElasticSearch.ESVersion"></span>
         </div>
         <div class="mb-3">
@@ -31,7 +31,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Start</button>
     </form>
-
+    <br />
     <form method="post" asp-controller="Env" asp-action="Update" asp- style="width: 400px;">
         <input type="hidden" asp-for="ID" />
         <div class="mb-3">
