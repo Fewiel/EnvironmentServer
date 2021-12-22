@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using Dapper;
 using EnvironmentServer.DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -107,9 +108,16 @@ public class EnvironmentESRepository
 
     public async Task StopAll()
     {
-        await Cli.Wrap("/bin/bash")
+        try
+        {
+            await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"docker kill $(docker ps -q)\"")
             .ExecuteAsync();
+        }
+        catch (Exception ex)
+        {
+            DB.Logs.Add("DAL", ex.ToString());
+        }
 
         using var connection = DB.GetConnection();
         connection.Execute("UPDATE `environments_es` SET `Active` = '0';");
@@ -128,13 +136,22 @@ public class EnvironmentESRepository
     public async Task Cleanup()
     {
         using var connection = DB.GetConnection();
-        var es_list = connection.Query<EnvironmentES>("Select * from `environments_es` where LastUse < DATE(DATE_SUB(NOW(), INTERVAL 60 DAY));");
-        foreach (var es in es_list)
+        var es_list = connection.Query<EnvironmentES>("Select * from `environments_es` where LastUse < DATE(DATE_SUB(NOW(), INTERVAL 30 DAY));");
+
+        try
         {
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
-                .ExecuteAsync();
-            connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
+            foreach (var es in es_list)
+            {
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
+                    .ExecuteAsync();
+                connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
+            }
         }
+        catch (Exception ex)
+        {
+            DB.Logs.Add("DAL", ex.ToString());
+        }
+
     }
 }
