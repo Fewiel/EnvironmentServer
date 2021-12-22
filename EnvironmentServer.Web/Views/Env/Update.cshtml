@@ -20,7 +20,8 @@
     <br />
     <h2>Elastic Search Settings</h2>
     <form method="post" asp-controller="Env" asp-action="StartElasticSearch">
-        <input type="hidden" asp-for="ID" />
+        <input type="hidden" asp-for="ID" />        
+        <input type="hidden" asp-for="ElasticSearch.DockerID" />
         <div class="alert alert-info">
             You can control the Docker container via SSH. Use the container name for this.<br /> <br />
             Use the Start button to start the container!<br /><br />
