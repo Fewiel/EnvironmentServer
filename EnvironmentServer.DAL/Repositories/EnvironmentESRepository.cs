@@ -95,7 +95,7 @@ public class EnvironmentESRepository
     public async Task StopContainer(string dockerID)
     {
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"docker kill {dockerID}\"")
+            .WithArguments($"-c \"docker stop {dockerID}\"")
             .ExecuteAsync();
 
         using var connection = DB.GetConnection();
