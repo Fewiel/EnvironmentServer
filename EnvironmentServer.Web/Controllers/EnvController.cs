@@ -26,15 +26,45 @@ namespace EnvironmentServer.Web.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Update(long id)
+        public async Task<IActionResult> StartElasticSearchAsync(long id, string esVersion)
         {
+
+            await DB.EnvironmentsES.AddAsync(id, esVersion);
+
             var createViewModel = new UpdateViewModel()
             {
                 ID = id,
                 EnvironmentName = DB.Environments.Get(id).Name,
                 PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
-                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString()))
+                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
+                ElasticSearch = DB.EnvironmentsES.GetByEnvironmentID(id)
+            };
+            return View(createViewModel);
+        }
+
+        [HttpGet]
+        public IActionResult Update(long id)
+        {
+            var es = DB.EnvironmentsES.GetByEnvironmentID(id);
+            if (es == null)
+            {
+                es = new EnvironmentES
+                {
+                    Active = false,
+                    DockerID = "Not configured",
+                    EnvironmentID = id,
+                    ESVersion = "",
+                    Port = 0
+                };
+            }
+
+            var createViewModel = new UpdateViewModel()
+            {
+                ID = id,
+                EnvironmentName = DB.Environments.Get(id).Name,
+                PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
+                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
+                ElasticSearch = es
             };
             return View(createViewModel);
         }

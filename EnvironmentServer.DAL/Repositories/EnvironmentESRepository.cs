@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL.Repositories;
 
-internal class EnvironmentESRepository
+public class EnvironmentESRepository
 {
     private Database DB;
 
@@ -23,19 +23,19 @@ internal class EnvironmentESRepository
         return connection.Query<EnvironmentES>("Select * from `environments_es`");
     }
 
-    public IEnumerable<EnvironmentES> GetByID(long id)
+    public EnvironmentES GetByID(long id)
     {
         using var connection = DB.GetConnection();
-        return connection.Query<EnvironmentES>("Select * from `environments_es` where ID = @id", new
+        return connection.QuerySingle<EnvironmentES>("Select * from `environments_es` where ID = @id", new
         {
             id = id
         });
     }
 
-    public IEnumerable<EnvironmentES> GetByEnvironmentID(long id)
+    public EnvironmentES GetByEnvironmentID(long id)
     {
         using var connection = DB.GetConnection();
-        return connection.Query<EnvironmentES>("Select * from `environments_es` where EnvironmentID = @id", new
+        return connection.QuerySingle<EnvironmentES>("Select * from `environments_es` where EnvironmentID = @id", new
         {
             id = id
         });
