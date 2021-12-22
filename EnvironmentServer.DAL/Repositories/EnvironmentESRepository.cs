@@ -55,7 +55,7 @@ public class EnvironmentESRepository
         var envName = DB.Environments.Get(id).Name;
         var dID = "es_docker_" + envName + "_uid_" + DB.Environments.Get(id).UserID;
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"docker run --name {dID} -p {port}:{port} -p {port + 100}:{port + 100} -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
+            .WithArguments($"-c \"docker run -d --name {dID} -p {port}:{port} -p {port + 100}:{port + 100} -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
             .WithValidation(CommandResultValidation.None)
             .ExecuteAsync();
 

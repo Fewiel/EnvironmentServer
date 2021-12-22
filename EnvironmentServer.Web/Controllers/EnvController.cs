@@ -39,7 +39,7 @@ namespace EnvironmentServer.Web.Controllers
                     .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
                 ElasticSearch = DB.EnvironmentsES.GetByEnvironmentID(id)
             };
-            return View(createViewModel);
+            return View("Update" ,createViewModel);
         }
 
         [HttpGet]
