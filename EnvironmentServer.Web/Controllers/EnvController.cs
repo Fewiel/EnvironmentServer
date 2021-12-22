@@ -29,7 +29,23 @@ namespace EnvironmentServer.Web.Controllers
         public async Task<IActionResult> StartElasticSearchAsync(long id, [FromForm] UpdateViewModel cvm)
         {
 
-            await DB.EnvironmentsES.AddAsync(id, cvm.ElasticSearch.ESVersion);
+            if (DB.EnvironmentsES.GetByEnvironmentID(id) == null)
+            {
+                await DB.EnvironmentsES.AddAsync(id, cvm.ElasticSearch.ESVersion);
+            }
+            else if (DB.EnvironmentsES.GetByEnvironmentID(id).ESVersion != cvm.ElasticSearch.ESVersion)
+            {
+                await DB.EnvironmentsES.Remove(cvm.ElasticSearch.DockerID);
+                await DB.EnvironmentsES.AddAsync(id, cvm.ElasticSearch.ESVersion);
+            }
+            else if (DB.EnvironmentsES.GetByEnvironmentID(id).Active == false)
+            {
+                await DB.EnvironmentsES.StartContainer(cvm.ElasticSearch.DockerID);
+            }
+            else
+            {
+                await DB.EnvironmentsES.StopContainer(cvm.ElasticSearch.DockerID);
+            }
 
             var createViewModel = new UpdateViewModel()
             {

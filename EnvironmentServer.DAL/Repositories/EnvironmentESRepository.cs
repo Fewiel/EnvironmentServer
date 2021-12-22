@@ -31,6 +31,14 @@ public class EnvironmentESRepository
             id = id
         });
     }
+    public EnvironmentES GetByDockerID(string dockerID)
+    {
+        using var connection = DB.GetConnection();
+        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where DockerID = @id", new
+        {
+            id = dockerID
+        });
+    }
 
     public EnvironmentES GetByEnvironmentID(long id)
     {
@@ -105,6 +113,16 @@ public class EnvironmentESRepository
 
         using var connection = DB.GetConnection();
         connection.Execute("UPDATE `environments_es` SET `Active` = '0';");
+    }
+
+    public async Task Remove(string dockerID)
+    {
+        using var connection = DB.GetConnection();
+        var es = GetByDockerID(dockerID);
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
+            .ExecuteAsync();
+        connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
     }
 
     public async Task Cleanup()
