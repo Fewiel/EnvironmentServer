@@ -26,10 +26,10 @@ namespace EnvironmentServer.Web.Controllers
             return View();
         }
 
-        public async Task<IActionResult> StartElasticSearchAsync(long id, string esVersion)
+        public async Task<IActionResult> StartElasticSearchAsync(long id, [FromForm] UpdateViewModel cvm)
         {
 
-            await DB.EnvironmentsES.AddAsync(id, esVersion);
+            await DB.EnvironmentsES.AddAsync(id, cvm.ElasticSearch.ESVersion);
 
             var createViewModel = new UpdateViewModel()
             {

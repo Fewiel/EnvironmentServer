@@ -5,6 +5,20 @@
 }
 
 <div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
+        <form method="post" asp-controller="Env" asp-action="Update" asp- style="width: 400px;">
+        <input type="hidden" asp-for="ID" />
+        <div class="mb-3">
+            <label class="form-label">Environment Name @Model.EnvironmentName</label>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">PHP Version</label>
+            <select asp-for="Version" asp-items="Model.PhpVersions" class="form-select"></select>
+            <span asp-validation-for="Version" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+    <br />
+    <h2>Elastic Search Settings</h2>
     <form method="post" asp-controller="Env" asp-action="StartElasticSearch">
         <input type="hidden" asp-for="ID" />
         <div class="alert alert-info">
@@ -21,7 +35,7 @@
             <span asp-validation-for="ElasticSearch.ESVersion"></span>
         </div>
         <div class="mb-3">
-            <label class="form-label">ElasticSearch Status @Model.ElasticSearch.Active.ToString()</label>
+            <label class="form-label">ElasticSearch Running: @Model.ElasticSearch.Active.ToString()</label>
         </div>        
         <div class="mb-3">
             <label class="form-label">ElasticSearch IP:Port: localhost:@Model.ElasticSearch.Port</label>
@@ -30,18 +44,5 @@
             <label class="form-label">Container Name: @Model.ElasticSearch.DockerID</label>
         </div>
         <button type="submit" class="btn btn-primary">Start</button>
-    </form>
-    <br />
-    <form method="post" asp-controller="Env" asp-action="Update" asp- style="width: 400px;">
-        <input type="hidden" asp-for="ID" />
-        <div class="mb-3">
-            <label class="form-label">Environment Name @Model.EnvironmentName</label>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">PHP Version</label>
-            <select asp-for="Version" asp-items="Model.PhpVersions" class="form-select"></select>
-            <span asp-validation-for="Version" class="text-danger"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Update</button>
     </form>
 </div>
