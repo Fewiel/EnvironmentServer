@@ -173,5 +173,69 @@ namespace EnvironmentServer.Web.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateWithAutoinstallerAsync([FromForm] EnvSetupViewModel esv)
+        {
+            var environment = new Environment()
+            {
+                UserID = GetSessionUser().ID,
+                Name = esv.Name,
+                Address = esv.Name.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
+                Version = esv.PhpVersion
+            };
+
+            if (esv.MajorShopwareVersion == 0)
+                esv.ShopwareVersion = "Custom";
+
+            var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(),
+                esv.MajorShopwareVersion == 6).ConfigureAwait(false);
+
+            var envSettingPersistent = new EnvironmentSettingValue()
+            {
+                EnvironmentID = lastID,
+                EnvironmentSettingID = 1,
+                Value = false.ToString()
+            };
+            var envSettingTemplate = new EnvironmentSettingValue()
+            {
+                EnvironmentID = lastID,
+                EnvironmentSettingID = 2,
+                Value = false.ToString()
+            };
+            var envSettingSWVersion = new EnvironmentSettingValue()
+            {
+                EnvironmentID = lastID,
+                EnvironmentSettingID = 3,
+                Value = esv.ShopwareVersion
+            };
+            var envSettingTask = new EnvironmentSettingValue()
+            {
+                EnvironmentID = lastID,
+                EnvironmentSettingID = 4,
+                Value = false.ToString()
+            };
+
+            DB.EnvironmentSettings.Insert(envSettingPersistent);
+            DB.EnvironmentSettings.Insert(envSettingTemplate);
+            DB.EnvironmentSettings.Insert(envSettingSWVersion);
+            DB.EnvironmentSettings.Insert(envSettingTask);
+
+            if (!string.IsNullOrEmpty(esv.ShopwareVersionDownload))
+            {
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt",
+                    esv.ShopwareVersionDownload);
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "download_extract_autoinstall",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+                DB.Environments.SetTaskRunning(lastID, true);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
