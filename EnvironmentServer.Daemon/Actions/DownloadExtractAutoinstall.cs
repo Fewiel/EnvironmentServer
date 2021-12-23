@@ -70,11 +70,11 @@ internal class DownloadExtractAutoinstall : ActionBase
                 .ExecuteAsync();
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash bin/build.sh\"")
+                .WithArguments($"-c \"bin/build.sh\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"bash bin/build-js.sh\"")
+                .WithArguments($"-c \"bin/build-js.sh\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
@@ -88,8 +88,7 @@ internal class DownloadExtractAutoinstall : ActionBase
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"php7.4 bin/console cache:clear\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
-                .ExecuteAsync();
-            
+                .ExecuteAsync();            
         }
         else
         {
