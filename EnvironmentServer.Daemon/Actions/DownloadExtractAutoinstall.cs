@@ -71,10 +71,12 @@ internal class DownloadExtractAutoinstall : ActionBase
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"bin/build.sh\"")
+                .WithValidation(CommandResultValidation.None)
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"bin/build-js.sh\"")
+                .WithValidation(CommandResultValidation.None)
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
