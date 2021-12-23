@@ -68,6 +68,28 @@ internal class DownloadExtractAutoinstall : ActionBase
                 .WithArguments($"-c \"php7.4 public/recovery/install/index.php --db-host=\\\"localhost\\\" --db-port=\\\"3306\\\" --db-user=\\\"{dbname}\\\" --db-password=\\\"{env.DBPassword}\\\" --db-name=\\\"{dbname}\\\" --shop-locale=\\\"de-DE\\\" --no-skip-import --shop-host=\\\"{env.Address}\\\" --shop-email=\\\"{user.Email}\\\" --admin-username=\\\"demo\\\" --admin-password=\\\"demo\\\" --admin-email=\\\"{user.Email}\\\" --admin-firstname=\\\"Shopware\\\" --admin-lastname=\\\"Demo\\\" --shop-currency=\\\"EUR\\\" --shop-name=\\\"{env.Name}\\\" --shop-country=\\\"DEU\\\" --admin-locale=\\\"de-DE\\\" -n\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"bash bin/build.sh\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"bash bin/build-js.sh\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"php7.4 bin/console theme:change --all Storefront\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"php7.4 bin/console theme:compile\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"php7.4 bin/console cache:clear\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+            
         }
         else
         {
@@ -77,6 +99,10 @@ internal class DownloadExtractAutoinstall : ActionBase
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
         }
+
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
+            .ExecuteAsync();
 
         db.Environments.SetTaskRunning(env.ID, false);
 
