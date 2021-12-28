@@ -18,6 +18,7 @@ namespace EnvironmentServer.Web.ViewModels.Login
 
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+        
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}")]
         public DateTime? ExpirationDate { get; set; }
     }
