@@ -281,7 +281,10 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     Username = usr.Username,
                     Email = usr.Email,
                     IsAdmin = usr.IsAdmin,
-                    Password = PasswordHasher.Hash(shellPassword)
+                    Password = PasswordHasher.Hash(shellPassword),
+                    Active = user.Active,
+                    LastUsed = user.LastUsed,
+                    ExpirationDate = user.ExpirationDate
                 };
 
 
@@ -306,13 +309,16 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
                     username = user.Username,
                     password = user.Password,
-                    isAdmin = user.IsAdmin
+                    isAdmin = user.IsAdmin,
+                    active = user.Active,
+                    lastused =  user.LastUsed,
+                    exp = user.ExpirationDate                    
                 });
 
             DB.Mail.Send("Account updated", string.Format(DB.Settings.Get("mail_account_update").Value, user.Username, user.Email, user.IsAdmin), user.Email);
@@ -341,15 +347,35 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 .ExecuteAsync();
 
             connection.Execute("UPDATE `users` SET "
-                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                 " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
+                + "`Email` = @email, `Username` = @username, `Password` = @password," +
+                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp WHERE `users`.`ID` = @id", new
+                {
+                    id = user.ID,
+                    email = user.Email,
+                    username = user.Username,
+                    password = user.Password,
+                    isAdmin = user.IsAdmin,
+                    active = user.Active,
+                    lastused = user.LastUsed,
+                    exp = user.ExpirationDate
+                });
+        }
+
+        public void ChangeActiveState(User user, bool active)
+        {
+            using var connection = DB.GetConnection();
+            connection.Execute("UPDATE `users` SET "
+                 + "`Active` = @active WHERE `users`.`ID` = @id", new
                  {
                      id = user.ID,
-                     email = user.Email,
-                     username = user.Username,
-                     password = user.Password,
-                     isAdmin = user.IsAdmin
+                     active = active
                  });
+        }
+
+        public IEnumerable<User>GetTempUsers()
+        {
+            using var connection = DB.GetConnection();
+            return connection.Query<User>("SELECT * FROM `users` Where ExpirationDate IS NOT NULL;");
         }
 
         public async Task DeleteAsync(User user)

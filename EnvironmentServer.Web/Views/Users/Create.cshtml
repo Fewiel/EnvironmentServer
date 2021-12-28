@@ -22,6 +22,11 @@
             <input asp-for="Password" class="form-control" />
             <span asp-validation-for="Password"></span>
         </div>
+        <div class="mb-3">
+            <label asp-for="ExpirationDate" class="form-label">Expiration Date (Leave empty for normal account)</label>
+            <input type="datetime-local" asp-for="ExpirationDate" class="form-control" />
+            <span asp-validation-for="ExpirationDate"></span>
+        </div>
         <button type="submit" class="btn btn-primary">Create Useraccount</button>
     </form>
 </div>

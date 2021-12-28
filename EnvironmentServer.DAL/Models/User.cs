@@ -14,5 +14,8 @@ namespace EnvironmentServer.DAL.Models
         public string Password { get; set; }
         public bool IsAdmin { get; set; }
         public string SSHPublicKey { get; set; }
+        public bool Active { get; set; }
+        public DateTime LastUsed { get; set; }
+        public DateTime ExpirationDate { get; set; }
     }
 }

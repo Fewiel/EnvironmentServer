@@ -8,7 +8,7 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
     public class EnvSetupViewModel
     {
         //DB Data
-        [MinLength(4), MaxLength(32), DataType(DataType.Text)]
+        [MinLength(4), MaxLength(15), DataType(DataType.Text)]
         [RegularExpression(@"^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$", ErrorMessage = "Environment name not allowed")]
         public string Name { get; set; }
         public int MajorShopwareVersion { get; set; }
