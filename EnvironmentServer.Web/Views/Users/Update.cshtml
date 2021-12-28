@@ -18,6 +18,11 @@
             <input class="form-check-input" type="checkbox" asp-for="IsAdmin">
             <label class="form-check-label" asp-for="IsAdmin">Admin</label>
         </div>
+        <div class="mb-3">
+            <label asp-for="ExpirationDate" class="form-label">Expiration Date (Leave empty for normal account)</label>
+            <input type="datetime-local" asp-for="ExpirationDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
+            <span asp-validation-for="ExpirationDate"></span>
+        </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
 </div>
