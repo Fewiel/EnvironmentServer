@@ -31,7 +31,7 @@
                     <span>@usr.IsAdmin</span>
                 </td>
                 <td>
-                    <span @(usr.Active ? "" : "style=\"color:#FF0000; font-weight:bold;\"")>@usr.Active</span>
+                    <span style="@(usr.Active ? "" : "color:#FF0000; font-weight:bold;")">@usr.Active</span>
                 </td>
                 <td>
                     <a asp-action="ResetPassword" onclick="return confirm('Are you sure?')" asp-route-id="@usr.ID">Reset Password</a>

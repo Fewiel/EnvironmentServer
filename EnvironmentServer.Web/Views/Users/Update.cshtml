@@ -4,9 +4,9 @@
     ViewData["Title"] = "Update";
 }
 
-<div class="d-flex align-items-center justify-content-center fullHeight">
-    <h4>Editing User: @Model.Username</h4>
-    <h5>Latest Use: @Model.LastUsed</h5>
+<div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
+    <h4>Editing User: @Model.Username</h4><br />
+    <h5>Latest Use: @Model.LastUsed</h5><br />
     <form method="post" asp-action="Update" style="width: 400px;">
         <input type="hidden" asp-for="ID" />
         <div class="mb-3">
