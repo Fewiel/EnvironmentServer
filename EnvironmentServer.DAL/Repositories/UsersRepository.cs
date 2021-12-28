@@ -266,7 +266,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             var user = new User();
             using var connection = DB.GetConnection();
-            UpdateLastUse(user);
+            UpdateLastUse(usr);
 
             if (newPassword)
             {
