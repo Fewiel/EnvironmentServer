@@ -30,8 +30,13 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index", "Profile");
             }
 
-            var dash = new DashboardModel() { Environments = DB.Environments.GetForUser(GetSessionUser().ID), 
+            var dash = new DashboardModel() { Environments = DB.Environments.GetForUser(GetSessionUser().ID),
                 Htaccess = DB.Settings.Get("pma_htacces_login").Value };
+            DB.Users.UpdateLastUse(GetSessionUser());
+
+            if (DB.Users.GetByUsername(GetSessionUser().Username) == null)
+                HttpContext.Session.Clear();
+
             return View(dash);
         }
 

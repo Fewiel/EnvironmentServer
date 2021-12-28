@@ -49,7 +49,7 @@ namespace EnvironmentServer.Daemon
 
                     if (!Actions.TryGetValue(sa.Action, out var act))
                     {
-                        DB.Logs.Add("Deamon", "Undefined action called: " + sa.Action);
+                        DB.Logs.Add("Scheduler", "Undefined action called: " + sa.Action);
                         continue;
                     }
 
@@ -64,7 +64,7 @@ namespace EnvironmentServer.Daemon
                         throw;
 #endif
                         Console.WriteLine(ex.ToString());
-                        DB.Logs.Add("Daemon", "ERROR in CronWorker: " + ex.ToString());
+                        DB.Logs.Add("Scheduler", "ERROR in CronWorker: " + ex.ToString());
                     }
                 }
 
@@ -79,7 +79,8 @@ namespace EnvironmentServer.Daemon
                 "feed_refresh",
                 "clear_logs",
                 "invalidate_tokens",
-                "delete_expired_users"
+                "delete_expired_users",
+                "lock_inactive_accounts"
             };
 
             foreach (var a in actionList)
@@ -138,7 +139,8 @@ namespace EnvironmentServer.Daemon
                 new FeedRefresh(sp),
                 new ClearLogs(sp),
                 new InvalidateTokens(sp),
-                new DeleteExpiredUsers(sp)
+                new DeleteExpiredUsers(sp),
+                new LockInactiveAccounts(sp)
             };
 
             foreach (var a in l)

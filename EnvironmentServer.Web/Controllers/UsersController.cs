@@ -84,6 +84,7 @@ namespace EnvironmentServer.Web.Controllers
             var usr = DB.Users.GetByID(user.ID);
             usr.IsAdmin = user.IsAdmin;
             usr.Email = user.Email;
+            usr.Active = user.Active;
             usr.ExpirationDate = user.ExpirationDate;
             await DB.Users.UpdateByAdminAsync(usr, false);
             AddInfo("User updated");

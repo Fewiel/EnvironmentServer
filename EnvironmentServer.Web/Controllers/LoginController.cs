@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Repositories;
 using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.Extensions;
 using EnvironmentServer.Web.ViewModels.Login;

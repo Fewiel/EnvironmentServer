@@ -4,9 +4,9 @@
     ViewData["Title"] = "Update";
 }
 
-<h4>Editing User: @Model.Username</h4>
-
 <div class="d-flex align-items-center justify-content-center fullHeight">
+    <h4>Editing User: @Model.Username</h4>
+    <h5>Latest Use: @Model.LastUsed</h5>
     <form method="post" asp-action="Update" style="width: 400px;">
         <input type="hidden" asp-for="ID" />
         <div class="mb-3">
@@ -17,6 +17,10 @@
         <div class="mb-3">
             <input class="form-check-input" type="checkbox" asp-for="IsAdmin">
             <label class="form-check-label" asp-for="IsAdmin">Admin</label>
+        </div>
+        <div class="mb-3">
+            <input class="form-check-input" type="checkbox" asp-for="Active">
+            <label class="form-check-label" asp-for="Active">Active</label>
         </div>
         <div class="mb-3">
             <label asp-for="ExpirationDate" class="form-label">Expiration Date (Leave empty for normal account)</label>

@@ -60,24 +60,19 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         public User GetByID(long ID)
         {
             using var connection = DB.GetConnection();
-            var user = connection.QuerySingleOrDefault<User>("select * from users where ID = @id;", new
+            return connection.QuerySingleOrDefault<User>("select * from users where ID = @id;", new
             {
                 id = ID
             });
-
-            return user;
         }
 
         public User GetByUsername(string username)
         {
-
             using var connection = DB.GetConnection();
-            var user = connection.QuerySingleOrDefault<User>("select * from users where Username = @username;", new
+            return connection.QuerySingleOrDefault<User>("select * from users where Username = @username AND `active` = 1;", new
             {
                 username = username
             });
-
-            return user;
         }
 
         public async Task InsertAsync(User user, string shellPassword)
@@ -432,6 +427,17 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                      {
                          id = userid,
                          key = key
+                     });
+        }
+
+        public void UpdateLastUse(User user)
+        {
+            using var connection = DB.GetConnection();
+            connection.Execute("UPDATE `users` SET "
+                     + "`LastUsed` = @used where `ID` = @id", new
+                     {
+                         id = user.ID,
+                         used = DateTime.Now
                      });
         }
 

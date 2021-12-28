@@ -10,6 +10,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Admin</th>
+            <th>Active</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -18,16 +19,19 @@
         {
             <tr>
                 <td>
-                    <a>@usr.ID</a>
+                    <span>@usr.ID</span>
                 </td>
                 <td>
-                    <a>@usr.Username</a>
+                    <span>@usr.Username</span>
                 </td>
                 <td>
-                    <a>@usr.Email</a>
+                    <span>@usr.Email</span>
                 </td>
                 <td>
-                    <a>@usr.IsAdmin</a>
+                    <span>@usr.IsAdmin</span>
+                </td>
+                <td>
+                    <span @(usr.Active ? "" : "style=\"color:#FF0000; font-weight:bold;\"")>@usr.Active</span>
                 </td>
                 <td>
                     <a asp-action="ResetPassword" onclick="return confirm('Are you sure?')" asp-route-id="@usr.ID">Reset Password</a>
