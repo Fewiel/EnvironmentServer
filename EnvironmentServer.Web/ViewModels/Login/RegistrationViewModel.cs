@@ -19,6 +19,6 @@ namespace EnvironmentServer.Web.ViewModels.Login
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
     }
 }
