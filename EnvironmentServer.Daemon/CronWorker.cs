@@ -78,7 +78,8 @@ namespace EnvironmentServer.Daemon
             {
                 "feed_refresh",
                 "clear_logs",
-                "invalidate_tokens"
+                "invalidate_tokens",
+                "delete_expired_users"
             };
 
             foreach (var a in actionList)
@@ -136,7 +137,8 @@ namespace EnvironmentServer.Daemon
             {
                 new FeedRefresh(sp),
                 new ClearLogs(sp),
-                new InvalidateTokens(sp)
+                new InvalidateTokens(sp),
+                new DeleteExpiredUsers(sp)
             };
 
             foreach (var a in l)
