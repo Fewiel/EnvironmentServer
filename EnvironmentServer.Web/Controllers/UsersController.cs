@@ -65,7 +65,8 @@ namespace EnvironmentServer.Web.Controllers
                 return View();
             }
 
-            var usr = new User { Username = rvm.Username, Email = rvm.Email, Password = PasswordHasher.Hash(rvm.Password), ExpirationDate = rvm.ExpirationDate };
+            var usr = new User { Username = rvm.Username, Email = rvm.Email, 
+                Password = PasswordHasher.Hash(rvm.Password), ExpirationDate = rvm.ExpirationDate };
             await DB.Users.InsertAsync(usr, rvm.Password).ConfigureAwait(false);
 
             AddInfo("User created");

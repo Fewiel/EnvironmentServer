@@ -85,13 +85,14 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Logs.Add("DAL", "Insert user " + user.Username);
             using var connection = DB.GetConnection();
 
-            connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`) "
-                     + "VALUES (NULL, @email, @username, @password, @isAdmin)", new
+            connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`, `ExpirationDate`) "
+                     + "VALUES (NULL, @email, @username, @password, @isAdmin, @exp)", new
                      {
                          email = user.Email,
                          username = user.Username,
                          password = user.Password,
-                         isAdmin = user.IsAdmin
+                         isAdmin = user.IsAdmin,
+                         exp = user.ExpirationDate
                      });
 
             connection.Execute($"create user {MySqlHelper.EscapeString(user.Username)}@'localhost' identified by @password;", new
