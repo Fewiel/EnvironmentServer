@@ -1,12 +1,14 @@
-﻿@model EnvironmentServer.DAL.Models.News
+﻿@model IEnumerable<EnvironmentServer.DAL.Models.News>
 
 @{
     ViewData["Title"] = "News";
 }
-
-<div class="card">
-  <h5 class="card-header">@Model.Created.ToString("dd.MM.yyyy H:mm:ss")</h5>
-  <div class="card-body">
-    <p class="card-text"><markdown>@Model.Content</markdown></p>    
-  </div>
-</div>
+@foreach (var news in Model)
+{
+    <div class="card">
+        <h5 class="card-header">@news.Created.ToString("dd.MM.yyyy H:mm:ss")</h5>
+        <div class="card-body">
+            <p class="card-text"><markdown>@news.Content</markdown></p>
+        </div>
+    </div>
+}
