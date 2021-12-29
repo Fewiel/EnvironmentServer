@@ -32,5 +32,10 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult Delete(long id)
+        {
+            DB.News.Delete(id);
+            return RedirectToAction("Index");
+        }
     }
 }

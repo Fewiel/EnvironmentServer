@@ -41,5 +41,9 @@
         <div class="card-body">
             <p class="card-text"><markdown>@news.Content</markdown></p>
         </div>
+        @if (usr?.IsAdmin == true)
+        {
+            <a asp-action="Delete" asp-route-id="@news.ID">Delete</a>
+        }
     </div>
 }

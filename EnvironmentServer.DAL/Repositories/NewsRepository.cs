@@ -23,19 +23,29 @@ public class NewsRepository
         using var connection = DB.GetConnection();
         connection.Execute("INSERT INTO `news` (`Id`, `UserID`, `Content`, `Created`) " +
             "VALUES (NULL, @uid, @content, CURRENT_TIMESTAMP);", new
-        {
-            uid = news.UserID,
-            content = news.Content
-        });
+            {
+                uid = news.UserID,
+                content = news.Content
+            });
     }
 
     public void Update(News news)
     {
         using var connection = DB.GetConnection();
         connection.Execute("UPDATE `news` SET `Content` = @content WHERE `news`.`Id` = @id;", new
-            {
-                id = news.ID,
-                content = news.Content
-            });
+        {
+            id = news.ID,
+            content = news.Content
+        });
+    }
+
+    public void Delete(long id)
+    {
+        //DELETE FROM `news` WHERE `news`.`Id` = 1
+        using var connection = DB.GetConnection();
+        connection.Execute("DELETE FROM `news` WHERE `news`.`Id` = @id;", new
+        {
+            id = id
+        });
     }
 }
