@@ -1,11 +1,21 @@
 ﻿@model IEnumerable<EnvironmentServer.DAL.Models.News>
 
-@{
-    ViewData["Title"] = "News";
+top ViewData["Title"] = "News";
 }
+<script src="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.css" />
+
+<form>
+    <div id="editor"></div>
+    <script type="text/javascript">
+        var tinyMDE = new TinyMDE.Editor({element: 'editor'});
+    </script>
+</form>
+
+
 @foreach (var news in Model)
 {
-    <div class="card">
+    <div class="card" style="margin-top:15px;">
         <h5 class="card-header">@news.Created.ToString("dd.MM.yyyy H:mm:ss")</h5>
         <div class="card-body">
             <p class="card-text"><markdown>@news.Content</markdown></p>
