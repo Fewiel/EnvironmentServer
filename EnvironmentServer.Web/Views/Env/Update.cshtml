@@ -6,7 +6,7 @@
 
 <div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column; margin-top: 20px;">
     <h2>Php Settings</h2>
-        <form method="post" asp-controller="Env" asp-action="Update" asp- style="width: 400px;">
+    <form method="post" asp-controller="Env" asp-action="Update" asp- style="width: 400px;">
         <input type="hidden" asp-for="ID" />
         <div class="mb-3">
             <label class="form-label">Environment Name @Model.EnvironmentName</label>
@@ -21,7 +21,7 @@
     <br />
     <h2>Elastic Search Settings</h2>
     <form method="post" asp-controller="Env" asp-action="StartElasticSearch">
-        <input type="hidden" asp-for="ID" />        
+        <input type="hidden" asp-for="ID" />
         <input type="hidden" asp-for="ElasticSearch.DockerID" />
         <div class="alert alert-info">
             You can control the Docker container via SSH. Use the container name for this.<br /> <br />
@@ -29,7 +29,7 @@
             Important: <br />
             - All containers will be stopped at 02:00!<br />
             - Unused containers will be deleted after 30 days.
-        </div> 
+        </div>
         <br />
         <div class="mb-3">
             <label asp-for="ElasticSearch.ESVersion" class="form-label">ElasticSearch Version</label>
@@ -38,7 +38,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">ElasticSearch Running: @Model.ElasticSearch.Active.ToString()</label>
-        </div>        
+        </div>
         <div class="mb-3">
             <label class="form-label">ElasticSearch IP:Port: localhost:@Model.ElasticSearch.Port</label>
         </div>
@@ -47,4 +47,11 @@
         </div>
         <button type="submit" class="btn btn-primary">Start/Stop</button>
     </form>
+    <h2>Delete Environment</h2>
+    <span>If the automatic installation got stuck, you can delete the environment here.</span>
+    <form method="post" asp-controller="Env" asp-action="Delete" asp- style="width: 400px;">
+        <input type="hidden" asp-for="ID" />
+        <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-danger">Delete Environment</button>
+    </form>
+    <br />
 </div>
