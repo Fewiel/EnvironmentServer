@@ -29,7 +29,7 @@ namespace EnvironmentServer.Web.Controllers
         {
             var lvm = new LoginViewModel
             {
-                LatestNews = DB.News.GetLatest(4)
+                LatestNews = DB.News.GetLatest(2)
             };
             return View(lvm);
         }
