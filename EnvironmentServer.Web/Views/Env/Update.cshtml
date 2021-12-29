@@ -49,8 +49,9 @@
     </form>
     <h2>Delete Environment</h2>
     <span>If the automatic installation got stuck, you can delete the environment here.</span>
-    <form method="post" asp-controller="Env" asp-action="Delete" asp- style="width: 400px;">
+    <form method="post" asp-controller="Env" asp-action="Delete" >
         <input type="hidden" asp-for="ID" />
+        <br />
         <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-danger">Delete Environment</button>
     </form>
     <br />
