@@ -37,13 +37,9 @@
 @foreach (var news in Model)
 {
     <div class="card" style="margin-top:15px;">
-        <h5 class="card-header">@news.Created.ToString("dd.MM.yyyy H:mm:ss")</h5>
+        <h5 class="card-header">@news.Created.ToString("dd.MM.yyyy H:mm:ss")@if (usr?.IsAdmin == true) { <a asp-action="Delete" asp-route-id="@news.ID">Delete</a> }</h5>
         <div class="card-body">
             <p class="card-text"><markdown>@news.Content</markdown></p>
-        </div>
-        @if (usr?.IsAdmin == true)
-        {
-            <a asp-action="Delete" asp-route-id="@news.ID">Delete</a>
-        }
+        </div>        
     </div>
 }
