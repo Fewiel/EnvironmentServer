@@ -20,14 +20,14 @@
     height: calc(100% - 60px);
 }
 
-.card:not(.disabled) {
+.hovercard:not(.disabled) {
     transition: 50ms linear;
 }
 
-/*.card:hover:not(.disabled) {
+.hovercard:hover:not(.disabled) {
     background-color: #333333;
     transform: scale(1.025);
-}*/
+}
 
 .accordion-button::after {
     display: none !important;
