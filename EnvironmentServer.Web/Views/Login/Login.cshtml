@@ -4,7 +4,8 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
+<div class="d-flex align-items-center justify-content-center" style="flex-direction: column;">
+    <h2>Login</h2>
     <form method="post" asp-action="Login" style="width: 400px;">
         <div class="mb-3">
             <label asp-for="Username" class="form-label">Username</label>
@@ -20,6 +21,7 @@
         <p style="margin-top: 10px;">To get an environment system account contact: MAILADDRESS</p>
     </form>
 
+    <h2>News</h2>
     @foreach (var news in Model.LatestNews)
     {
         <div class="card" style="margin-top:15px;">
