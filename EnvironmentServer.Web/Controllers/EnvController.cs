@@ -121,13 +121,13 @@ namespace EnvironmentServer.Web.Controllers
         public IActionResult Increase(long id)
         {
             DB.Environments.IncreaseSorting(id);
-            return RedirectToAction("Env", "Sorting");
+            return RedirectToAction("Sorting", "Env");
         }
 
         public IActionResult Decrease(long id)
         {
             DB.Environments.DecreaseSorting(id);
-            return RedirectToAction("Env", "Sorting");
+            return RedirectToAction("Sorting", "Env");
         }
     }
 }
