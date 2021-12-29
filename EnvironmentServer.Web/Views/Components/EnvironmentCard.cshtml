@@ -24,6 +24,9 @@
                 <a asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">
                     <i class="bi bi-pencil-square" style="font-size: 20px; float: right; position: absolute; right: 5px;"></i>
                 </a>
+                <a asp-controller="Env" asp-action="Sorting" class="text-decoration-none">
+                    <i class="bi bi-sort-numeric-down-alt" style="font-size: 20px; float: right; position: absolute; right: 5px;"></i>
+                </a>
             </p>
             <div class="card-body">
                 <h5 class="card-title">@Model.Name</h5>
