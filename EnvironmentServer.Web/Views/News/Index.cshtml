@@ -1,14 +1,17 @@
 ﻿@model IEnumerable<EnvironmentServer.DAL.Models.News>
-
-top ViewData["Title"] = "News";
+@{
+    ViewData["Title"] = "News";
 }
+
 <script src="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.css" />
 
 <form>
+    <div id="toolbar"></div>
     <div id="editor"></div>
     <script type="text/javascript">
         var tinyMDE = new TinyMDE.Editor({element: 'editor'});
+        var commandBar = new TinyMDE.CommandBar({element: 'toolbar', editor: tinyMDE});
     </script>
 </form>
 
