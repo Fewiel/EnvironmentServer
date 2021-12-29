@@ -6,15 +6,23 @@
 <script src="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.css" />
 
-<form>
+<form onsubmit="GetContent()" asp-action="Add">
+    <input type="hidden" id="Content" name="Content" />
     <div id="toolbar"></div>
     <div id="editor"></div>
-    <script type="text/javascript">
-        var tinyMDE = new TinyMDE.Editor({element: 'editor'});
-        var commandBar = new TinyMDE.CommandBar({element: 'toolbar', editor: tinyMDE});
-    </script>
+    <button type="submit" class="btn btn-primary">Add News</button>
 </form>
 
+<script type="text/javascript">
+    var tinyMDE = new TinyMDE.Editor({element: 'editor'});
+    var commandBar = new TinyMDE.CommandBar({element: 'toolbar', editor: tinyMDE});
+    
+    function GetContent() 
+    {
+        var input = document.getElementById("Content");
+        input.value = tinyMDE.GetContent();
+    }
+</script>
 
 @foreach (var news in Model)
 {

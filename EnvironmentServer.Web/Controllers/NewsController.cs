@@ -1,9 +1,10 @@
 ﻿using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnvironmentServer.Web.Controllers
 {
-    public class NewsController : Controller
+    public class NewsController : ControllerBase
     {
         private Database DB;
 
@@ -16,5 +17,19 @@ namespace EnvironmentServer.Web.Controllers
         {
             return View(DB.News.GetLatest());
         }
+
+        public IActionResult Add(string content)
+        {
+            var news = new News
+            {
+                Content = content,
+                UserID = GetSessionUser().ID
+            };
+
+            DB.News.Insert(news);
+
+            return RedirectToAction("Index");
+        }
+
     }
 }
