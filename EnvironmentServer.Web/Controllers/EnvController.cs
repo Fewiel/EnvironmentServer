@@ -55,7 +55,7 @@ namespace EnvironmentServer.Web.Controllers
                     .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
                 ElasticSearch = DB.EnvironmentsES.GetByEnvironmentID(id)
             };
-            return View("Update" ,createViewModel);
+            return View("Update", createViewModel);
         }
 
         [HttpGet]
@@ -103,16 +103,31 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            DB.CmdAction.CreateTask(new CmdAction {
-            Action = "delete_environment",
-            Id_Variable = env.ID,
-            ExecutedById = GetSessionUser().ID
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "delete_environment",
+                Id_Variable = env.ID,
+                ExecutedById = GetSessionUser().ID
             });
 
             DB.Environments.SetTaskRunning(id, true);
 
             AddInfo("Delete in progress...");
             return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Sorting() => View(DB.Environments.GetForUser(GetSessionUser().ID));
+
+        public IActionResult Increase(long id)
+        {
+            DB.Environments.IncreaseSorting(id);
+            return RedirectToAction("Env", "Sorting");
+        }
+
+        public IActionResult Decrease(long id)
+        {
+            DB.Environments.DecreaseSorting(id);
+            return RedirectToAction("Env", "Sorting");
         }
     }
 }

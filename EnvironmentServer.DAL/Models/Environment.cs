@@ -19,5 +19,6 @@ namespace EnvironmentServer.DAL.Models
         public string DBPassword { get; set; }
         public PhpVersion Version { get; set; }
         public List<EnvironmentSettingValue> Settings { get; set; }
+        public int Sorting { get; set; }
     }
 }

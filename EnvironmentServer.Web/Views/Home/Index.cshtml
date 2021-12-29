@@ -9,7 +9,11 @@
 @{
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
 }
-
+<div>
+    <a asp-controller="Env" asp-action="Sorting" class="text-decoration-none">
+        <i class="bi bi-sort-numeric-down-alt" style="font-size: 50px"></i>
+    </a>
+</div>
 <div class="row row-cols-md-4" style="margin-top: 15px;">
     <div class="col-md-3 px-1">
         <div class="card mb-2 align-middle d-flex align-content-center hovercard" style="height: 420px; padding: 15px;">

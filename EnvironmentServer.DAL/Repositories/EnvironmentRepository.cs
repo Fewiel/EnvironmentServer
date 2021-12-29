@@ -51,7 +51,7 @@ namespace EnvironmentServer.DAL.Repositories
         {
             using (var connection = DB.GetConnection())
             {
-                var Command = new MySqlCommand("select * from environments where users_ID_fk = @id;");
+                var Command = new MySqlCommand("select * from environments where users_ID_fk = @id ORDER BY Sorting DESC;");
                 Command.Parameters.AddWithValue("@id", userID);
                 Command.Connection = connection;
                 MySqlDataReader reader = Command.ExecuteReader();
@@ -84,7 +84,8 @@ namespace EnvironmentServer.DAL.Repositories
                 Address = reader.GetString(3),
                 Version = (PhpVersion)reader.GetInt32(4),
                 DBPassword = reader.GetString(5),
-                Settings = new List<EnvironmentSettingValue>(GetSettingValues(reader.GetInt64(0)))
+                Settings = new List<EnvironmentSettingValue>(GetSettingValues(reader.GetInt64(0))),
+                Sorting = reader.GetInt32(6)
             };
         }
 
@@ -258,6 +259,28 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
+        }
+
+        public void IncreaseSorting(long id)
+        {
+            var env = Get(id);
+            using var connection = DB.GetConnection();
+            connection.Execute("UPDATE `environments` SET `Sorting` = @sorting WHERE `ID` = @id;", new
+            {
+                id = id,
+                sorting = env.Sorting + 1
+            });
+        }
+
+        public void DecreaseSorting(long id)
+        {
+            var env = Get(id);
+            using var connection = DB.GetConnection();
+            connection.Execute("UPDATE `environments` SET `Sorting` = @sorting WHERE `ID` = @id;", new
+            {
+                id = id,
+                sorting = env.Sorting - 1
+            });
         }
 
         public async Task DeleteAsync(Environment environment, User user)

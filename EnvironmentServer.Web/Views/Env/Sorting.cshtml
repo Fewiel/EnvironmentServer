@@ -1,0 +1,37 @@
+﻿@model IEnumerable<EnvironmentServer.DAL.Models.Environment>
+
+@{
+    ViewData["Title"] = "Sort Environments";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Environment-Name</th>
+            <th>Address</th>
+            <th>Sorting Priority</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var env in Model)
+        {
+            <tr>
+                <td>
+                    <span>@env.ID</span>
+                </td>
+                <td>
+                    <span>@env.Name</span>
+                </td>
+                <td>
+                    <span>@env.Address</span>
+                </td>
+                <td>
+                    <a asp-action="Decrease" asp-route-id="@env.ID"><i class="bi bi-dash-circle"></i></a>                    
+                    <span>@env.Sorting</span>
+                    <a asp-action="Increase" asp-route-id="@env.ID"><i class="bi bi-plus-circle"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
