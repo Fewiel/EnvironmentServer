@@ -18,7 +18,8 @@ namespace EnvironmentServer.Web.Controllers
             return View(DB.News.GetLatest());
         }
 
-        public IActionResult Add(string content)
+        [HttpPost]
+        public IActionResult Add([FromForm]string content)
         {
             var news = new News
             {
