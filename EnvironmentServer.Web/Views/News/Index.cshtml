@@ -1,30 +1,38 @@
-﻿@model IEnumerable<EnvironmentServer.DAL.Models.News>
+﻿@using EnvironmentServer.Web.Extensions
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model IEnumerable<EnvironmentServer.DAL.Models.News>
 @{
     ViewData["Title"] = "News";
+    var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
 }
 
-<script src="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.css" />
+@if (usr?.IsAdmin == true)
+{
+    <script src="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.css" />
 
-<form method="post" onsubmit="GetContent()" asp-action="Add">
-    <input type="hidden" id="Content" name="content" />
-    <div id="toolbar"></div>
-    <div id="editor"></div>
-    <button type="submit" class="btn btn-primary">Add News</button>
-</form>
+    <h3>Add News</h3>
+    <span>This can be seen only by admins</span>
 
-<button onclick="GetContent()" class="btn btn-primary">Add News</button>
+    <form method="post" onsubmit="GetContent()" asp-action="Add">
+        <input type="hidden" id="Content" name="content" />
+        <div id="toolbar"></div>
+        <div id="editor"></div>
+        <button type="submit" class="btn btn-primary">Add News</button>
+    </form>
 
-<script type="text/javascript">
-    var tinyMDE = new TinyMDE.Editor({element: 'editor'});
-    var commandBar = new TinyMDE.CommandBar({element: 'toolbar', editor: tinyMDE});
-    
-    function GetContent() 
-    {
+    <script type="text/javascript">
+        var tinyMDE = new TinyMDE.Editor({element: 'editor'});
+        var commandBar = new TinyMDE.CommandBar({element: 'toolbar', editor: tinyMDE});
+
+        function GetContent()
+        {
         var input = document.getElementById("Content");
         input.value = tinyMDE.getContent();
-    }
-</script>
+        }
+    </script>
+}
 
 @foreach (var news in Model)
 {

@@ -15,7 +15,7 @@ public class NewsRepository
     public IEnumerable<News> GetLatest()
     {
         using var connection = DB.GetConnection();
-        return connection.Query<News>("select * from `news` Order BY Created limit 10;");
+        return connection.Query<News>("select * from `news` Order BY Created DESC limit 10;");
     }
 
     public void Insert(News news)
