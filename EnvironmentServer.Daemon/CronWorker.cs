@@ -140,12 +140,9 @@ namespace EnvironmentServer.Daemon
                 new FeedRefresh(sp),
                 new ClearLogs(sp),
                 new InvalidateTokens(sp),
-<<<<<<< HEAD
                 new DeleteExpiredUsers(sp),
-                new LockInactiveAccounts(sp)
-=======
+                new LockInactiveAccounts(sp),
                 new ESCleanup(sp)
->>>>>>> master
             };
 
             foreach (var a in l)
