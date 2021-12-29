@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using EnvironmentServer.DAL.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace EnvironmentServer.Web.ViewModels.Env
         public string EnvironmentName { get; set; }
         public int Version { get; set; }
         public IEnumerable<SelectListItem> PhpVersions { get; set; }
+        public EnvironmentES ElasticSearch { get; set; }
     }
 }

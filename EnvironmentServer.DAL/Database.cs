@@ -29,6 +29,7 @@ namespace EnvironmentServer.DAL
         public ShopwareVersionInfoRepository ShopwareVersionInfos { get; }
         public TokenRepository Tokens { get; }
         public NewsRepository News { get; }
+        public EnvironmentESRepository EnvironmentsES { get; }
 
         public Database(string connString)
         {
@@ -50,6 +51,7 @@ namespace EnvironmentServer.DAL
             ShopwareVersionInfos = new ShopwareVersionInfoRepository(this);
             Tokens = new TokenRepository(this);
             News = new NewsRepository(this);
+            EnvironmentsES = new EnvironmentESRepository(this);
 
             if (Users.GetByUsername("Admin") == null)
             {

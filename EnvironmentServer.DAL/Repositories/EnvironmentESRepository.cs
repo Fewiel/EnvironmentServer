@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using Dapper;
 using EnvironmentServer.DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL.Repositories;
 
-internal class EnvironmentESRepository
+public class EnvironmentESRepository
 {
     private Database DB;
 
@@ -23,19 +24,27 @@ internal class EnvironmentESRepository
         return connection.Query<EnvironmentES>("Select * from `environments_es`");
     }
 
-    public IEnumerable<EnvironmentES> GetByID(long id)
+    public EnvironmentES GetByID(long id)
     {
         using var connection = DB.GetConnection();
-        return connection.Query<EnvironmentES>("Select * from `environments_es` where ID = @id", new
+        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where ID = @id", new
         {
             id = id
         });
     }
-
-    public IEnumerable<EnvironmentES> GetByEnvironmentID(long id)
+    public EnvironmentES GetByDockerID(string dockerID)
     {
         using var connection = DB.GetConnection();
-        return connection.Query<EnvironmentES>("Select * from `environments_es` where EnvironmentID = @id", new
+        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where DockerID = @id", new
+        {
+            id = dockerID
+        });
+    }
+
+    public EnvironmentES GetByEnvironmentID(long id)
+    {
+        using var connection = DB.GetConnection();
+        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where EnvironmentID = @id", new
         {
             id = id
         });
@@ -55,7 +64,8 @@ internal class EnvironmentESRepository
         var envName = DB.Environments.Get(id).Name;
         var dID = "es_docker_" + envName + "_uid_" + DB.Environments.Get(id).UserID;
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"docker run --name {dID} -p {port}:{port} -p {port + 100}:{port + 100} -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
+            .WithArguments($"-c \"docker run -d --name {dID} -p {port}:{port} -p {port + 100}:{port + 100} -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
+            .WithValidation(CommandResultValidation.None)
             .ExecuteAsync();
 
 
@@ -86,7 +96,7 @@ internal class EnvironmentESRepository
     public async Task StopContainer(string dockerID)
     {
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"docker kill {dockerID}\"")
+            .WithArguments($"-c \"docker stop {dockerID}\"")
             .ExecuteAsync();
 
         using var connection = DB.GetConnection();
@@ -98,24 +108,50 @@ internal class EnvironmentESRepository
 
     public async Task StopAll()
     {
-        await Cli.Wrap("/bin/bash")
+        try
+        {
+            await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"docker kill $(docker ps -q)\"")
             .ExecuteAsync();
+        }
+        catch (Exception ex)
+        {
+            DB.Logs.Add("DAL", ex.ToString());
+        }
 
         using var connection = DB.GetConnection();
         connection.Execute("UPDATE `environments_es` SET `Active` = '0';");
     }
 
+    public async Task Remove(string dockerID)
+    {
+        using var connection = DB.GetConnection();
+        var es = GetByDockerID(dockerID);
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
+            .ExecuteAsync();
+        connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
+    }
+
     public async Task Cleanup()
     {
         using var connection = DB.GetConnection();
-        var es_list = connection.Query<EnvironmentES>("Select * from `environments_es` where LastUse < DATE(DATE_SUB(NOW(), INTERVAL 60 DAY));");
-        foreach (var es in es_list)
+        var es_list = connection.Query<EnvironmentES>("Select * from `environments_es` where LastUse < DATE(DATE_SUB(NOW(), INTERVAL 30 DAY));");
+
+        try
         {
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
-                .ExecuteAsync();
-            connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
+            foreach (var es in es_list)
+            {
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
+                    .ExecuteAsync();
+                connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
+            }
         }
+        catch (Exception ex)
+        {
+            DB.Logs.Add("DAL", ex.ToString());
+        }
+
     }
 }

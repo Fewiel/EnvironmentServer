@@ -80,7 +80,8 @@ namespace EnvironmentServer.Daemon
                 "clear_logs",
                 "invalidate_tokens",
                 "delete_expired_users",
-                "lock_inactive_accounts"
+                "lock_inactive_accounts",
+                "es_cleanup"
             };
 
             foreach (var a in actionList)
@@ -139,8 +140,12 @@ namespace EnvironmentServer.Daemon
                 new FeedRefresh(sp),
                 new ClearLogs(sp),
                 new InvalidateTokens(sp),
+<<<<<<< HEAD
                 new DeleteExpiredUsers(sp),
                 new LockInactiveAccounts(sp)
+=======
+                new ESCleanup(sp)
+>>>>>>> master
             };
 
             foreach (var a in l)
