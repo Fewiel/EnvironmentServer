@@ -12,10 +12,13 @@ public class NewsRepository
         DB = db;
     }
 
-    public IEnumerable<News> GetLatest()
+    public IEnumerable<News> GetLatest(int limit)
     {
         using var connection = DB.GetConnection();
-        return connection.Query<News>("select * from `news` Order BY Created DESC limit 10;");
+        return connection.Query<News>("select * from `news` Order BY Created DESC limit @limit;", new
+        {
+            limit = limit
+        });
     }
 
     public void Insert(News news)

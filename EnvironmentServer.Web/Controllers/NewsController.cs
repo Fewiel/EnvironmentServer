@@ -15,7 +15,7 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Index()
         {
-            return View(DB.News.GetLatest());
+            return View(DB.News.GetLatest(10));
         }
 
         [HttpPost]

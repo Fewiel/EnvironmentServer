@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EnvironmentServer.DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,5 +14,7 @@ namespace EnvironmentServer.Web.ViewModels.Login
 
         [MinLength(4), DataType(DataType.Password)]
         public string Password { get; set; }
+
+        public IEnumerable<News> LatestNews { get; set; }
     }
 }

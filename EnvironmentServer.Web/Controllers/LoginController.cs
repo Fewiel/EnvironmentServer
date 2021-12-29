@@ -25,7 +25,14 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpGet, Route("/Login", Name = "login")]
-        public IActionResult Login() => View();
+        public IActionResult Login()
+        {
+            var lvm = new LoginViewModel
+            {
+                LatestNews = DB.News.GetLatest(4)
+            };
+            return View(lvm);
+        }
 
         [HttpPost, Route("/Login", Name = "login")]
         public IActionResult Login([FromForm]LoginViewModel lvm)
