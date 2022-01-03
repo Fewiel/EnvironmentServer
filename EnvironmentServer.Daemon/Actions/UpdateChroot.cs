@@ -16,7 +16,7 @@ namespace EnvironmentServer.Daemon.Actions
             foreach (var u in db.Users.GetUsers())
             {
                 db.Logs.Add("Daemon", "Update Chroot for " + u.Username);
-                await db.Users.UpdateChrootForUserAsync(u.Username);
+                await DAL.Repositories.UsersRepository.UpdateChrootForUserAsync(u.Username);
             }
         }
     }

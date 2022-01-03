@@ -37,7 +37,6 @@ php_admin_value[open_basedir] = /home/{0}/files
 php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
 php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
-
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
         {
@@ -77,7 +76,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             using var connection = DB.GetConnection();
             var usr = connection.QuerySingleOrDefault<User>("select * from users where Username = @username AND `active` = 1;", new
             {
-                username = username
+                username
             });
 
             if (usr != null)
@@ -173,7 +172,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Logs.Add("DAL", "New User added: " + user.Username);
         }
 
-        public async Task UpdateChrootForUserAsync(string user)
+        public static async Task UpdateChrootForUserAsync(string user)
         {
             var path = "/home/" + user;
 
@@ -188,7 +187,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
         public async Task RegenerateConfig()
         {
-
             foreach (var user in DB.Users.GetUsers())
             {
                 try
@@ -234,7 +232,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
-
         }
 
         public async Task UpdateAsync(User user, string shellPassword)
@@ -295,14 +292,11 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     ExpirationDate = user.ExpirationDate
                 };
 
-
-
                 connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
                 {
                     user = user.Username + "@localhost",
                     password = shellPassword
                 });
-
 
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"echo -e '{user.Username}:{shellPassword}' | chpasswd\"")
@@ -326,7 +320,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     isAdmin = user.IsAdmin,
                     active = user.Active,
                     lastused =  user.LastUsed,
-                    exp = user.ExpirationDate                    
+                    exp = user.ExpirationDate
                 });
         }
 
@@ -374,7 +368,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                  + "`Active` = @active WHERE `users`.`ID` = @id", new
                  {
                      id = user.ID,
-                     active = active
+                     active
                  });
         }
 
@@ -436,7 +430,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                      + "`SSHPublicKey` = @key where `ID` = @id", new
                      {
                          id = userid,
-                         key = key
+                         key
                      });
         }
 
