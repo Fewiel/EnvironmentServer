@@ -22,8 +22,7 @@ public class UserInformationRepository
         {
             id = uid
         });
-        usrInfo.DepartmentName = DB.Department.Get(usrInfo.DepartmentID).Name;
-
+        
         var usr = DB.Users.GetByID(uid);
 
         if (usrInfo == null)
@@ -41,6 +40,8 @@ public class UserInformationRepository
             };
             DB.UserInformation.Insert(usrInfo);
         }
+
+        usrInfo.DepartmentName = DB.Department.Get(usrInfo.DepartmentID).Name;
 
         return usrInfo;
     }
