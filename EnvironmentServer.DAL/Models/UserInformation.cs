@@ -10,6 +10,6 @@ public class UserInformation
     public string SlackID { get; set; }
     public long DepartmentID { get; set; }
     public DateTime? AbsenceDate { get; set; }
-    public string AbsenceReason { get; set; }
-    public string AdminNote { get; set; }
+    public string AbsenceReason { get; set; } = "";
+    public string AdminNote { get; set; } = "";
 }

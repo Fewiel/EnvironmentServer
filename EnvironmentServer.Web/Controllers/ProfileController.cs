@@ -123,7 +123,6 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult UpdateInformations([FromForm] ProfileViewModel pvm)
         {
-            DB.Logs.Add("debug", "AdminNote: " + (pvm.UserInformation.AdminNote == null ? "1NULL" : pvm.UserInformation.AdminNote));
             pvm.UserInformation.UserID = GetSessionUser().ID;
             DB.UserInformation.Update(pvm.UserInformation);
             return RedirectToAction("Index", "Profile");
