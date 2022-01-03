@@ -23,15 +23,13 @@ public class UserInformationRepository
             id = uid
         });
         
-        var usr = DB.Users.GetByID(uid);
-
         if (usrInfo == null)
         {
             usrInfo = new UserInformation
             {
-                Name = usr.Username,
-                SlackID = "Not set",
-                UserID = usr.ID,
+                Name = "",
+                SlackID = "",
+                UserID = uid,
                 AbsenceReason = "",
                 AdminNote = "",
                 DepartmentID = 0,
