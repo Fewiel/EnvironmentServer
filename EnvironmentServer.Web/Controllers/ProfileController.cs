@@ -63,6 +63,7 @@ namespace EnvironmentServer.Web.Controllers
             AddInfo("SSH key was successfully inserted. You can now log in to SSH via SSH key.");
             return RedirectToAction("Index", "Home");
         }
+
         public IActionResult ChangeSSH([FromForm] ProfileViewModel pvm)
         {
             if (string.IsNullOrEmpty(pvm.SSHPublicKey) || !Regex.Match(pvm.SSHPublicKey, "ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3}( [^@]+@[^@]+)?").Success)
@@ -118,6 +119,23 @@ namespace EnvironmentServer.Web.Controllers
 
             AddInfo("Password changed");
             return RedirectToAction("Logout", "Login");
+        }
+
+        public IActionResult UpdateInformations([FromForm] ProfileViewModel pvm)
+        {
+            var usi = new UserInformation
+            {
+                ID = pvm.UserInformation.ID,
+                Name = pvm.UserInformation.Name,
+                DepartmentID = pvm.UserInformation.DepartmentID,
+                AdminNote = pvm.UserInformation.AdminNote,
+                AbsenceDate = pvm.UserInformation.AbsenceDate,
+                AbsenceReason = pvm.UserInformation.AbsenceReason,
+                SlackID = pvm.UserInformation.SlackID,
+                UserID = GetSessionUser().ID
+            };
+            DB.UserInformation.Update(usi);
+            return RedirectToAction("Index", "Profile");
         }
     }
 }

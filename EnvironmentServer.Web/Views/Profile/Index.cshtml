@@ -18,6 +18,9 @@
     </form>
     <br />
     <form method="post" asp-action="UpdateInformations" style="width: 400px;">
+        <input type="hidden" asp-for="UserInformation.ID" />
+        <input type="hidden" asp-for="UserInformation.AdminNote" />
+        <input type="hidden" asp-for="UserInformation.DepartmentID" />
         <div class="mb-3">
             <label asp-for="UserInformation.Name" class="form-label">Full Name</label>
             <input asp-for="UserInformation.Name" class="form-control" />
