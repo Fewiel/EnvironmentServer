@@ -12,4 +12,10 @@ public class UserInformation
     public DateTime? AbsenceDate { get; set; }
     public string AbsenceReason { get; set; } = "";
     public string AdminNote { get; set; } = "";
+
+    public void PrepareForDB()
+    {
+        AdminNote ??= "";
+        AbsenceReason ??= "";
+    }
 }

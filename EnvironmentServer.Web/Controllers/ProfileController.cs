@@ -124,6 +124,7 @@ namespace EnvironmentServer.Web.Controllers
         public IActionResult UpdateInformations([FromForm] ProfileViewModel pvm)
         {
             pvm.UserInformation.UserID = GetSessionUser().ID;
+            pvm.UserInformation.PrepareForDB();
             DB.UserInformation.Update(pvm.UserInformation);
             return RedirectToAction("Index", "Profile");
         }
