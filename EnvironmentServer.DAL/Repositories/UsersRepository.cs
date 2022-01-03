@@ -54,25 +54,33 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         public IEnumerable<User> GetUsers()
         {
             using var connection = DB.GetConnection();
-            return connection.Query<User>("select * from users;");
+            foreach (var usr in connection.Query<User>("select * from users;"))
+            {
+                usr.UserInformation = DB.UserInformation.Get(usr.ID);
+                yield return usr;
+            }
         }
 
         public User GetByID(long ID)
         {
             using var connection = DB.GetConnection();
-            return connection.QuerySingleOrDefault<User>("select * from users where ID = @id;", new
+            var usr = connection.QuerySingleOrDefault<User>("select * from users where ID = @id;", new
             {
                 id = ID
             });
+            usr.UserInformation = DB.UserInformation.Get(usr.ID);
+            return usr;
         }
 
         public User GetByUsername(string username)
         {
             using var connection = DB.GetConnection();
-            return connection.QuerySingleOrDefault<User>("select * from users where Username = @username AND `active` = 1;", new
+            var usr = connection.QuerySingleOrDefault<User>("select * from users where Username = @username AND `active` = 1;", new
             {
                 username = username
             });
+            usr.UserInformation = DB.UserInformation.Get(usr.ID);
+            return usr;
         }
 
         public async Task InsertAsync(User user, string shellPassword)

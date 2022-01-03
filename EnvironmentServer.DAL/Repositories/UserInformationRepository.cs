@@ -12,13 +12,37 @@ public class UserInformationRepository
         DB = db;
     }
 
+    /// <summary>
+    /// Get a UserInformation for specified UserID. Inserts new UserInformation if not exist.
+    /// </summary>
     public UserInformation Get(long uid)
     {
         using var connection = DB.GetConnection();
-        return connection.QuerySingleOrDefault<UserInformation>("select * from users_information where UserID = @id;", new
+        var usrInfo = connection.QuerySingleOrDefault<UserInformation>("select * from users_information where UserID = @id;", new
         {
             id = uid
         });
+        usrInfo.DepartmentName = DB.Department.Get(usrInfo.DepartmentID).Name;
+
+        var usr = DB.Users.GetByID(uid);
+
+        if (usrInfo == null)
+        {
+            usrInfo = new UserInformation
+            {
+                Name = usr.Username,
+                SlackID = "Not set",
+                UserID = usr.ID,
+                AbsenceReason = "",
+                AdminNote = "",
+                DepartmentID = 0,
+                DepartmentName = DB.Department.Get(0).Name,
+                AbsenceDate = null
+            };
+            DB.UserInformation.Insert(usrInfo);
+        }
+
+        return usrInfo;
     }
 
     public void Insert(UserInformation ui)

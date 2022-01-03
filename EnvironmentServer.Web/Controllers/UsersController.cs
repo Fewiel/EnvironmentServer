@@ -2,7 +2,9 @@
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.ViewModels.Login;
+using EnvironmentServer.Web.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,18 +77,27 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Update(long id)
         {
-            return View(DB.Users.GetByID(id));
+            var auvm = new AdminUsersViewModel
+            {
+                User = DB.Users.GetByID(id),
+                DepartmentList = DB.Department.GetAll()
+                    .Select(d => new SelectListItem(d.Name, d.ID.ToString()))
+            };
+
+            return View(auvm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(User user)
+        public async Task<IActionResult> Update([FromForm] AdminUsersViewModel auvm)
         {
-            var usr = DB.Users.GetByID(user.ID);
-            usr.IsAdmin = user.IsAdmin;
-            usr.Email = user.Email;
-            usr.Active = user.Active;
-            usr.ExpirationDate = user.ExpirationDate;
+            var usr = DB.Users.GetByID(auvm.User.ID);
+            usr.IsAdmin = auvm.User.IsAdmin;
+            usr.Email = auvm.User.Email;
+            usr.Active = auvm.User.Active;
+            usr.ExpirationDate = auvm.User.ExpirationDate;
             await DB.Users.UpdateByAdminAsync(usr, false);
+            auvm.User.UserInformation.PrepareForDB();
+            DB.UserInformation.Update(auvm.User.UserInformation);
             AddInfo("User updated");
             return RedirectToAction("Index");
         }

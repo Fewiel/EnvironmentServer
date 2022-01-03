@@ -2,13 +2,15 @@
 @{
     ViewData["Title"] = "Users";
 }
-<a asp-action="Create">Create new user</a><span> - </span><a asp-action="Regenerate">Regenerate config files</a><span> - </span><a asp-action="UpdateChroot">Update Chroot</a>
+<a asp-action="Create"><i class="bi bi-person-plus"></i></a>
+@*<span> - </span><a asp-action="Regenerate">Regenerate config files</a><span>*@
 <table class="table">
     <thead>
         <tr>
             <th>ID</th>
             <th>Username</th>
             <th>Email</th>
+            <th>Department</th>
             <th>Admin</th>
             <th>Active</th>
             <th>Actions</th>
@@ -28,15 +30,17 @@
                     <span>@usr.Email</span>
                 </td>
                 <td>
+                    <span>@usr.UserInformation.DepartmentName</span>
+                </td>
+                <td>
                     <span>@usr.IsAdmin</span>
                 </td>
                 <td>
                     <span style="@(usr.Active ? "" : "color:#FF0000; font-weight:bold;")">@usr.Active</span>
                 </td>
                 <td>
-                    <a asp-action="ResetPassword" onclick="return confirm('Are you sure?')" asp-route-id="@usr.ID">Reset Password</a>
-                    <a asp-action="Update" asp-route-id="@usr.ID">Update</a>
-                    <a asp-action="Delete" onclick="return confirm('Are you sure?')" asp-route-id="@usr.ID">Delete</a>
+                    <a asp-action="Update" asp-route-id="@usr.ID"><i class="bi bi-pencil"></i></a>
+                    <a asp-action="Delete" onclick="return confirm('Are you sure? This will delete the User and all Userdata! This step cannot be undone!')" asp-route-id="@usr.ID"><i style="color:#FF0000" class="bi bi-trash"></i></a>
                 </td>
             </tr>
         }

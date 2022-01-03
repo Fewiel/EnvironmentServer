@@ -23,21 +23,6 @@ namespace EnvironmentServer.Web.Controllers
             var usr = DB.Users.GetByID(GetSessionUser().ID);
             var uInfo = DB.UserInformation.Get(usr.ID);
 
-            if (uInfo == null)
-            {
-                uInfo = new UserInformation
-                {
-                    Name = usr.Username,
-                    SlackID = "Not set",
-                    UserID = usr.ID,
-                    AbsenceReason = "",
-                    AdminNote = "",
-                    DepartmentID = 0,
-                    AbsenceDate = null
-                };
-                DB.UserInformation.Insert(uInfo);
-            }
-
             var pvm = new ProfileViewModel
             {
                 SSHPublicKey = usr.SSHPublicKey,
@@ -126,6 +111,7 @@ namespace EnvironmentServer.Web.Controllers
             pvm.UserInformation.UserID = GetSessionUser().ID;
             pvm.UserInformation.PrepareForDB();
             DB.UserInformation.Update(pvm.UserInformation);
+            AddInfo("Userinformation updated");
             return RedirectToAction("Index", "Profile");
         }
     }

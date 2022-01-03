@@ -17,5 +17,6 @@ namespace EnvironmentServer.DAL.Models
         public bool Active { get; set; }
         public DateTime LastUsed { get; set; }
         public DateTime? ExpirationDate { get; set; }
+        public UserInformation UserInformation { get; set; }
     }
 }

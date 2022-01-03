@@ -1,31 +1,63 @@
-﻿@model EnvironmentServer.DAL.Models.User
+﻿@model EnvironmentServer.Web.ViewModels.Users.AdminUsersViewModel
 
 @{
     ViewData["Title"] = "Update";
 }
 
 <div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
-    <h4>Editing User: @Model.Username</h4><br />
-    <h5>Latest use: @Model.LastUsed.ToString("dd.MM.yyyy H:mm:ss")</h5><br />
+    <h4>Editing User: @Model.User.Username</h4><br />
+    <h5>Latest use: @Model.User.LastUsed.ToString("dd.MM.yyyy H:mm:ss")</h5><br />
     <form method="post" asp-action="Update" style="width: 400px;">
-        <input type="hidden" asp-for="ID" />
+        <input type="hidden" asp-for="User.ID" />
+        <input type="hidden" asp-for="User.UserInformation.ID" />
+        <input type="hidden" asp-for="User.UserInformation.UserID" />
         <div class="mb-3">
-            <label asp-for="Email" class="form-label">E-Mail</label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email"></span>
+            <label asp-for="User.UserInformation.Name" class="form-label">Full Name</label>
+            <input asp-for="User.UserInformation.Name" class="form-control" />
+            <span asp-validation-for="User.UserInformation.Name"></span>
         </div>
         <div class="mb-3">
-            <input class="form-check-input" type="checkbox" asp-for="IsAdmin">
-            <label class="form-check-label" asp-for="IsAdmin">Admin</label>
+            <label asp-for="User.UserInformation.SlackID" class="form-label">SlackID</label>
+            <input asp-for="User.UserInformation.SlackID" class="form-control" />
+            <span asp-validation-for="User.UserInformation.SlackID"></span>
         </div>
         <div class="mb-3">
-            <input class="form-check-input" type="checkbox" asp-for="Active">
-            <label class="form-check-label" asp-for="Active">Active</label>
+            <label asp-for="User.Email" class="form-label">E-Mail</label>
+            <input asp-for="User.Email" class="form-control" />
+            <span asp-validation-for="User.Email"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="ExpirationDate" class="form-label">Expiration Date (Leave empty for normal account)</label>
-            <input type="datetime-local" asp-for="ExpirationDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
-            <span asp-validation-for="ExpirationDate"></span>
+            <label class="form-label">Department</label>
+            <select asp-for="User.UserInformation.DepartmentID" asp-items="Model.DepartmentList" class="form-select"></select>
+            <span asp-validation-for="User.UserInformation.DepartmentID" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="User.UserInformation.AbsenceDate" class="form-label">Absence until (Only if longer than 60 days)</label>
+            <input type="datetime-local" asp-for="User.UserInformation.AbsenceDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
+            <span asp-validation-for="User.UserInformation.AbsenceDate"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="User.UserInformation.AbsenceReason" class="form-label">Absence reason (short)</label>
+            <input asp-for="User.UserInformation.AbsenceReason" class="form-control" />
+            <span asp-validation-for="User.UserInformation.AbsenceReason"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="User.UserInformation.AdminNote" class="form-label">Admin Note (Only visible for Admins)</label>
+            <input asp-for="User.UserInformation.AdminNote" class="form-control" />
+            <span asp-validation-for="User.UserInformation.AdminNote"></span>
+        </div>
+        <div class="mb-3">
+            <input class="form-check-input" type="checkbox" asp-for="User.IsAdmin">
+            <label class="form-check-label" asp-for="User.IsAdmin">Admin</label>
+        </div>
+        <div class="mb-3">
+            <input class="form-check-input" type="checkbox" asp-for="User.Active">
+            <label class="form-check-label" asp-for="User.Active">Active</label>
+        </div>
+        <div class="mb-3">
+            <label asp-for="User.ExpirationDate" class="form-label">Expiration Date (Leave empty for normal account)</label>
+            <input type="datetime-local" asp-for="User.ExpirationDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
+            <span asp-validation-for="User.ExpirationDate"></span>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
