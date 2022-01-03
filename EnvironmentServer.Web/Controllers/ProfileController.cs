@@ -123,18 +123,9 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult UpdateInformations([FromForm] ProfileViewModel pvm)
         {
-            var usi = new UserInformation
-            {
-                ID = pvm.UserInformation.ID,
-                Name = pvm.UserInformation.Name,
-                DepartmentID = pvm.UserInformation.DepartmentID,
-                AdminNote = pvm.UserInformation.AdminNote,
-                AbsenceDate = pvm.UserInformation.AbsenceDate,
-                AbsenceReason = pvm.UserInformation.AbsenceReason,
-                SlackID = pvm.UserInformation.SlackID,
-                UserID = GetSessionUser().ID
-            };
-            DB.UserInformation.Update(usi);
+            DB.Logs.Add("debug", "AdminNote: " + (pvm.UserInformation.AdminNote == null ? "1NULL" : pvm.UserInformation.AdminNote));
+            pvm.UserInformation.UserID = GetSessionUser().ID;
+            DB.UserInformation.Update(pvm.UserInformation);
             return RedirectToAction("Index", "Profile");
         }
     }
