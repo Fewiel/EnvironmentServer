@@ -79,7 +79,10 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             {
                 username = username
             });
-            usr.UserInformation = DB.UserInformation.Get(usr.ID);
+
+            if (usr != null)
+                usr.UserInformation = DB.UserInformation.Get(usr.ID);
+
             return usr;
         }
 
