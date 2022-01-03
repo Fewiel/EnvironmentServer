@@ -15,7 +15,7 @@ public class UserInformationRepository
     public UserInformation Get(long uid)
     {
         using var connection = DB.GetConnection();
-        return connection.QuerySingleOrDefault<UserInformation>("select * from user_information where UserID = @id;", new
+        return connection.QuerySingleOrDefault<UserInformation>("select * from users_information where UserID = @id;", new
         {
             id = uid
         });
