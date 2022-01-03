@@ -325,8 +325,6 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     lastused =  user.LastUsed,
                     exp = user.ExpirationDate                    
                 });
-
-            DB.Mail.Send("Account updated", string.Format(DB.Settings.Get("mail_account_update").Value, user.Username, user.Email, user.IsAdmin), user.Email);
         }
 
         public async Task LockUserAsync(User usr)

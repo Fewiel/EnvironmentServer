@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Users";
 }
-<a asp-action="Create"><i class="bi bi-person-plus"></i></a>
+<a asp-action="Create"><i style="font-size: 30px;" class="bi bi-person-plus"></i></a>
 @*<span> - </span><a asp-action="Regenerate">Regenerate config files</a><span>*@
 <table class="table">
     <thead>
@@ -40,7 +40,7 @@
                 </td>
                 <td>
                     <a asp-action="Update" asp-route-id="@usr.ID"><i class="bi bi-pencil"></i></a>
-                    <a asp-action="Delete" onclick="return confirm('Are you sure? This will delete the User and all Userdata! This step cannot be undone!')" asp-route-id="@usr.ID"><i style="color:#FF0000" class="bi bi-trash"></i></a>
+                    <a asp-action="Delete" style="margin-left: 10px;" onclick="return confirm('Are you sure? This will delete the User and all Userdata! This step cannot be undone!')" asp-route-id="@usr.ID"><i style="color:#FF0000" class="bi bi-trash"></i></a>
                 </td>
             </tr>
         }
