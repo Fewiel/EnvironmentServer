@@ -20,12 +20,36 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
+            var uInfo = DB.UserInformation.Get(usr.ID);
+
+            if (uInfo == null)
+            {
+                uInfo = new UserInformation
+                {
+                    Name = usr.Username,
+                    SlackID = "Not set",
+                    UserID = usr.ID,
+                    AbsenceReason = "",
+                    AdminNote = "",
+                    DepartmentID = 0,
+                    AbsenceDate = null
+                };
+                DB.UserInformation.Insert(uInfo);
+            }
+
+            var pvm = new ProfileViewModel
+            {
+                SSHPublicKey = usr.SSHPublicKey,
+                UserInformation = uInfo,
+                UserDepartment = DB.Department.Get(uInfo.DepartmentID)
+            };
+            return View(pvm);
         }
 
         public async Task<IActionResult> VerifySSHAsync(string token)
         {
-            var usr = GetSessionUser();            
+            var usr = GetSessionUser();
             if (usr == null || string.IsNullOrEmpty(token) || !Guid.TryParse(token, out Guid guid))
                 return RedirectToAction("Index", "Home");
 

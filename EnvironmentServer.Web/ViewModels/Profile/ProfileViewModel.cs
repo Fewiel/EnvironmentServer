@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EnvironmentServer.DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -20,5 +21,8 @@ namespace EnvironmentServer.Web.ViewModels.Profile
         [MinLength(6), DataType(DataType.Password)]
         [RegularExpression(@"^[^'"" ´`]*$", ErrorMessage = "Password may not contain: ^'\"´`[SPACE]")]
         public string PasswordNewRetype { get; set; }
+
+        public UserInformation UserInformation { get; set; }
+        public Department UserDepartment { get; set; }
     }
 }

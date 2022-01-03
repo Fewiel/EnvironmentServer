@@ -30,6 +30,8 @@ namespace EnvironmentServer.DAL
         public TokenRepository Tokens { get; }
         public NewsRepository News { get; }
         public EnvironmentESRepository EnvironmentsES { get; }
+        public UserInformationRepository UserInformation { get; }
+        public DepartmentRepository Department { get; }
 
         public Database(string connString)
         {
@@ -52,6 +54,8 @@ namespace EnvironmentServer.DAL
             Tokens = new TokenRepository(this);
             News = new NewsRepository(this);
             EnvironmentsES = new EnvironmentESRepository(this);
+            UserInformation = new UserInformationRepository(this);
+            Department = new DepartmentRepository(this);
 
             if (Users.GetByUsername("Admin") == null)
             {
