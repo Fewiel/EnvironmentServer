@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.ViewModels.Profile;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -114,9 +115,11 @@ namespace EnvironmentServer.Web.Controllers
             AddInfo("Userinformation updated");
             return RedirectToAction("Index", "Profile");
         }
-                
+
+        [AllowNotLoggedIn]
         public IActionResult PasswordRecovery() => View();
-                
+
+        [AllowNotLoggedIn]
         public IActionResult PasswordRecovery([FromForm] PasswordRecoveryViewModel prv)
         {
             DB.Users.ForgotPassword(prv.Mail);
@@ -124,12 +127,14 @@ namespace EnvironmentServer.Web.Controllers
             return View();
         }
 
+        [AllowNotLoggedIn]
         public IActionResult SetPassword(string token, string mail)
         {
             var prv = new PasswordRecoveryViewModel { Token = token, Mail = mail };
             return View(prv);
         }
 
+        [AllowNotLoggedIn]
         public async Task<IActionResult> SetPasswordAsync([FromForm] PasswordRecoveryViewModel prv)
         {
             if (prv.PasswordNew != prv.PasswordNewRetype)
