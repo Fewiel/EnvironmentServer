@@ -116,10 +116,10 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index", "Profile");
         }
 
-        [AllowNotLoggedIn, HttpGet]
+        [AllowNotLoggedIn]
         public IActionResult PasswordRecovery() => View();
 
-        [AllowNotLoggedIn]
+        [AllowNotLoggedIn, HttpPost]
         public IActionResult PasswordRecovery([FromForm] PasswordRecoveryViewModel prv)
         {
             DB.Users.ForgotPassword(prv.Mail);
@@ -134,7 +134,7 @@ namespace EnvironmentServer.Web.Controllers
             return View(prv);
         }
 
-        [AllowNotLoggedIn]
+        [AllowNotLoggedIn, HttpPost]
         public async Task<IActionResult> SetPasswordAsync([FromForm] PasswordRecoveryViewModel prv)
         {
             if (prv.PasswordNew != prv.PasswordNewRetype)
