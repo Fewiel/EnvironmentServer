@@ -116,7 +116,7 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index", "Profile");
         }
 
-        [AllowNotLoggedIn]
+        [AllowNotLoggedIn, HttpGet]
         public IActionResult PasswordRecovery() => View();
 
         [AllowNotLoggedIn]
