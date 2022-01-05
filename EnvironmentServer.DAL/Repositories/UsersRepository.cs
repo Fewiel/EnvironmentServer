@@ -85,6 +85,20 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             return usr;
         }
 
+        public User GetByMail(string mail)
+        {
+            using var connection = DB.GetConnection();
+            var usr = connection.QuerySingleOrDefault<User>("select * from users where Email = @mail AND `active` = 1;", new
+            {
+                mail
+            });
+
+            if (usr != null)
+                usr.UserInformation = DB.UserInformation.Get(usr.ID);
+
+            return usr;
+        }
+
         public async Task InsertAsync(User user, string shellPassword)
         {
             DB.Logs.Add("DAL", "Insert user " + user.Username);
@@ -461,6 +475,44 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             var token = DB.Tokens.Generate(user.ID);
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_sshkey").Value, user.Username, token.ToString()), user.Email);
+        }
+
+        public void ForgotPassword(string mail)
+        {
+            if (string.IsNullOrEmpty(mail))
+                return;
+
+            var usr = GetByMail(mail);
+
+            if (usr == null)
+                return;
+
+            var token = DB.Tokens.Generate(usr.ID);
+            DB.Mail.Send("Shopware Environment Server Account",
+                string.Format(DB.Settings.Get("mail_account_password_recovery").Value, usr.Username, token.ToString()), usr.Email);
+        }
+
+        public async Task<bool> ResetPasswordAsync(string token, string mail, string password)
+        {
+            var usr = GetByMail(mail);
+
+            if (usr == null || string.IsNullOrEmpty(token) || !Guid.TryParse(token, out Guid guid))
+                return false;
+
+            if (!DB.Tokens.Use(guid, usr.ID))
+                return false;
+
+            var update_usr = new User
+            {
+                ID = usr.ID,
+                Username = usr.Username,
+                Email = usr.Email,
+                Password = PasswordHasher.Hash(password),
+                IsAdmin = usr.IsAdmin
+            };
+
+            await UpdateAsync(update_usr, password);
+            return true;
         }
     }
 }

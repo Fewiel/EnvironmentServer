@@ -114,5 +114,39 @@ namespace EnvironmentServer.Web.Controllers
             AddInfo("Userinformation updated");
             return RedirectToAction("Index", "Profile");
         }
+                
+        public IActionResult PasswordRecovery() => View();
+                
+        public IActionResult PasswordRecovery([FromForm] PasswordRecoveryViewModel prv)
+        {
+            DB.Users.ForgotPassword(prv.Mail);
+            AddInfo("Passwort recovery mail send. Check your mailbox!");
+            return View();
+        }
+
+        public IActionResult SetPassword(string token, string mail)
+        {
+            var prv = new PasswordRecoveryViewModel { Token = token, Mail = mail };
+            return View(prv);
+        }
+
+        public async Task<IActionResult> SetPasswordAsync([FromForm] PasswordRecoveryViewModel prv)
+        {
+            if (prv.PasswordNew != prv.PasswordNewRetype)
+            {
+                AddError("Passwords does not match");
+                return View(prv);
+            }
+
+
+            if (!await DB.Users.ResetPasswordAsync(prv.Token, prv.Mail, prv.PasswordNew))
+            {
+                AddError("Token or Mailaddress not valid");
+                return View(prv);
+            }
+
+            AddInfo("Passwort set. You can now login to your account!");
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
