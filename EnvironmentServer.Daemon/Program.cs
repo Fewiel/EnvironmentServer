@@ -30,10 +30,12 @@ namespace EnvironmentServer.Daemon
 
             if (db.Settings.Get("slack_enable").Value == "1")
             {
+                Console.WriteLine("SlackEnabled: " + db.Settings.Get("slack_api_key").Value);
                 sc.AddSingleton<IExternalMessaging>(new Bot(db.Settings.Get("slack_api_key").Value));
             }
             else
             {
+                Console.WriteLine("SlackDisabled");
                 sc.AddSingleton<IExternalMessaging>(new NoExternalMessaging());
             }
 

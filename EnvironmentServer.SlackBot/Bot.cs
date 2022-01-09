@@ -17,7 +17,9 @@ public class Bot : IExternalMessaging
 
     public async Task<bool> SendMessageAsync(string msg, string uid)
     {
+        Console.WriteLine(msg);
         var response = await Client.PostMessageAsync(uid, msg);
+        Console.Write(response.error);
         return response.ok;
     }
 }
