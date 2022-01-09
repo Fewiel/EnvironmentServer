@@ -125,9 +125,10 @@ internal class DownloadExtractAutoinstall : ActionBase
 
         if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
         {
-            await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value, env.Name),
+            var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value, env.Name),
                 user.UserInformation.SlackID);
-            return;
+            if (success)
+                return;
         }
         db.Mail.Send($"Installation finished for {env.Name}!", string.Format(
             db.Settings.Get("mail_download_finished").Value, user.Username, env.Name), user.Email);

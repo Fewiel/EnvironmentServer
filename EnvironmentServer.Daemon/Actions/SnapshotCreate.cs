@@ -98,9 +98,10 @@ namespace EnvironmentServer.Daemon.Actions
 
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
-                await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_create_finished").Value, env.Name)
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_create_finished").Value, env.Name)
                     , user.UserInformation.SlackID);
-                return;
+                if (success)
+                    return;
             }
 
             db.Mail.Send($"Snapshot ready for {env.Name}!", string.Format(db.Settings.Get("mail_snapshot_create").Value,
