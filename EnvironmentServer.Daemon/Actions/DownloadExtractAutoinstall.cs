@@ -1,5 +1,7 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL;
+using EnvironmentServer.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -10,8 +12,10 @@ internal class DownloadExtractAutoinstall : ActionBase
 {
     public override string ActionIdentifier => "download_extract_autoinstall";
 
-    public override async Task ExecuteAsync(Database db, long variableID, long userID)
+    public override async Task ExecuteAsync(ServiceProvider sp, long variableID, long userID)
     {
+        var db = sp.GetService<Database>();
+        var em = sp.GetService<IExternalMessaging>();
         var user = db.Users.GetByID(userID);
         var env = db.Environments.Get(variableID);
 
@@ -65,7 +69,13 @@ internal class DownloadExtractAutoinstall : ActionBase
         {
             //SW6
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"php7.4 public/recovery/install/index.php --db-host=\\\"localhost\\\" --db-port=\\\"3306\\\" --db-user=\\\"{dbname}\\\" --db-password=\\\"{env.DBPassword}\\\" --db-name=\\\"{dbname}\\\" --shop-locale=\\\"de-DE\\\" --no-skip-import --shop-host=\\\"{env.Address}\\\" --shop-email=\\\"{user.Email}\\\" --admin-username=\\\"demo\\\" --admin-password=\\\"demo\\\" --admin-email=\\\"{user.Email}\\\" --admin-firstname=\\\"Shopware\\\" --admin-lastname=\\\"Demo\\\" --shop-currency=\\\"EUR\\\" --shop-name=\\\"{env.Name}\\\" --shop-country=\\\"DEU\\\" --admin-locale=\\\"de-DE\\\" -n\"")
+                .WithArguments($"-c \"php7.4 public/recovery/install/index.php --db-host=\\\"localhost\\\" " +
+                $"--db-port=\\\"3306\\\" --db-user=\\\"{dbname}\\\" --db-password=\\\"{env.DBPassword}\\\" " +
+                $"--db-name=\\\"{dbname}\\\" --shop-locale=\\\"de-DE\\\" --no-skip-import " +
+                $"--shop-host=\\\"{env.Address}\\\" --shop-email=\\\"{user.Email}\\\" --admin-username=\\\"demo\\\" " +
+                $"--admin-password=\\\"demo\\\" --admin-email=\\\"{user.Email}\\\" --admin-firstname=\\\"Shopware\\\" " +
+                $"--admin-lastname=\\\"Demo\\\" --shop-currency=\\\"EUR\\\" --shop-name=\\\"{env.Name}\\\" " +
+                $"--shop-country=\\\"DEU\\\" --admin-locale=\\\"de-DE\\\" -n\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
@@ -96,7 +106,13 @@ internal class DownloadExtractAutoinstall : ActionBase
         {
             //SW5
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"php7.4 recovery/install/index.php --no-interaction --quiet --no-skip-import --db-host=\\\"localhost\\\" --db-user=\\\"{dbname}\\\" --db-password=\\\"{env.DBPassword}\\\" --db-name=\\\"{dbname}\\\" --shop-locale=\\\"de_DE\\\" --shop-host=\\\"{env.Address}\\\" --shop-name=\\\"{env.Name}\\\" --shop-email=\\\"{user.Email}\\\" --shop-currency=\\\"EUR\\\" --admin-username=\\\"demo\\\" --admin-password=\\\"demo\\\" --admin-email=\\\"{user.Email}\\\" --admin-name=\\\"Shopware Demo\\\" --admin-locale=\\\"de_DE\\\"\"")
+                .WithArguments($"-c \"php7.4 recovery/install/index.php --no-interaction --quiet " +
+                $"--no-skip-import --db-host=\\\"localhost\\\" --db-user=\\\"{dbname}\\\" " +
+                $"--db-password=\\\"{env.DBPassword}\\\" --db-name=\\\"{dbname}\\\" " +
+                $"--shop-locale=\\\"de_DE\\\" --shop-host=\\\"{env.Address}\\\" " +
+                $"--shop-name=\\\"{env.Name}\\\" --shop-email=\\\"{user.Email}\\\" " +
+                $"--shop-currency=\\\"EUR\\\" --admin-username=\\\"demo\\\" --admin-password=\\\"demo\\\" " +
+                $"--admin-email=\\\"{user.Email}\\\" --admin-name=\\\"Shopware Demo\\\" --admin-locale=\\\"de_DE\\\"\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
         }
@@ -107,6 +123,13 @@ internal class DownloadExtractAutoinstall : ActionBase
 
         db.Environments.SetTaskRunning(env.ID, false);
 
-        db.Mail.Send($"Installation finished for {env.Name}!", string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.Name), user.Email);
+        if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
+        {
+            await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value, env.Name),
+                user.UserInformation.SlackID);
+            return;
+        }
+        db.Mail.Send($"Installation finished for {env.Name}!", string.Format(
+            db.Settings.Get("mail_download_finished").Value, user.Username, env.Name), user.Email);
     }
 }

@@ -14,10 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EnvironmentServer.DAL\EnvironmentServer.DAL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Repositories\" />
+    <ProjectReference Include="..\EnvironmentServer.SlackBot\EnvironmentServer.SlackBot.csproj" />
   </ItemGroup>
 
 </Project>

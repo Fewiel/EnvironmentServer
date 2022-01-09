@@ -1,4 +1,5 @@
 ﻿using EnvironmentServer.DAL;
+using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,9 @@ namespace EnvironmentServer.Daemon.Actions
     {
         public override string ActionIdentifier => "delete_environment";
 
-        public override async Task ExecuteAsync(Database db, long variableID, long userID)
+        public override async Task ExecuteAsync(ServiceProvider sp, long variableID, long userID)
         {
+            var db = sp.GetService<Database>();
             var env = db.Environments.Get(variableID);
             var usr = db.Users.GetByID(userID);
 

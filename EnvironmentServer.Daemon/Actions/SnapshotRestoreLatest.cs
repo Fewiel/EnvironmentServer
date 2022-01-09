@@ -1,5 +1,7 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL;
+using EnvironmentServer.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System;
@@ -15,8 +17,11 @@ namespace EnvironmentServer.Daemon.Actions
     {
         public override string ActionIdentifier => "snapshot_restore_latest";
 
-        public override async Task ExecuteAsync(Database db, long variableID, long userID)
+        public override async Task ExecuteAsync(ServiceProvider sp, long variableID, long userID)
         {
+            var db = sp.GetService<Database>();
+            var em = sp.GetService<IExternalMessaging>();
+
             //Get user, environment and databasename
             var user = db.Users.GetByID(userID);
             var env = db.Environments.Get(variableID);
@@ -78,7 +83,16 @@ namespace EnvironmentServer.Daemon.Actions
             db.Environments.SetTaskRunning(env.ID, false);
 
             db.Logs.Add("Daemon", "SnapshotRestoreLatest - Done: " + env.Name);
-            db.Mail.Send($"Latest Snapshot restored for {env.Name}!", string.Format(db.Settings.Get("mail_snapshot_restored_latest").Value, user.Username, env.Name), user.Email);
+
+            if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
+            {
+                await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_restore_finished").Value, env.Name),
+                    user.UserInformation.SlackID);
+                return;
+            }
+
+            db.Mail.Send($"Latest Snapshot restored for {env.Name}!",
+                string.Format(db.Settings.Get("mail_snapshot_restored_latest").Value, user.Username, env.Name), user.Email);
         }
     }
 }

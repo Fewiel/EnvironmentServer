@@ -1,5 +1,7 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL;
+using EnvironmentServer.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -14,10 +16,12 @@ namespace EnvironmentServer.Daemon.Actions
     {
         public override string ActionIdentifier => "download_extract";
 
-        public override async Task ExecuteAsync(Database db, long variableID, long userID)
+        public override async Task ExecuteAsync(ServiceProvider sp, long variableID, long userID)
         {
+            var db = sp.GetService<Database>();
+            var em = sp.GetService<IExternalMessaging>();
             var user = db.Users.GetByID(userID);
-            var env = db.Environments.Get(variableID);            
+            var env = db.Environments.Get(variableID);
 
             var url = System.IO.File.ReadAllText($"/home/{user.Username}/files/{env.Name}/dl.txt");
             var filename = url.Substring(url.LastIndexOf('/') + 1);
@@ -54,14 +58,21 @@ namespace EnvironmentServer.Daemon.Actions
                     .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                     .ExecuteAsync();
             }
-            
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
                 .ExecuteAsync();
 
             db.Environments.SetTaskRunning(env.ID, false);
-
-            db.Mail.Send($"Download and Extract finished for {env.Name}!", string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.Name), user.Email);
+            var usr = db.Users.GetByID(env.UserID);
+            if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
+            {
+                await em.SendMessageAsync(string.Format(db.Settings.Get("slack_download_finished").Value, env.Name),
+                    usr.UserInformation.SlackID);
+                return;
+            }
+            db.Mail.Send($"Download and Extract finished for {env.Name}!", 
+                string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.Name), user.Email);
         }
     }
 }

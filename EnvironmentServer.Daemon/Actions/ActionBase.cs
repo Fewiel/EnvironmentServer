@@ -1,4 +1,5 @@
 ﻿using EnvironmentServer.DAL;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,6 @@ namespace EnvironmentServer.Daemon.Actions
     public abstract class ActionBase
     {
         public abstract string ActionIdentifier { get; }
-        public abstract Task ExecuteAsync(Database db, long variableID, long userID);
+        public abstract Task ExecuteAsync(ServiceProvider db, long variableID, long userID);
     }
 }

@@ -13,6 +13,7 @@ namespace EnvironmentServer.Daemon
     public class Worker
     {
         private readonly Database DB;
+        private readonly ServiceProvider SP;
         private readonly CancellationTokenSource cancellationToken;
         private readonly Task ActiveWorkerTask;
         private readonly Dictionary<string, ActionBase> Actions = new();
@@ -21,6 +22,7 @@ namespace EnvironmentServer.Daemon
         {
             FillActions();
             DB = sp.GetService<Database>();
+            SP = sp;
             cancellationToken = new CancellationTokenSource();
             ActiveWorkerTask = Task.Factory.StartNew(DoWork, cancellationToken.Token);
         }
@@ -56,7 +58,7 @@ namespace EnvironmentServer.Daemon
                 try
                 {
                     Console.WriteLine("Run Task: " + task.Action);
-                    await act.ExecuteAsync(DB, task.Id_Variable, task.ExecutedById);
+                    await act.ExecuteAsync(SP, task.Id_Variable, task.ExecutedById);
                 }
                 catch (Exception ex)
                 {
