@@ -57,7 +57,7 @@ namespace EnvironmentServer.Web.Controllers
             }
             DB.Logs.Add("Web", "Login failed for: " + lvm.Username + ". Wrong username or password.");
             AddError("Wrong username or password");
-            return View();
+            return RedirectToRoute("login");
         }
 
         [HttpGet]
