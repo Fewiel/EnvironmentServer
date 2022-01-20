@@ -40,14 +40,14 @@ namespace EnvironmentServer.Web.Controllers
             Thread.Sleep(300);
 
             if (!ModelState.IsValid)
-                return View();
+                return RedirectToRoute("login");
 
             var usr = DB.Users.GetByUsername(lvm.Username);
             if (usr == null)
             {
                 DB.Logs.Add("Web", "Login failed for: " + lvm.Username + ". User not found.");
                 AddError("Wrong username or password");
-                return View();
+                return RedirectToRoute("login");
             }
 
             if (PasswordHasher.Verify(lvm.Password, usr.Password))
