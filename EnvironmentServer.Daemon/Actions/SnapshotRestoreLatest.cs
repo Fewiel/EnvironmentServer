@@ -45,6 +45,11 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"git clean -f -d\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+
             db.Logs.Add("Daemon", "SnapshotRestoreLatest - Recreate/dump database: " + env.Name);
             //Recreate Database            
             using (var connection = db.GetConnection())
