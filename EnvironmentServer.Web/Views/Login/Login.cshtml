@@ -8,7 +8,7 @@
     <h2>Login</h2>
     <form method="post" asp-action="Login" style="width: 400px;">
         <div class="mb-3">
-            <label asp-for="Username" class="form-label">Username</label>
+            <label asp-for="Username" class="form-label">Username or Shopware Mailadress</label>
             <input asp-for="Username" class="form-control" />
             <span asp-validation-for="Username"></span>
         </div>
@@ -19,7 +19,7 @@
             <a class="nav-link" asp-area="" asp-controller="Profile" asp-action="PasswordRecovery">Recover password</a>
         </div>
         <button type="submit" class="btn btn-primary">Login</button>
-        <p style="margin-top: 10px;">To get an environment system account contact your Team-Lead</p>
+        <p style="margin-top: 10px;">To get an environment system account contact your Team-Lead or Support-Expert</p>
     </form>
 
     <h2>News</h2>

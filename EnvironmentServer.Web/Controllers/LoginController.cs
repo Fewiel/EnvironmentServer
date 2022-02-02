@@ -42,7 +42,17 @@ namespace EnvironmentServer.Web.Controllers
             if (!ModelState.IsValid)
                 return RedirectToRoute("login");
 
-            var usr = DB.Users.GetByUsername(lvm.Username);
+            var usr = new User();
+
+            if (lvm.Username.Contains("@shopware.com"))
+            {
+                usr = DB.Users.GetByMail(lvm.Username);
+            }
+            else
+            {
+                usr = DB.Users.GetByUsername(lvm.Username);
+            }
+
             if (usr == null)
             {
                 DB.Logs.Add("Web", "Login failed for: " + lvm.Username + ". User not found.");
