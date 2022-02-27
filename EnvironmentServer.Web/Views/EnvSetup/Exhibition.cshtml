@@ -20,8 +20,12 @@
                 </td>
                 <td>
                     <form method="post" asp-action="PhpVersion">
-                            <input type="hidden" asp-for="Name" value=@Model.Name/>
-                            <input type="hidden" asp-for="MajorShopwareVersion" value="6"/>
+                            <input type="hidden" asp-for="Name" />
+                            <input type="hidden" asp-for="WgetURL" />
+                            <input type="hidden" asp-for="GitURL" />
+                            <input type="hidden" asp-for="MajorShopwareVersion" />
+                            <input type="hidden" asp-for="ShopwareVersion" />
+                            <input type="hidden" asp-for="ShopwareVersionDownload" />
                             <input type="hidden" asp-for="ExhibitionFile" value=@v.File />
                             <button type="submit" class="btn btn-primary">Select</button>
                     </form>

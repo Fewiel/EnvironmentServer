@@ -103,6 +103,11 @@ namespace EnvironmentServer.Web.Controllers
             if (esv.MajorShopwareVersion == 0)
                 esv.ShopwareVersion = "Custom";
 
+            if (!string.IsNullOrEmpty(esv.ExhibitionFile))
+            {
+                esv.ShopwareVersion = "6";
+            }
+
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(),
                 esv.MajorShopwareVersion == 6).ConfigureAwait(false);
 
@@ -136,7 +141,7 @@ namespace EnvironmentServer.Web.Controllers
             DB.EnvironmentSettings.Insert(envSettingSWVersion);
             DB.EnvironmentSettings.Insert(envSettingTask);
 
-            if(!string.IsNullOrEmpty(esv.ExhibitionFile))
+            if (!string.IsNullOrEmpty(esv.ExhibitionFile))
             {
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt", esv.ExhibitionFile);
 
