@@ -4,6 +4,7 @@ using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -49,9 +50,7 @@ public class SetupExhibition : ActionBase
             .ExecuteAsync();
 
         var shopwareconfig = File.ReadAllText($"/home/{user.Username}/files/{env.Name}/.env");
-        shopwareconfig.Replace("DATABASE_URL=mysql://root:root@localhost:3306/shopware_demo_next",
-            $"DATABASE_URL=mysql://{user.Username}_{env.Name}:{env.DBPassword}@localhost:3306/{user.Username}_{env.Name}");
-
+        shopwareconfig = shopwareconfig + Environment.NewLine + $"DATABASE_URL=mysql://{user.Username}_{env.Name}:{env.DBPassword}@localhost:3306/{user.Username}_{env.Name}";
         File.WriteAllText($"/home/{user.Username}/files/{env.Name}/.env", shopwareconfig);
 
         db.Environments.SetTaskRunning(env.ID, false);
