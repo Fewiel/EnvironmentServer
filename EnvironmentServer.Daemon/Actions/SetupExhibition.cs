@@ -2,6 +2,7 @@
 using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
@@ -34,10 +35,12 @@ public class SetupExhibition : ActionBase
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"unzip -qq {filename}\"")
             .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+            .WithValidation(CommandResultValidation.None)
             .ExecuteAsync();
 
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"mysql -u {config.Username} -p{config.Password} " + dbString + " < db.sql\"")
+            .WithValidation(CommandResultValidation.None)
             .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
             .ExecuteAsync();
 
