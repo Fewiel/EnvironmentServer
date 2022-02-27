@@ -55,11 +55,11 @@ public class SetupExhibition : ActionBase
         File.WriteAllText($"/home/{user.Username}/files/{env.Name}/.env", shopwareconfig);
 
         using var conn = db.GetConnection();
-        conn.Execute("UPDATE `sales_channel_domain` SET `url` = @url WHERE `url` not like '%/de' and `url` like '%http%';", new
+        conn.Execute($"UPDATE `{user.Username}_{env.Name}`.`sales_channel_domain` SET `url` = @url WHERE `url` not like '%/de' and `url` like '%http%';", new
         {
             url = "https://" + env.Address
         });
-        conn.Execute("UPDATE `sales_channel_domain` SET `url` = @url WHERE `url` like '%/de' and `url` like '%http%';", new
+        conn.Execute($"UPDATE `{user.Username}_{env.Name}`.`sales_channel_domain` SET `url` = @url WHERE `url` like '%/de' and `url` like '%http%';", new
         {
             url = "https://" + env.Address + "/de"
         });
