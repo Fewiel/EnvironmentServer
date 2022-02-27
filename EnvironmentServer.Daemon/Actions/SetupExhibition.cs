@@ -48,6 +48,12 @@ public class SetupExhibition : ActionBase
             .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
             .ExecuteAsync();
 
+        var shopwareconfig = File.ReadAllText($"/home/{user.Username}/files/{env.Name}/.env");
+        shopwareconfig.Replace("DATABASE_URL=mysql://root:root@localhost:3306/shopware_demo_next",
+            $"DATABASE_URL=mysql://{user.Username}_{env.Name}:{env.DBPassword}@localhost:3306/{user.Username}_{env.Name}");
+
+        File.WriteAllText($"/home/{user.Username}/files/{env.Name}/.env", shopwareconfig);
+
         db.Environments.SetTaskRunning(env.ID, false);
         var usr = db.Users.GetByID(env.UserID);
         if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
