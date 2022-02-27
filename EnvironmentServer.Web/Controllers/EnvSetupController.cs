@@ -92,13 +92,6 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] EnvSetupViewModel esv)
         {
-            var uid = GetSessionUser().ID;
-            var testname = esv.Name;
-            var u = GetSessionUser().Username;
-            var dom = DB.Settings.Get("domain").Value;
-            var Addr = esv.Name.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value;
-            var vers = esv.PhpVersion;
-
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
