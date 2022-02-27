@@ -92,6 +92,12 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] EnvSetupViewModel esv)
         {
+            if (!string.IsNullOrEmpty(esv.ExhibitionFile))
+            {
+                esv.ShopwareVersion = "6";
+                esv.MajorShopwareVersion = 6;
+            }
+
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
@@ -102,11 +108,6 @@ namespace EnvironmentServer.Web.Controllers
 
             if (esv.MajorShopwareVersion == 0)
                 esv.ShopwareVersion = "Custom";
-
-            if (!string.IsNullOrEmpty(esv.ExhibitionFile))
-            {
-                esv.ShopwareVersion = "6";
-            }
 
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(),
                 esv.MajorShopwareVersion == 6).ConfigureAwait(false);
