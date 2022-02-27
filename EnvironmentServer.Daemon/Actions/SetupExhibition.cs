@@ -1,4 +1,5 @@
 ﻿using CliWrap;
+using Dapper;
 using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +53,16 @@ public class SetupExhibition : ActionBase
         var shopwareconfig = File.ReadAllText($"/home/{user.Username}/files/{env.Name}/.env");
         shopwareconfig = shopwareconfig + Environment.NewLine + $"DATABASE_URL=mysql://{user.Username}_{env.Name}:{env.DBPassword}@localhost:3306/{user.Username}_{env.Name}";
         File.WriteAllText($"/home/{user.Username}/files/{env.Name}/.env", shopwareconfig);
+
+        using var conn = db.GetConnection();
+        conn.Execute("UPDATE `sales_channel_domain` SET `url` = @url WHERE `url` not like '%/de' and `url` like '%http%';", new
+        {
+            url = "https://" + env.Address
+        });
+        conn.Execute("UPDATE `sales_channel_domain` SET `url` = @url WHERE `url` like '%/de' and `url` like '%http%';", new
+        {
+            url = "https://" + env.Address + "/de"
+        });
 
         db.Environments.SetTaskRunning(env.ID, false);
         var usr = db.Users.GetByID(env.UserID);
