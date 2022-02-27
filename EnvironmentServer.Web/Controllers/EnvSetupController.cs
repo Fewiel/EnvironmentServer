@@ -77,7 +77,7 @@ namespace EnvironmentServer.Web.Controllers
             return View(esv);
         }
 
-        public IActionResult Exhibition([FromForm] EnvSetupViewModel esv)
+        public IActionResult Exhibition(EnvSetupViewModel esv)
         {
             esv.ExhibitionVersions = DB.ExhibitionVersion.Get();
             return View(esv);

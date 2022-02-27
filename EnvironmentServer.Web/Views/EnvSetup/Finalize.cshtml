@@ -40,7 +40,7 @@
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 
-    @if (!string.IsNullOrEmpty(@Model.ExhibitionFile))
+    @if (string.IsNullOrEmpty(@Model.ExhibitionFile))
     {
         <form method="post" asp-action="CreateWithAutoinstaller" style="width: 800px;">
         <input type="hidden" asp-for="Name" />
