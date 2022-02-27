@@ -94,6 +94,8 @@ namespace EnvironmentServer.Web.Controllers
         {
             var uid = GetSessionUser().ID;
             var testname = esv.Name;
+            var u = GetSessionUser().Username;
+            var dom = DB.Settings.Get("domain").Value;
             var Addr = esv.Name.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value;
             var vers = esv.PhpVersion;
 
