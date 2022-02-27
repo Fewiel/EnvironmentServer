@@ -32,7 +32,7 @@ public class SetupExhibition : ActionBase
 
         db.Logs.Add("Daemon", "Unzip File for: " + env.Name);
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"unzip {filename}\"")
+            .WithArguments($"-c \"unzip -qq {filename}\"")
             .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
             .ExecuteAsync();
 
