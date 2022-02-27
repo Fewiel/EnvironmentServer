@@ -11,6 +11,7 @@
         <input type="hidden" asp-for="MajorShopwareVersion" />
         <input type="hidden" asp-for="ShopwareVersion" />
         <input type="hidden" asp-for="ShopwareVersionDownload" />
+        <input type="hidden" asp-for="ExhibitionFile" />
         <input type="hidden" asp-for="PhpVersion" />
 
         <dl class="row">
@@ -23,6 +24,9 @@
             <dt class="col-sm-6">Git URL</dt>
             <dd class="col-sm-6">@Model.GitURL</dd>
 
+            <dt class="col-sm-6">Exhibition File</dt>
+            <dd class="col-sm-6">@Model.ExhibitionFile</dd>
+
             <dt class="col-sm-6">Major Version</dt>
             <dd class="col-sm-6">@Model.MajorShopwareVersion</dd>
 
@@ -33,16 +37,19 @@
             <dd class="col-sm-6">@Model.PhpVersion</dd>
         </dl>
 
-
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
-    <form method="post" asp-action="CreateWithAutoinstaller" style="width: 800px;">
+
+    @if (!string.IsNullOrEmpty(@Model.ExhibitionFile))
+    {
+        <form method="post" asp-action="CreateWithAutoinstaller" style="width: 800px;">
         <input type="hidden" asp-for="Name" />
         <input type="hidden" asp-for="WgetURL" />
         <input type="hidden" asp-for="GitURL" />
         <input type="hidden" asp-for="MajorShopwareVersion" />
         <input type="hidden" asp-for="ShopwareVersion" />
         <input type="hidden" asp-for="ShopwareVersionDownload" />
+        <input type="hidden" asp-for="ExhibitionFile" />
         <input type="hidden" asp-for="PhpVersion" />
                 
         <h4>or</h4>
@@ -50,4 +57,5 @@
         <div class="alert alert-danger">Older Versions are not Supported! (Automatic installations of versions below 6.4.7.0 and 5.7.6. may fail!)</div>
         <button type="submit" onclick="return confirm('Please keep in mind. Automatic installations of versions below 6.4.7.0 and 5.7.6. may fail!')" class="btn btn-danger">Create with Autoinstallation</button>                
     </form>
+    }
 </div>

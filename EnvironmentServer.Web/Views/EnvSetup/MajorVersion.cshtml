@@ -31,7 +31,34 @@
     </div>
 </div>
 
-
+<h2>Other</h2>
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-3">
+        <form method="post" asp-action="MinorVersion">
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="CustomSetupType" value="exhibition" />
+            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                    <i class="bi bi-briefcase align-self-center" style="font-size: 200px"></i>
+                    <div class="card-body"><p class="card-text">Exhibition Showcase</p></div>
+                </div>
+            </a>
+        </form>
+    </div>
+    <div class="col-3">
+        <form method="post" asp-action="MinorVersion">
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="CustomSetupType" value="empty" />
+            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                     <i class="bi bi-folder2-open align-self-center" style="font-size: 200px"></i>
+                    <div class="card-body"><p class="card-text">Empty Webspace</p></div>
+                </div>
+            </a>
+        </form>
+    </div>
+</div>
 
 <h2>Expert Mode</h2>
 <div class="row">
@@ -62,10 +89,3 @@
     </div>
 </div>
 
-<form method="post" asp-action="MinorVersion">
-    <input type="hidden" asp-for="Name" />
-    <input type="hidden" asp-for="CustomSetupType" value="empty" />
-    <button asp-controller="EnvSetup" asp-action="MinorVersion" class="btn btn-link text-decoration-none text-body">
-        Empty Webspace
-    </button>
-</form>
