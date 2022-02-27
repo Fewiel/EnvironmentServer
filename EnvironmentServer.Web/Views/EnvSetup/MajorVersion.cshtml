@@ -37,6 +37,7 @@
     <div class="col-3">
         <form method="post" asp-action="MinorVersion">
             <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="MajorShopwareVersion" value="6" />
             <input type="hidden" asp-for="CustomSetupType" value="exhibition" />
             <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
                 <div class="card">
