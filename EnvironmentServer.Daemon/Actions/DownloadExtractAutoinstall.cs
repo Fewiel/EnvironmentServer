@@ -136,6 +136,7 @@ internal class DownloadExtractAutoinstall : ActionBase
         }
         catch (Exception ex)
         {
+            db.Environments.SetTaskRunning(env.ID, false);
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
                 var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_install_failed").Value, env.Name, ex),
@@ -145,8 +146,6 @@ internal class DownloadExtractAutoinstall : ActionBase
             }
             db.Mail.Send($"Installation finished for {env.Name}!", string.Format(
                 db.Settings.Get("mail_install_failed").Value, user.Username, env.Name, ex), user.Email);
-        }
-
-        db.Environments.SetTaskRunning(env.ID, false);        
+        }               
     }
 }
