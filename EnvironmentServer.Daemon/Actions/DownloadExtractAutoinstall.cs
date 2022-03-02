@@ -123,6 +123,7 @@ internal class DownloadExtractAutoinstall : ActionBase
                 .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
                 .ExecuteAsync();
 
+            db.Environments.SetTaskRunning(env.ID, false);
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
                 var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value, env.Name),
