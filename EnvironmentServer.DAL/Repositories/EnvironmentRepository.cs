@@ -176,7 +176,7 @@ namespace EnvironmentServer.DAL.Repositories
             var docRoot = $"/home/{user.Username}/files/{environment.Name}{(sw6 ? "/public" : "")}";
             var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
 
-            var conf = ApacheConfConstructor.Construct
+            var builder = ApacheConfConstructor.Construct
                 .WithVersion(environment.Version)
                 .WithEmail(user.Email)
                 .WithAddress(environment.Address)
@@ -185,7 +185,9 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithSSLCertFile(DB.Settings.Get("SSLCertificateFile").Value)
                 .WithSSLKeyFile(DB.Settings.Get("SSLCertificateKeyFile").Value)
                 .WithSSLChainFile(DB.Settings.Get("SSLCertificateChainFile").Value)
-                .WithUsername(user.Username).BuildSSL();
+                .WithUsername(user.Username);
+
+            var conf = File.Exists(".nossl") ? builder.Build() : builder.BuildSSL();
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
             await Cli.Wrap("/bin/bash")
