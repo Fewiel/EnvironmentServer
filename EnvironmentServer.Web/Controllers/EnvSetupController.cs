@@ -60,21 +60,26 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction(nameof(GitSource), esv);
             if (esv.CustomSetupType == "wget")
                 return RedirectToAction(nameof(WGetSource), esv);
+            if (esv.CustomSetupType == "exhibition")
+                return RedirectToAction(nameof(Exhibition), esv);
 
             esv.ShopwareVersions = DB.ShopwareVersionInfos.GetForMajor(esv.MajorShopwareVersion);
             return View(esv);
         }
 
-
         public IActionResult WGetSource(EnvSetupViewModel esv) => View(esv);
 
-
         public IActionResult GitSource(EnvSetupViewModel esv) => View(esv);
-
 
         public IActionResult PhpVersion(EnvSetupViewModel esv)
         {
             esv.PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>();
+            return View(esv);
+        }
+
+        public IActionResult Exhibition(EnvSetupViewModel esv)
+        {
+            esv.ExhibitionVersions = DB.ExhibitionVersion.Get();
             return View(esv);
         }
 
@@ -87,6 +92,12 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] EnvSetupViewModel esv)
         {
+            if (!string.IsNullOrEmpty(esv.ExhibitionFile))
+            {
+                esv.ShopwareVersion = "6";
+                esv.MajorShopwareVersion = 6;
+            }
+
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
@@ -130,6 +141,19 @@ namespace EnvironmentServer.Web.Controllers
             DB.EnvironmentSettings.Insert(envSettingTemplate);
             DB.EnvironmentSettings.Insert(envSettingSWVersion);
             DB.EnvironmentSettings.Insert(envSettingTask);
+
+            if (!string.IsNullOrEmpty(esv.ExhibitionFile))
+            {
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt", esv.ExhibitionFile);
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "setup_exhibition",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+                DB.Environments.SetTaskRunning(lastID, true);
+            }
 
             if (!string.IsNullOrEmpty(esv.WgetURL) && System.Uri.IsWellFormedUriString(esv.WgetURL, System.UriKind.RelativeOrAbsolute))
             {

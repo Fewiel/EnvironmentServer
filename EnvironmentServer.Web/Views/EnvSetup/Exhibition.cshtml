@@ -1,0 +1,36 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+@{
+    ViewData["Title"] = "Exhibition Version - Environment Setup";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var v in @Model.ExhibitionVersions)
+        {
+            <tr>
+                <td>
+                    <span>@v.Name</span>
+                </td>
+                <td>
+                    <form method="post" asp-action="PhpVersion">
+                            <input type="hidden" asp-for="Name" />
+                            <input type="hidden" asp-for="WgetURL" />
+                            <input type="hidden" asp-for="GitURL" />
+                            <input type="hidden" asp-for="MajorShopwareVersion" />
+                            <input type="hidden" asp-for="ShopwareVersion" />
+                            <input type="hidden" asp-for="ShopwareVersionDownload" />
+                            <input type="hidden" asp-for="ExhibitionFile" value=@v.File />
+                            <button type="submit" class="btn btn-primary">Select</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -45,6 +45,12 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
                 .ExecuteAsync();
 
+            //git clean -f -d
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"git clean -f -d\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .ExecuteAsync();
+
             db.Logs.Add("Daemon", "SnapshotRestore - Recreate/dump database: " + env.Name);
             //Recreate Database            
             using (var connection = db.GetConnection())
@@ -94,9 +100,10 @@ namespace EnvironmentServer.Daemon.Actions
 
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
-                await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_restore_finished").Value, env.Name),
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_restore_finished").Value, env.Name),
                     user.UserInformation.SlackID);
-                return;
+                if (success)
+                    return;
             }
 
             db.Mail.Send($"Snapshot restored for {env.Name}!", 

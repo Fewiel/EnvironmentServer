@@ -67,9 +67,10 @@ namespace EnvironmentServer.Daemon.Actions
             var usr = db.Users.GetByID(env.UserID);
             if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
             {
-                await em.SendMessageAsync(string.Format(db.Settings.Get("slack_download_finished").Value, env.Name),
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_download_finished").Value, env.Name),
                     usr.UserInformation.SlackID);
-                return;
+                if (success)
+                    return;
             }
             db.Mail.Send($"Download and Extract finished for {env.Name}!", 
                 string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.Name), user.Email);

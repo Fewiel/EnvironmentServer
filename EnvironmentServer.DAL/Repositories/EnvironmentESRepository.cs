@@ -64,7 +64,7 @@ public class EnvironmentESRepository
         var envName = DB.Environments.Get(id).Name;
         var dID = "es_docker_" + envName + "_uid_" + DB.Environments.Get(id).UserID;
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"docker run -d --name {dID} -p {port}:{port} -p {port + 100}:{port + 100} -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
+            .WithArguments($"-c \"docker run -d --name {dID} -p 127.0.0.1:{port}:9200 -p 127.0.0.1:{port + 100}:9300 -e \"discovery.type=single-node\" -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
             .WithValidation(CommandResultValidation.None)
             .ExecuteAsync();
 
@@ -82,22 +82,36 @@ public class EnvironmentESRepository
 
     public async Task StartContainer(string dockerID)
     {
-        await Cli.Wrap("/bin/bash")
+        try
+        {
+            await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"docker start {dockerID}\"")
             .ExecuteAsync();
 
-        using var connection = DB.GetConnection();
-        connection.Execute("UPDATE `environments_es` SET `Active` = '1' WHERE `environments_es`.`DockerID` = @dID;", new
+            using var connection = DB.GetConnection();
+            connection.Execute("UPDATE `environments_es` SET `Active` = '1' WHERE `environments_es`.`DockerID` = @dID;", new
+            {
+                dID = dockerID
+            });
+        }
+        catch (Exception ex)
         {
-            dID = dockerID
-        });
+            DB.Logs.Add("ESCleanup", "StartContainer() - Startup Error - " + ex.ToString());
+        }        
     }
 
     public async Task StopContainer(string dockerID)
     {
-        await Cli.Wrap("/bin/bash")
+        try
+        {
+            await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"docker stop {dockerID}\"")
             .ExecuteAsync();
+        }
+        catch (Exception ex)
+        {
+            DB.Logs.Add("ESCleanup", "StopContainer() - Nothing to Stop");
+        }
 
         using var connection = DB.GetConnection();
         connection.Execute("UPDATE `environments_es` SET `Active` = '0' WHERE `environments_es`.`DockerID` = @dID;", new
@@ -116,7 +130,7 @@ public class EnvironmentESRepository
         }
         catch (Exception ex)
         {
-            DB.Logs.Add("DAL", ex.ToString());
+            DB.Logs.Add("ESCleanup", "StopAll() - Nothing to Stop");
         }
 
         using var connection = DB.GetConnection();
@@ -150,7 +164,7 @@ public class EnvironmentESRepository
         }
         catch (Exception ex)
         {
-            DB.Logs.Add("DAL", ex.ToString());
+            DB.Logs.Add("ESCleanup", "Cleanup() - Nothing to Cleanup");
         }
 
     }

@@ -20,9 +20,11 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
         public string WgetURL { get; set; }
         public string GitURL { get; set; }
         public string CustomSetupType { get; set; }
+        public string ExhibitionFile { get; set; }
 
         //Display Data
         public IEnumerable<PhpVersion> PhpVersions { get; set; }
         public IEnumerable<ShopwareVersionInfo> ShopwareVersions { get; set; }
+        public IEnumerable<ExhibitionVersion> ExhibitionVersions { get; set;}
     }
 }

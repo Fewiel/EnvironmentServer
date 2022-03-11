@@ -38,7 +38,7 @@ namespace EnvironmentServer.DAL.Repositories
                     type = swversion.Type,
                     download_link_install = swversion.DownloadLinkInstall,
                     download_link_update = swversion.DownloadLinkUpdate
-                });            
+                });
         }
 
         public void Clear()
