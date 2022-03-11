@@ -143,7 +143,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             Directory.CreateDirectory($"/home/{user.Username}/files/php");
             Directory.CreateDirectory($"/home/{user.Username}/files/php/tmp");
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files\"")
+                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/files\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"chmod 755 /home/{user.Username}/files\"")

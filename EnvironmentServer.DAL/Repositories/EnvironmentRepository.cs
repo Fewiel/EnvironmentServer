@@ -158,7 +158,7 @@ namespace EnvironmentServer.DAL.Repositories
             //Create environment dir            
             Directory.CreateDirectory($"/home/{user.Username}/files/{environment.Name}");
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user.Username} /home/{user.Username}/files/{environment.Name}\"")
+                .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}/files/{environment.Name}\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/{environment.Name}\"")
@@ -166,7 +166,7 @@ namespace EnvironmentServer.DAL.Repositories
             //Create log dir
             Directory.CreateDirectory($"/home/{user.Username}/files/logs/{environment.Name}");
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user.Username} /home/{user.Username}/files/logs/{environment.Name}\"")
+                .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}/files/logs/{environment.Name}\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/logs/{environment.Name}\"")
