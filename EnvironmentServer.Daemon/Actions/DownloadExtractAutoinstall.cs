@@ -118,7 +118,7 @@ internal class DownloadExtractAutoinstall : ActionBase
         }
 
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
+            .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/files/{env.Name}\"")
             .ExecuteAsync();
 
         db.Environments.SetTaskRunning(env.ID, false);

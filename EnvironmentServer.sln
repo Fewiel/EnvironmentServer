@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnvironmentServer.DAL", "En
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnvironmentServer.Daemon", "EnvironmentServer.Daemon\EnvironmentServer.Daemon.csproj", "{73DA4AC6-41B8-41B1-8847-F8B88CCE01B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentServer.SlackBot", "EnvironmentServer.SlackBot\EnvironmentServer.SlackBot.csproj", "{E76BB536-AD81-4F6E-96ED-A2FC67A8F074}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnvironmentServer.SlackBot", "EnvironmentServer.SlackBot\EnvironmentServer.SlackBot.csproj", "{E76BB536-AD81-4F6E-96ED-A2FC67A8F074}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvironmentServer.Interfaces", "EnvironmentServer.Interfaces\EnvironmentServer.Interfaces.csproj", "{00F86BDF-5FA0-44CB-9AF8-E15A1221EE07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnvironmentServer.Interfaces", "EnvironmentServer.Interfaces\EnvironmentServer.Interfaces.csproj", "{00F86BDF-5FA0-44CB-9AF8-E15A1221EE07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
