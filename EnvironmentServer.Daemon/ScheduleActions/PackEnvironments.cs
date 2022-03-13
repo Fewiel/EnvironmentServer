@@ -55,22 +55,22 @@ internal class PackEnvironments : ScheduledActionBase
                 {
                     Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/public");
                     File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/public/index.html",
-                        "<!DOCTYPE html>" + Environment.NewLine +
-                        "   <html>" + Environment.NewLine +
-                        "       <head>" + Environment.NewLine +
-                        $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain").Value}/recover/{env.ID}\" />" + Environment.NewLine +
-                        "       </head>" + Environment.NewLine +
-                        "   </html>");
+                        $@"<!DOCTYPE html>
+                            <html>
+                                <head>
+                                    <meta http-equiv=""Refresh"" content=""0""; url=""https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
+                                </head> 
+                            </html>");
                 }
                 else
                 {
                     File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/index.html",
-                        "<!DOCTYPE html>" + Environment.NewLine +
-                        "   <html>" + Environment.NewLine +
-                        "       <head>" + Environment.NewLine +
-                        $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain").Value}/recover/{env.ID}\" />" + Environment.NewLine +
-                        "       </head>" + Environment.NewLine +
-                        "   </html>");
+                        $@"<!DOCTYPE html>
+                            <html>
+                                <head>
+                                    <meta http-equiv=""Refresh"" content=""0""; url=""https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
+                                </head> 
+                            </html>");
                 }
 
                 File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/.stored", "This Environment is stored.");
