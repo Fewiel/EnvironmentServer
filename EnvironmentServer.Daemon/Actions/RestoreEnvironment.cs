@@ -31,6 +31,7 @@ internal class RestoreEnvironment : ActionBase
 
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"unzip /home/{usr.Username}/files/inactive/{env.Name}.zip\"")
+            .WithWorkingDirectory($"/home/{usr.Username}/files")
             .ExecuteAsync();
 
         await Cli.Wrap("/bin/bash")
