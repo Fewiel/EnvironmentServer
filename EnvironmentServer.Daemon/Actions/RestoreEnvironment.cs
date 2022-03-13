@@ -32,7 +32,6 @@ internal class RestoreEnvironment : ActionBase
 
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"tar zxvf /home/{usr.Username}/files/inactive/{env.Name}.tar.gz\"")
-            .WithWorkingDirectory($"/home/{usr.Username}/files/{env.Name}")
             .ExecuteAsync();
 
         await Cli.Wrap("/bin/bash")
