@@ -38,6 +38,8 @@ internal class RestoreEnvironment : ActionBase
             .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.Name}\"")
             .ExecuteAsync();
 
+        File.Delete($"/home/{usr.Username}/files/inactive/{env.Name}.zip");
+
         db.Logs.Add("Daemon", $"Environment {env.Name} restored.");
         await em.SendMessageAsync($"Restore of Environment {env.Name} done.",
             db.UserInformation.Get(userID).SlackID);
