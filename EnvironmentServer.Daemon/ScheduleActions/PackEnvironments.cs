@@ -73,7 +73,7 @@ internal class PackEnvironments : ScheduledActionBase
                 File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/.stored", "This Environment is stored.");
 
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.Name}\"")
+                    .WithArguments($"-c \"chown -R {usr.Username}:sftp_users /home/{usr.Username}/files/{env.Name}\"")
                     .ExecuteAsync();
             }
         }
