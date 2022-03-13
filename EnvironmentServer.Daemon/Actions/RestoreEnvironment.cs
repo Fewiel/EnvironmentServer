@@ -49,6 +49,6 @@ internal class RestoreEnvironment : ActionBase
 
         db.Logs.Add("Daemon", $"Environment {env.Name} restored.");
         await em.SendMessageAsync($"Restore of Environment {env.Name} done.",
-            db.UserInformation.Get(userID).SlackID);
+            db.UserInformation.Get(env.UserID).SlackID);
     }
 }
