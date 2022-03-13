@@ -21,5 +21,6 @@ namespace EnvironmentServer.DAL.Models
         public List<EnvironmentSettingValue> Settings { get; set; }
         public int Sorting { get; set; }
         public DateTime LatestUse { get; set; }
+        public bool Stored { get; set; }
     }
 }

@@ -25,7 +25,7 @@ internal class PackEnvironments : ScheduledActionBase
             {
                 var usr = db.Users.GetByID(env.UserID);
 
-                if (File.Exists($"/home/{usr.Username}/files/{env.Name}/.stored"))
+                if (env.Stored)
                     return;
 
                 var sw6 = Directory.Exists($"/home/{usr.Username}/files/{env.Name}/public");
@@ -52,28 +52,17 @@ internal class PackEnvironments : ScheduledActionBase
                 Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}");
 
                 if (sw6)
-                {
                     Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/public");
-                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/public/index.html",
-                        $@"<!DOCTYPE html>
-                            <html>
-                                <head>
-                                    <meta http-equiv=""Refresh"" content=""0""; url=""https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
-                                </head> 
-                            </html>");
-                }
-                else
-                {
-                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/index.html",
-                        $@"<!DOCTYPE html>
-                            <html>
-                                <head>
-                                    <meta http-equiv=""Refresh"" content=""0""; url=""https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
-                                </head> 
-                            </html>");
-                }
 
-                File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/.stored", "This Environment is stored.");
+                File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/" : "")}index.html",
+                        $@"<!DOCTYPE html>
+                            <html>
+                                <head>
+                                    <meta http-equiv=""Refresh"" content=""0""; url=""https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
+                                </head> 
+                            </html>");
+
+                db.Environments.SetStored(env.ID, true);
 
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"chown -R {usr.Username}:sftp_users /home/{usr.Username}/files/{env.Name}\"")

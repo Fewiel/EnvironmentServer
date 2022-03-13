@@ -40,6 +40,8 @@ internal class RestoreEnvironment : ActionBase
 
         File.Delete($"/home/{usr.Username}/files/inactive/{env.Name}.zip");
 
+        db.Environments.SetStored(env.ID, false);
+
         db.Logs.Add("Daemon", $"Environment {env.Name} restored.");
         await em.SendMessageAsync($"Restore of Environment {env.Name} done.",
             db.UserInformation.Get(userID).SlackID);

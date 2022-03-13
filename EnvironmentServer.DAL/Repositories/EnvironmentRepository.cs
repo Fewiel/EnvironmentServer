@@ -85,7 +85,9 @@ namespace EnvironmentServer.DAL.Repositories
                 Version = (PhpVersion)reader.GetInt32(4),
                 DBPassword = reader.GetString(5),
                 Settings = new List<EnvironmentSettingValue>(GetSettingValues(reader.GetInt64(0))),
-                Sorting = reader.GetInt32(6)
+                Sorting = reader.GetInt32(6),
+                LatestUse = reader.GetDateTime(7),
+                Stored = reader.GetBoolean(8)
             };
         }
 
@@ -261,6 +263,16 @@ namespace EnvironmentServer.DAL.Repositories
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
+        }
+
+        public void SetStored(long id, bool isStored)
+        {
+            using var connection = DB.GetConnection();
+            connection.Execute("update environments set `Stored` = @isStored where `ID` = @id;", new
+            {
+                id,
+                isStored
+            });
         }
 
         public void IncreaseSorting(long id)
