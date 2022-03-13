@@ -24,9 +24,9 @@ namespace EnvironmentServer.Web.Controllers
             if (!ModelState.IsValid || string.IsNullOrEmpty(esv.Name))
                 return RedirectToAction("BaseData", esv);
 
-            if (esv.Name != DB.Environments.FixEnvironmentName(esv.Name))
+            if (esv.Name != DAL.Repositories.EnvironmentRepository.FixEnvironmentName(esv.Name))
             {
-                esv.Name = DB.Environments.FixEnvironmentName(esv.Name);
+                esv.Name = DAL.Repositories.EnvironmentRepository.FixEnvironmentName(esv.Name);
                 AddError("Your environment name was fixed - No spaces and capital letters allowed");
                 return RedirectToAction("BaseData", esv);
             }

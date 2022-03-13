@@ -129,5 +129,20 @@ namespace EnvironmentServer.Web.Controllers
             DB.Environments.DecreaseSorting(id);
             return RedirectToAction("Sorting", "Env");
         }
+
+        public IActionResult OpenFrontend(long id)
+        {
+            var env = DB.Environments.Get(id);
+            DB.Environments.Use(id);
+            return Redirect("https://" + env.Address);
+        }
+
+        public IActionResult OpenBackend(long id)
+        {
+            var env = DB.Environments.Get(id);
+            var version = env.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version").Value;
+            DB.Environments.Use(id);
+            return Redirect("https://" + env.Address + (version[0] == '5' ? "/backend" : "/admin"));
+        }
     }
 }

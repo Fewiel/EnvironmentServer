@@ -17,16 +17,13 @@ internal class PackEnvironments : ScheduledActionBase
 
     public override async Task ExecuteAsync(Database db)
     {
-        var environments = db.Environments.GetAll();
+        var environments = db.Environments.GetAllUnstored();
 
         foreach (var env in environments)
         {
             if (env.LatestUse.AddDays(14) < DateTime.Now)
             {
                 var usr = db.Users.GetByID(env.UserID);
-
-                if (env.Stored)
-                    return;
 
                 var sw6 = Directory.Exists($"/home/{usr.Username}/files/{env.Name}/public");
 
