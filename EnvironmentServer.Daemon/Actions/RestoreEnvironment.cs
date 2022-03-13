@@ -22,6 +22,8 @@ internal class RestoreEnvironment : ActionBase
         if (!env.Stored)
             return;
 
+        db.Logs.Add("Daemon", $"Starting restore for Environment {env.Name}.");
+
         if (!File.Exists($"/home/{usr.Username}/files/inactive/{env.Name}.zip"))
         {
             db.Logs.Add("Daemon", $"Restore Failed! File not found: /home/{usr.Username}/files/inactive/{env.Name}.zip");

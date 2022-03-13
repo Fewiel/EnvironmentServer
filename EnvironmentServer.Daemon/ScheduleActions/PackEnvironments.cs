@@ -21,7 +21,7 @@ internal class PackEnvironments : ScheduledActionBase
 
         foreach (var env in environments)
         {
-            if (env.LatestUse.AddDays(14) < DateTime.Now)
+            if (env.LatestUse.AddDays(7) < DateTime.Now)
             {
                 var usr = db.Users.GetByID(env.UserID);
 
@@ -64,6 +64,8 @@ internal class PackEnvironments : ScheduledActionBase
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"chown -R {usr.Username}:sftp_users /home/{usr.Username}/files/{env.Name}\"")
                     .ExecuteAsync();
+
+                db.Logs.Add("Daemon", $"Packing complete for Environment: {env.Name} User: {db.Users.GetByID(env.UserID).Username}");
             }
         }
     }
