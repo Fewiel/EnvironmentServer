@@ -70,6 +70,8 @@ internal class PackEnvironments : ScheduledActionBase
                         "   </html>");
                 }
 
+                File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/.stored", "This Environment is stored.");
+
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.Name}\"")
                     .ExecuteAsync();
