@@ -40,6 +40,9 @@ internal class PackEnvironments : ScheduledActionBase
 
                 Directory.CreateDirectory($"/home/{usr.Username}/files/inactive");
 
+                if (File.Exists($"/home/{usr.Username}/files/inactive/{env.Name}.zip"))
+                    File.Delete($"/home/{usr.Username}/files/inactive/{env.Name}.zip");
+
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"zip -r /home/{usr.Username}/files/inactive/{env.Name}.zip {env.Name}\"")
                     .WithWorkingDirectory($"/home/{usr.Username}/files/")
