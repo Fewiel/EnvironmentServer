@@ -24,15 +24,16 @@ internal class PackEnvironments : ScheduledActionBase
             if (env.LatestUse.AddDays(14) < DateTime.Now)
             {
                 var usr = db.Users.GetByID(env.UserID);
-                
+                db.Logs.Add("Daemon", $"Packing Environment: {env.Name} User: {db.Users.GetByID(env.UserID).Username}");
+
                 foreach (var f in Directory.GetDirectories($"/home/{usr.Username}/files/{env.Name}/var/cache"))
                 {
                     if (f.Contains("prod"))
                         Directory.Delete(f, true);
                 }
 
-                Directory.CreateDirectory("/home/{usr.Username}/files/inactive");
-                
+                Directory.CreateDirectory($"/home/{usr.Username}/files/inactive");
+
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"tar -czvf /home/{usr.Username}/files/inactive/{env.Name}.tar.gz /home/{usr.Username}/files/{env.Name}/*\"")
                     .WithWorkingDirectory($"/home/{usr.Username}/files/{env.Name}")
@@ -41,17 +42,17 @@ internal class PackEnvironments : ScheduledActionBase
                 Directory.Delete($"/home/{usr.Username}/files/{env.Name}", true);
                 Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}");
 
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.Name}\"")
-                    .ExecuteAsync();
-
-                File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/index.html", 
+                File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/index.html",
                     "<!DOCTYPE html>" +
                     "   <html>" +
                     "       <head>" +
                     $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain")}/recover/{env.ID}\" />" +
                     "       </head>" +
                     "   </html>");
+
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.Name}\"")
+                    .ExecuteAsync();
             }
         }
     }

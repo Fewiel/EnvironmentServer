@@ -81,7 +81,8 @@ namespace EnvironmentServer.Daemon
                 "invalidate_tokens",
                 "delete_expired_users",
                 "lock_inactive_accounts",
-                "es_cleanup"
+                "es_cleanup",
+                "pack_environments"
             };
 
             foreach (var a in actionList)
@@ -142,7 +143,8 @@ namespace EnvironmentServer.Daemon
                 new InvalidateTokens(sp),
                 new DeleteExpiredUsers(sp),
                 new LockInactiveAccounts(sp),
-                new ESCleanup(sp)
+                new ESCleanup(sp),
+                new PackEnvironments(sp)
             };
 
             foreach (var a in l)

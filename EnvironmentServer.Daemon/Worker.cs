@@ -87,7 +87,8 @@ namespace EnvironmentServer.Daemon
                 new CloneGit(),
                 new UpdateChroot(),
                 new DownloadExtractAutoinstall(),
-                new SetupExhibition()
+                new SetupExhibition(),
+                new RestoreEnvironment()
             };
 
             foreach (var a in l)
