@@ -24,6 +24,12 @@ internal class PackEnvironments : ScheduledActionBase
             if (env.LatestUse.AddDays(14) < DateTime.Now)
             {
                 var usr = db.Users.GetByID(env.UserID);
+
+                if (File.Exists($"/home/{usr.Username}/files/{env.Name}/.stored"))
+                    return;
+
+                var sw6 = Directory.Exists($"/home/{usr.Username}/files/{env.Name}/public");
+
                 db.Logs.Add("Daemon", $"Packing Environment: {env.Name} User: {db.Users.GetByID(env.UserID).Username}");
 
                 foreach (var f in Directory.GetDirectories($"/home/{usr.Username}/files/{env.Name}/var/cache"))
@@ -35,20 +41,33 @@ internal class PackEnvironments : ScheduledActionBase
                 Directory.CreateDirectory($"/home/{usr.Username}/files/inactive");
 
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"tar -czvf /home/{usr.Username}/files/inactive/{env.Name}.tar.gz /home/{usr.Username}/files/{env.Name}/*\"")
+                    .WithArguments($"-c \"tar -czvf /home/{usr.Username}/files/inactive/{env.Name}.tar.gz /home/{usr.Username}/files/{env.Name}\"")
                     .WithWorkingDirectory($"/home/{usr.Username}/files/{env.Name}")
                     .ExecuteAsync();
 
                 Directory.Delete($"/home/{usr.Username}/files/{env.Name}", true);
                 Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}");
 
-                File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/index.html",
-                    "<!DOCTYPE html>" +
-                    "   <html>" +
-                    "       <head>" +
-                    $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain")}/recover/{env.ID}\" />" +
-                    "       </head>" +
-                    "   </html>");
+                if (sw6)
+                {
+                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/public/index.html",
+                        "<!DOCTYPE html>" + Environment.NewLine +
+                        "   <html>" + Environment.NewLine +
+                        "       <head>" + Environment.NewLine +
+                        $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain")}/recover/{env.ID}\" />" + Environment.NewLine +
+                        "       </head>" + Environment.NewLine +
+                        "   </html>");
+                }
+                else
+                {
+                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/index.html",
+                        "<!DOCTYPE html>" + Environment.NewLine +
+                        "   <html>" + Environment.NewLine +
+                        "       <head>" + Environment.NewLine +
+                        $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain")}/recover/{env.ID}\" />" + Environment.NewLine +
+                        "       </head>" + Environment.NewLine +
+                        "   </html>");
+                }
 
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.Name}\"")
