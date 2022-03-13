@@ -15,7 +15,7 @@ namespace EnvironmentServer.Web.Controllers
             DB = db;
         }
 
-        [Route("{id}")]
+        [Route("[controller]/{id}")]
         public IActionResult StartRecover(long id)
         {
             DB.Environments.Use(id);
@@ -25,7 +25,7 @@ namespace EnvironmentServer.Web.Controllers
                 Id_Variable = id,
                 ExecutedById = 0
             });
-            return RedirectToAction(nameof(WaitForRecover), id);
+            return RedirectToAction(nameof(WaitForRecover), new { id });
         }
 
         public IActionResult WaitForRecover(long id)

@@ -55,7 +55,7 @@ internal class PackEnvironments : ScheduledActionBase
                         $@"<!DOCTYPE html>
                             <html>
                                 <head>
-                                    <meta http-equiv=""Refresh"" content=""0""; url=""https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
+                                    <meta http-equiv=""Refresh"" content=""0; url=https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
                                 </head> 
                             </html>");
 
