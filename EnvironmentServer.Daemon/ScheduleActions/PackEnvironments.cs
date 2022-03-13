@@ -58,7 +58,7 @@ internal class PackEnvironments : ScheduledActionBase
                         "<!DOCTYPE html>" + Environment.NewLine +
                         "   <html>" + Environment.NewLine +
                         "       <head>" + Environment.NewLine +
-                        $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain")}/recover/{env.ID}\" />" + Environment.NewLine +
+                        $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain").Value}/recover/{env.ID}\" />" + Environment.NewLine +
                         "       </head>" + Environment.NewLine +
                         "   </html>");
                 }
@@ -68,7 +68,7 @@ internal class PackEnvironments : ScheduledActionBase
                         "<!DOCTYPE html>" + Environment.NewLine +
                         "   <html>" + Environment.NewLine +
                         "       <head>" + Environment.NewLine +
-                        $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain")}/recover/{env.ID}\" />" + Environment.NewLine +
+                        $"           <meta http-equiv=\"Refresh\" content=\"0; url=https://cp.{db.Settings.Get("domain").Value}/recover/{env.ID}\" />" + Environment.NewLine +
                         "       </head>" + Environment.NewLine +
                         "   </html>");
                 }
