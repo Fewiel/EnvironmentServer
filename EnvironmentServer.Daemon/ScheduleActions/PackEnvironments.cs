@@ -41,8 +41,7 @@ internal class PackEnvironments : ScheduledActionBase
                 Directory.CreateDirectory($"/home/{usr.Username}/files/inactive");
 
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"tar -czvf /home/{usr.Username}/files/inactive/{env.Name}.tar.gz /home/{usr.Username}/files/{env.Name}\"")
-                    .WithWorkingDirectory($"/home/{usr.Username}/files/{env.Name}")
+                    .WithArguments($"-c \"zip /home/{usr.Username}/files/inactive/{env.Name}.zip /home/{usr.Username}/files/{env.Name}\"")
                     .ExecuteAsync();
 
                 Directory.Delete($"/home/{usr.Username}/files/{env.Name}", true);

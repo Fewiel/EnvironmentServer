@@ -28,10 +28,10 @@ internal class RestoreEnvironment : ActionBase
         }
 
         Directory.Delete($"/home/{usr.Username}/files/{env.Name}", true);
-        Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}");
 
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"tar zxvf /home/{usr.Username}/files/inactive/{env.Name}.tar.gz\"")
+            .WithArguments($"-c \"unzip /home/{usr.Username}/files/inactive/{env.Name}.zip\"")
+            .WithWorkingDirectory($"/home/{usr.Username}/files")
             .ExecuteAsync();
 
         await Cli.Wrap("/bin/bash")
