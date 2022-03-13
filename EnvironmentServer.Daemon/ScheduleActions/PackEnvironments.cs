@@ -50,6 +50,7 @@ internal class PackEnvironments : ScheduledActionBase
 
                 if (sw6)
                 {
+                    Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/public");
                     File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/public/index.html",
                         "<!DOCTYPE html>" + Environment.NewLine +
                         "   <html>" + Environment.NewLine +
