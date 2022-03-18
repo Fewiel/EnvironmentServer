@@ -51,16 +51,28 @@ internal class PackEnvironments : ScheduledActionBase
                     Directory.Delete($"/home/{usr.Username}/files/{env.Name}", true);
                     Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}");
 
-                    if (sw6)
-                        Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/public");
-
-                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/" : "")}index.html",
-                            $@"<!DOCTYPE html>
+                    var content = $@"<!DOCTYPE html>
                             <html>
                                 <head>
                                     <meta http-equiv=""Refresh"" content=""0; url=https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
                                 </head> 
-                            </html>");
+                            </html>";
+
+                    if (sw6)
+                    {
+                        Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/public");
+                        Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/public/admin");
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/backend");
+                    }
+
+                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/" : "")}index.html",
+                            content);
+
+                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/admin" : "backend/")}index.html",
+                            content);
 
                     db.Environments.SetStored(env.ID, true);
 
