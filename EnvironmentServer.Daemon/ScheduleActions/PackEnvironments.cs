@@ -21,51 +21,59 @@ internal class PackEnvironments : ScheduledActionBase
 
         foreach (var env in environments)
         {
-            if (env.LatestUse.AddDays(7) < DateTime.Now)
+            try
             {
-                var usr = db.Users.GetByID(env.UserID);
 
-                var sw6 = Directory.Exists($"/home/{usr.Username}/files/{env.Name}/public");
-
-                db.Logs.Add("Daemon", $"Packing Environment: {env.Name} User: {db.Users.GetByID(env.UserID).Username}");
-
-                foreach (var f in Directory.GetDirectories($"/home/{usr.Username}/files/{env.Name}/var/cache"))
+                if (env.LatestUse.AddDays(7) < DateTime.Now)
                 {
-                    if (f.Contains("prod"))
-                        Directory.Delete(f, true);
-                }
+                    var usr = db.Users.GetByID(env.UserID);
 
-                Directory.CreateDirectory($"/home/{usr.Username}/files/inactive");
+                    var sw6 = Directory.Exists($"/home/{usr.Username}/files/{env.Name}/public");
 
-                if (File.Exists($"/home/{usr.Username}/files/inactive/{env.Name}.zip"))
-                    File.Delete($"/home/{usr.Username}/files/inactive/{env.Name}.zip");
+                    db.Logs.Add("Daemon", $"Packing Environment: {env.Name} User: {db.Users.GetByID(env.UserID).Username}");
 
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"zip -r /home/{usr.Username}/files/inactive/{env.Name}.zip {env.Name}\"")
-                    .WithWorkingDirectory($"/home/{usr.Username}/files/")
-                    .ExecuteAsync();
+                    foreach (var f in Directory.GetDirectories($"/home/{usr.Username}/files/{env.Name}/var/cache"))
+                    {
+                        if (f.Contains("prod"))
+                            Directory.Delete(f, true);
+                    }
 
-                Directory.Delete($"/home/{usr.Username}/files/{env.Name}", true);
-                Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}");
+                    Directory.CreateDirectory($"/home/{usr.Username}/files/inactive");
 
-                if (sw6)
-                    Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/public");
+                    if (File.Exists($"/home/{usr.Username}/files/inactive/{env.Name}.zip"))
+                        File.Delete($"/home/{usr.Username}/files/inactive/{env.Name}.zip");
 
-                File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/" : "")}index.html",
-                        $@"<!DOCTYPE html>
+                    await Cli.Wrap("/bin/bash")
+                        .WithArguments($"-c \"zip -r /home/{usr.Username}/files/inactive/{env.Name}.zip {env.Name}\"")
+                        .WithWorkingDirectory($"/home/{usr.Username}/files/")
+                        .ExecuteAsync();
+
+                    Directory.Delete($"/home/{usr.Username}/files/{env.Name}", true);
+                    Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}");
+
+                    if (sw6)
+                        Directory.CreateDirectory($"/home/{usr.Username}/files/{env.Name}/public");
+
+                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/" : "")}index.html",
+                            $@"<!DOCTYPE html>
                             <html>
                                 <head>
                                     <meta http-equiv=""Refresh"" content=""0; url=https://cp.{db.Settings.Get("domain").Value}/Recover/{env.ID}"" />
                                 </head> 
                             </html>");
 
-                db.Environments.SetStored(env.ID, true);
+                    db.Environments.SetStored(env.ID, true);
 
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"chown -R {usr.Username}:sftp_users /home/{usr.Username}/files/{env.Name}\"")
-                    .ExecuteAsync();
+                    await Cli.Wrap("/bin/bash")
+                        .WithArguments($"-c \"chown -R {usr.Username}:sftp_users /home/{usr.Username}/files/{env.Name}\"")
+                        .ExecuteAsync();
 
-                db.Logs.Add("Daemon", $"Packing complete for Environment: {env.Name} User: {db.Users.GetByID(env.UserID).Username}");
+                    db.Logs.Add("Daemon", $"Packing complete for Environment: {env.Name} User: {db.Users.GetByID(env.UserID).Username}");
+                }
+            }
+            catch (Exception ex)
+            {
+                db.Logs.Add("PackEnvironments", ex.ToString());
             }
         }
     }
