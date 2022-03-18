@@ -71,7 +71,7 @@ internal class PackEnvironments : ScheduledActionBase
                     File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/" : "")}index.html",
                             content);
 
-                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/admin" : "backend/")}index.html",
+                    File.WriteAllText($"/home/{usr.Username}/files/{env.Name}/{(sw6 ? "public/admin/" : "backend/")}index.html",
                             content);
 
                     db.Environments.SetStored(env.ID, true);
