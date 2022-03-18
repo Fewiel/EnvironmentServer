@@ -53,13 +53,7 @@ public class EnvironmentESRepository
     public async Task AddAsync(long id, string esVersion)
     {
         int port = 9000;
-        foreach (var es in Get())
-        {
-            if (es.Port != port)
-                break;
-
-            port += 1;
-        }
+        port += Get().Count();
 
         var envName = DB.Environments.Get(id).Name;
         var dID = "es_docker_" + envName + "_uid_" + DB.Environments.Get(id).UserID;
