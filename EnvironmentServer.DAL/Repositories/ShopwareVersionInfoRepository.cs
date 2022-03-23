@@ -57,7 +57,7 @@ namespace EnvironmentServer.DAL.Repositories
         public IEnumerable<ShopwareVersionInfo> GetForMajor(int v)
         {
             using var connection = DB.GetConnection();
-            return connection.Query<ShopwareVersionInfo>("SELECT * FROM `shopware_release_feed` where LEFT(`version`, 1) = '@version';",
+            return connection.Query<ShopwareVersionInfo>("SELECT * FROM `shopware_release_feed` where LEFT(`version`, 1) = @version;",
                 new
                 {
                     version = v + "%"
