@@ -1,31 +1,32 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 
-namespace EnvironmentServer.Web
+namespace EnvironmentServer.Web;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        CreateHostBuilder(args).Build().Run();
+    }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
+    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        File.AppendAllText($"error_log_{DateTime.Now:dd_MM_yyyy}.log", e.ExceptionObject.ToString());
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
 #if DEBUG
                     webBuilder.UseUrls("http://0.0.0.0:5000");
 #else
                     webBuilder.UseUrls("http://0.0.0.0:5000");
 #endif
                     webBuilder.UseStartup<Startup>();
-                });
-    }
+            });
 }
