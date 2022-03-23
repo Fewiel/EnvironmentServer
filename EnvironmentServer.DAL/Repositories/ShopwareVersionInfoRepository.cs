@@ -60,7 +60,7 @@ namespace EnvironmentServer.DAL.Repositories
             return connection.Query<ShopwareVersionInfo>("SELECT * FROM `shopware_release_feed` where LEFT(`version`, 1) = @version;",
                 new
                 {
-                    version = v + "%"
+                    version = v
                 });
         }
     }
