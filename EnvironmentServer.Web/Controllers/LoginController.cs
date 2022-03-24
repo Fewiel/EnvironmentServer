@@ -62,6 +62,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (PasswordHasher.Verify(lvm.Password, usr.Password))
             {
+                DB.Logs.Add("Web", "User " + lvm.Username + " logged in!");
                 HttpContext.Session.SetObject("user", usr);
                 return RedirectToAction("Index", "Home");
             }

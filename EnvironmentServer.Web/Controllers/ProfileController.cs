@@ -122,6 +122,7 @@ namespace EnvironmentServer.Web.Controllers
         [AllowNotLoggedIn, HttpPost]
         public IActionResult PasswordRecovery([FromForm] PasswordRecoveryViewModel prv)
         {
+            DB.Logs.Add("Web", "Password Recovery for: " + prv.Mail);
             DB.Users.ForgotPassword(prv.Mail);
             AddInfo("Passwort recovery mail send. Check your mailbox!");
             return View();

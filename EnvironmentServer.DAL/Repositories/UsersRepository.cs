@@ -205,6 +205,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             {
                 try
                 {
+                    DB.Logs.Add("RegenerateConfig", "Regenerate Config for " + user.Username);
                     var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
                     File.WriteAllText($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf", conf);
                     conf = string.Format(phpfpm, user.Username, "php7.2-fpm");
