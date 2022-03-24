@@ -88,7 +88,8 @@ namespace EnvironmentServer.Daemon
                 new UpdateChroot(),
                 new DownloadExtractAutoinstall(),
                 new SetupExhibition(),
-                new RestoreEnvironment()
+                new RestoreEnvironment(),
+                new RegeneratePhpConfig()
             };
 
             foreach (var a in l)
