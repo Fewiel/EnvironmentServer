@@ -20,23 +20,15 @@
     <div class="card mb-2 hovercard" style="min-height: 420px;@(Model.Stored ? " color: red;" : "")">
         <a asp-controller="Env" asp-action="OpenFrontend" asp-route-id=@Model.ID target="_blank" class="text-decoration-none text-body">
             <p class="text-center">
-                @{
-                    if (!Model.Stored)
-                    {
-                        <img src="~/img/sw@(sw_version[0])-signet.svg" width="100" height="100" style="padding-top: 15px;" />
-                    }
-                    else
-                    {
-                        <i class="bi bi-file-earmark-zip" width="100" height="100" style="padding-top: 15px;" />
-                    }
-                }                
+                <img src="~/img/sw@(sw_version[0])-signet.svg" width="100" height="100" style="padding-top: 15px;" />
+
                 <a asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">
                     <i class="bi bi-pencil-square" style="font-size: 20px; float: right; position: absolute; right: 5px;"></i>
                 </a>
                 <a asp-controller="Env" asp-action="Sorting" class="text-decoration-none">
                     <i class="bi bi-sort-numeric-down-alt" style="font-size: 20px; float: right; top: 25px; position: absolute; right: 5px;"></i>
                 </a>
-            </p>            
+            </p>
             <div class="card-body">
                 <h5 class="card-title">@Model.Name</h5>
                 <span class="card-text">SW Version: @sw_version</span><br />
