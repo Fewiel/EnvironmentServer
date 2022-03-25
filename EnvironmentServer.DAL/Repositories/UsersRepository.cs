@@ -488,7 +488,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             if (usr == null)
                 return;
 
-            var token = DB.Tokens.Generate(usr.ID);
+            var token = DB.Tokens.Generate(usr.ID);            
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_password_recovery").Value, usr.Username, token.ToString(), usr.Email), usr.Email);
         }
