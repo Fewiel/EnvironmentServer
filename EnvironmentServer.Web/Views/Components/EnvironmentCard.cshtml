@@ -20,7 +20,6 @@
     <div class="card mb-2 hovercard" style="min-height: 420px;@(Model.Stored ? " color: red;" : "")">
         <a asp-controller="Env" asp-action="OpenFrontend" asp-route-id=@Model.ID target="_blank" class="text-decoration-none text-body">
             <p class="text-center">
-                @(Model.Stored ? " - stored" : "")
                 @{
                     if (!Model.Stored)
                     {
