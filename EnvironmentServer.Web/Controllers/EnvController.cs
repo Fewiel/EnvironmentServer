@@ -142,6 +142,8 @@ namespace EnvironmentServer.Web.Controllers
             var env = DB.Environments.Get(id);
             var version = env.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version").Value;
             DB.Environments.Use(id);
+            if (env.Stored)
+                return Redirect("https://" + env.Address);
             return Redirect("https://" + env.Address + (version[0] == '5' ? "/backend" : "/admin"));
         }
     }
