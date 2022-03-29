@@ -40,3 +40,7 @@
 .no-scrollbars::-webkit-scrollbar {
     width: 0 !important;
 }
+
+.dropdown-toggle-hide::after {
+    display: none;
+}

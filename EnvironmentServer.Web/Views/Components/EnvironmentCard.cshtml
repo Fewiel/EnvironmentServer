@@ -34,28 +34,28 @@
             <i class="bi bi-sort-numeric-down-alt" style="font-size: 20px; float: right; top: 25px; position: absolute; right: 5px;"></i>
             </a>
             </p>*@
-        <div class="card-body">
-            <div style="display: grid; grid-template-areas: 'logo name' 'logo buttons' 'pills';">
+        <div class="card-body" style="padding: 5px;">
+            <div style="display: grid; grid-template-areas: 'logo name' 'logo buttons' 'pills pills'; grid-template-rows: 62px 38px auto; grid-template-columns: 100px auto;">
                 <div style="grid-area: logo;">
                     @if (!Model.Stored)
                     {
-                        <img src="~/img/sw@(sw_version[0])-signet.svg" width="100" height="100" style="padding-top: 15px;" />
+                        <img src="~/img/sw@(sw_version[0])-signet.svg" width="100" height="100" style="padding-right: 15px;" />
                     }
                     else
                     {
-                        <img src="~/img/zip.png" width="100" height="100" style="padding-top: 15px;" />
+                        <img src="~/img/zip.png" width="100" height="100" style="padding-right: 10px;" />
                     }
                 </div>
-                <div style="grid-area: name;">
+                <div style="grid-area: name; margin-bottom: 10px; overflow: hidden;">
                     <h5 class="card-title">@Model.Name</h5>
                 </div>
-                <div style="grid-area: buttons;">
-                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                        <button type="button" class="btn btn-primary">1</button>
-                        <button type="button" class="btn btn-primary">2</button>
+                <div style="grid-area: buttons; width: 100%;">
+                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown" style="width: 100%;";>
+                        <button type="button" class="btn btn-primary">Frontend</button>
+                        <button type="button" class="btn btn-primary">Admin</button>
                         <div class="btn-group" role="group">
-                            <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
+                            <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-hide" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                 <li><a class="dropdown-item" href="#">Dropdown link</a></li>
