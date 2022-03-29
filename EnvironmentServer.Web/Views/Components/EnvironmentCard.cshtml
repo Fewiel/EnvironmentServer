@@ -51,13 +51,16 @@
                 </div>
                 <div style="grid-area: buttons; width: 100%;">
                     <div class="btn-group" role="group" style="width: 100%;";>
-                        <button type="button" class="btn btn-primary">Frontend</button>
-                        <button type="button" class="btn btn-primary">Admin</button>
+
+                        <a class="btn btn-primary me-auto" asp-controller="Env" asp-action="OpenFrontend" asp-route-id=@Model.ID target="_blank">Frontend</a>
+
+                        <a class="btn btn-primary" asp-controller="Env" asp-action="OpenBackend" asp-route-id=@Model.ID target="_blank">Admin</a>
+
                         <div class="btn-group" role="group">
                             <button id="btnMore" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-hide" data-bs-toggle="dropdown">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="#">Dropdown link</a></li>
                                 <li><a class="dropdown-item" href="#">Dropdown link</a></li>
                             </ul>
