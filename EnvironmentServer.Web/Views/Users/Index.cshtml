@@ -40,7 +40,7 @@
                 </td>
                 <td>                    
                     <a asp-action="LoginAsUser" asp-route-id="@usr.ID"><i class="bi bi-door-open"></i></a>
-                    <a asp-action="Update" asp-route-id="@usr.ID"><i class="bi bi-pencil"></i></a>
+                    <a asp-action="Update" style="margin-left: 10px;" asp-route-id="@usr.ID"><i class="bi bi-pencil"></i></a>
                     <a asp-action="Delete" style="margin-left: 10px;" onclick="return confirm('Are you sure? This will delete the User and all Userdata! This step cannot be undone!')" asp-route-id="@usr.ID"><i style="color:#FF0000" class="bi bi-trash"></i></a>
                 </td>
             </tr>
