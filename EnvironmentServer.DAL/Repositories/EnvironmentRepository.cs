@@ -330,6 +330,8 @@ namespace EnvironmentServer.DAL.Repositories
 
             File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf");
 
+            File.Delete($"/home/{user.Username}/files/inactive/{environment.InternalName}.zip");
+
             using var connection = DB.GetConnection();
             var Command = new MySqlCommand("DELETE FROM `environments` WHERE `environments`.`ID` = @id");
             Command.Parameters.AddWithValue("@id", environment.ID);
