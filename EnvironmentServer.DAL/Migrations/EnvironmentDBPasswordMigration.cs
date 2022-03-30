@@ -16,7 +16,7 @@ internal class EnvironmentDBPasswordMigration
                     continue;
 
                 var dbPassword = UsersRepository.RandomPasswordString(16);
-                var dbString = db.Users.GetByID(env.UserID).Username + "_" + env.Name;
+                var dbString = db.Users.GetByID(env.UserID).Username + "_" + env.InternalName;
 
                 connection.Execute("UPDATE `environments` SET `DBPassword` = @password WHERE `environments`.`ID` = @id;", new
                 {

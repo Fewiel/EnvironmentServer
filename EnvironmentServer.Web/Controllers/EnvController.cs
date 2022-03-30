@@ -50,7 +50,7 @@ namespace EnvironmentServer.Web.Controllers
             var createViewModel = new UpdateViewModel()
             {
                 ID = id,
-                EnvironmentName = DB.Environments.Get(id).Name,
+                EnvironmentName = DB.Environments.Get(id).InternalName,
                 PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
                     .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
                 ElasticSearch = DB.EnvironmentsES.GetByEnvironmentID(id)
@@ -77,7 +77,7 @@ namespace EnvironmentServer.Web.Controllers
             var createViewModel = new UpdateViewModel()
             {
                 ID = id,
-                EnvironmentName = DB.Environments.Get(id).Name,
+                EnvironmentName = DB.Environments.Get(id).InternalName,
                 PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
                     .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
                 ElasticSearch = es
@@ -91,6 +91,14 @@ namespace EnvironmentServer.Web.Controllers
             await DB.Environments.UpdatePhpAsync(id, GetSessionUser(), (PhpVersion)cvm.Version);
 
             AddInfo("Environment PhpVersion sucessfull updated");
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public IActionResult Rename(long id, [FromForm] UpdateViewModel cvm)
+        {
+            DB.Environments.SetDisplayName(id, cvm.DisplayName);
+            AddInfo("Environment Name Changed");
             return RedirectToAction("Index", "Home");
         }
 

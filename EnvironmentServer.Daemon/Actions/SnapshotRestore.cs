@@ -26,32 +26,32 @@ namespace EnvironmentServer.Daemon.Actions
             var user = db.Users.GetByID(userID);
             var snap = db.Snapshot.Get(variableID);
             var env = db.Environments.Get(snap.EnvironmentId);
-            var dbString = user.Username + "_" + env.Name;
+            var dbString = user.Username + "_" + env.InternalName;
             var config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
 
-            db.Logs.Add("Daemon", "SnapshotRestore - Disable Site: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotRestore - Disable Site: " + env.InternalName);
             //Stop Website (a2dissite)
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{env.Name}.conf\"")
+                .WithArguments($"-c \"a2dissite {user.Username}_{env.InternalName}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "SnapshotRestore - git reset --hard: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotRestore - git reset --hard: " + env.InternalName);
             //Git reset
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git reset --hard {snap.Hash}\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
             //git clean -f -d
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git clean -f -d\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "SnapshotRestore - Recreate/dump database: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotRestore - Recreate/dump database: " + env.InternalName);
             //Recreate Database            
             using (var connection = db.GetConnection())
             {
@@ -78,17 +78,17 @@ namespace EnvironmentServer.Daemon.Actions
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"mysql -u {config.Username} -p{config.Password} " + dbString + " < db.sql\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
+                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "SnapshotRestore - Enable Site: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotRestore - Enable Site: " + env.InternalName);
             //restart site
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{env.Name}.conf\"")
+                .WithArguments($"-c \"a2ensite {user.Username}_{env.InternalName}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
@@ -96,18 +96,18 @@ namespace EnvironmentServer.Daemon.Actions
 
             db.Environments.SetTaskRunning(env.ID, false);
 
-            db.Logs.Add("Daemon", "SnapshotRestore - Done: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotRestore - Done: " + env.InternalName);
 
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
-                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_restore_finished").Value, env.Name),
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_restore_finished").Value, env.InternalName),
                     user.UserInformation.SlackID);
                 if (success)
                     return;
             }
 
-            db.Mail.Send($"Snapshot restored for {env.Name}!", 
-                string.Format(db.Settings.Get("mail_snapshot_restored").Value, user.Username, env.Name), user.Email);
+            db.Mail.Send($"Snapshot restored for {env.InternalName}!", 
+                string.Format(db.Settings.Get("mail_snapshot_restored").Value, user.Username, env.InternalName), user.Email);
         }
     }
 }

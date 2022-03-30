@@ -23,18 +23,18 @@ namespace EnvironmentServer.Daemon.Actions
             var user = db.Users.GetByID(userID);
             var env = db.Environments.Get(variableID);
 
-            var url = System.IO.File.ReadAllText($"/home/{user.Username}/files/{env.Name}/dl.txt");
+            var url = System.IO.File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/dl.txt");
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"rm dl.txt\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "Clone Repo for: " + env.Name + " URL: " + url);
+            db.Logs.Add("Daemon", "Clone Repo for: " + env.InternalName + " URL: " + url);
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git init\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
             var repo = url.Substring(0, url.IndexOf("/commit/"));
@@ -42,21 +42,21 @@ namespace EnvironmentServer.Daemon.Actions
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git remote add origin {repo}\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git fetch origin {hash}\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git reset --hard FETCH_HEAD\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.Name}\"")
+                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
                 .ExecuteAsync();
 
             db.Environments.SetTaskRunning(env.ID, false);
@@ -64,13 +64,13 @@ namespace EnvironmentServer.Daemon.Actions
             var usr = db.Users.GetByID(env.UserID);
             if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
             {
-                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_clone_finished").Value, env.Name),
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_clone_finished").Value, env.InternalName),
                     usr.UserInformation.SlackID);
                 if (success)
                     return;
             }
-            db.Mail.Send($"Setup ready for {env.Name}!", string.Format(db.Settings.Get("mail_setup_finished").Value,
-                                user.Username, env.Name), user.Email);
+            db.Mail.Send($"Setup ready for {env.InternalName}!", string.Format(db.Settings.Get("mail_setup_finished").Value,
+                                user.Username, env.InternalName), user.Email);
         }
     }
 }

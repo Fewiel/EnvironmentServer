@@ -22,33 +22,33 @@ internal class RestoreEnvironment : ActionBase
         if (!env.Stored)
             return;
 
-        db.Logs.Add("Daemon", $"Starting restore for Environment {env.Name}.");
+        db.Logs.Add("Daemon", $"Starting restore for Environment {env.InternalName}.");
 
-        if (!File.Exists($"/home/{usr.Username}/files/inactive/{env.Name}.zip"))
+        if (!File.Exists($"/home/{usr.Username}/files/inactive/{env.InternalName}.zip"))
         {
-            db.Logs.Add("Daemon", $"Restore Failed! File not found: /home/{usr.Username}/files/inactive/{env.Name}.zip");
-            await em.SendMessageAsync($"Restore of Environment Failed! File not found: /home/{usr.Username}/files/inactive/{env.Name}.zip",
+            db.Logs.Add("Daemon", $"Restore Failed! File not found: /home/{usr.Username}/files/inactive/{env.InternalName}.zip");
+            await em.SendMessageAsync($"Restore of Environment Failed! File not found: /home/{usr.Username}/files/inactive/{env.InternalName}.zip",
                 db.UserInformation.Get(usr.ID).SlackID);
             return;
         }
 
-        Directory.Delete($"/home/{usr.Username}/files/{env.Name}", true);
+        Directory.Delete($"/home/{usr.Username}/files/{env.InternalName}", true);
 
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"unzip /home/{usr.Username}/files/inactive/{env.Name}.zip\"")
+            .WithArguments($"-c \"unzip /home/{usr.Username}/files/inactive/{env.InternalName}.zip\"")
             .WithWorkingDirectory($"/home/{usr.Username}/files")
             .ExecuteAsync();
 
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.Name}\"")
+            .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.InternalName}\"")
             .ExecuteAsync();
 
-        File.Delete($"/home/{usr.Username}/files/inactive/{env.Name}.zip");
+        File.Delete($"/home/{usr.Username}/files/inactive/{env.InternalName}.zip");
 
         db.Environments.SetStored(env.ID, false);
 
-        db.Logs.Add("Daemon", $"Environment {env.Name} restored.");
-        await em.SendMessageAsync($"Restore of Environment {env.Name} done.",
+        db.Logs.Add("Daemon", $"Environment {env.InternalName} restored.");
+        await em.SendMessageAsync($"Restore of Environment {env.InternalName} done.",
             db.UserInformation.Get(env.UserID).SlackID);
     }
 }

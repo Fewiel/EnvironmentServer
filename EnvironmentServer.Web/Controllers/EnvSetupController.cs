@@ -41,7 +41,7 @@ namespace EnvironmentServer.Web.Controllers
 
             foreach (var i in tmp_env_list)
             {
-                if (i.Name.ToLower() == esv.Name.ToLower())
+                if (i.InternalName.ToLower() == esv.Name.ToLower())
                 {
                     AddError("Environment Name already in use");
                     return RedirectToAction("BaseData", esv);
@@ -101,7 +101,7 @@ namespace EnvironmentServer.Web.Controllers
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
-                Name = esv.Name,
+                InternalName = esv.Name,
                 Address = esv.Name.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion
             };
@@ -204,7 +204,7 @@ namespace EnvironmentServer.Web.Controllers
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
-                Name = esv.Name,
+                InternalName = esv.Name,
                 Address = esv.Name.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion
             };

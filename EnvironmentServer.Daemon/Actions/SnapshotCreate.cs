@@ -26,52 +26,52 @@ namespace EnvironmentServer.Daemon.Actions
             var user = db.Users.GetByID(userID);
             var snap = db.Snapshot.Get(variableID);
             var env = db.Environments.Get(snap.EnvironmentId);
-            var dbString = user.Username + "_" + env.Name;
+            var dbString = user.Username + "_" + env.InternalName;
             var config = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
 
-            db.Logs.Add("Daemon", "SnapshotCreate - Disable Site: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotCreate - Disable Site: " + env.InternalName);
             //Stop Website (a2dissite)
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{env.Name}.conf\"")
+                .WithArguments($"-c \"a2dissite {user.Username}_{env.InternalName}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "SnapshotCreate - Create database dump: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotCreate - Create database dump: " + env.InternalName);
             //Create database dump in site folder
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"mysqldump -u {config.Username} -p{config.Password} " + dbString + " > db.sql\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "SnapshotCreate - Git init: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotCreate - Git init: " + env.InternalName);
             //check for git init
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"git init\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "SnapshotCreate - Git create: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotCreate - Git create: " + env.InternalName);
             //git stage
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"git stage -A\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "SnapshotCreate - Git commit: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotCreate - Git commit: " + env.InternalName);
             //create commit
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"git commit -m 'EnvSnapshot'\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
-            db.Logs.Add("Daemon", "SnapshotCreate - Save hash: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotCreate - Save hash: " + env.InternalName);
             //save hash
             StringBuilder hash = new();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"git rev-parse HEAD\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.Name}")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .WithStandardOutputPipe(PipeTarget.ToStringBuilder(hash))
                 .ExecuteAsync();
 
@@ -83,10 +83,10 @@ namespace EnvironmentServer.Daemon.Actions
                 Command.ExecuteNonQuery();
             }
 
-            db.Logs.Add("Daemon", "SnapshotCreate - Enable Site: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotCreate - Enable Site: " + env.InternalName);
             //restart site
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{env.Name}.conf\"")
+                .WithArguments($"-c \"a2ensite {user.Username}_{env.InternalName}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
@@ -94,18 +94,18 @@ namespace EnvironmentServer.Daemon.Actions
 
             db.Environments.SetTaskRunning(env.ID, false);
 
-            db.Logs.Add("Daemon", "SnapshotCreate - Done: " + env.Name);
+            db.Logs.Add("Daemon", "SnapshotCreate - Done: " + env.InternalName);
 
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
-                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_create_finished").Value, env.Name)
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_snapshot_create_finished").Value, env.InternalName)
                     , user.UserInformation.SlackID);
                 if (success)
                     return;
             }
 
-            db.Mail.Send($"Snapshot ready for {env.Name}!", string.Format(db.Settings.Get("mail_snapshot_create").Value,
-                user.Username, env.Name), user.Email);
+            db.Mail.Send($"Snapshot ready for {env.InternalName}!", string.Format(db.Settings.Get("mail_snapshot_create").Value,
+                user.Username, env.InternalName), user.Email);
         }
     }
 }

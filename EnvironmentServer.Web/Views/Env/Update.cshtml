@@ -5,6 +5,14 @@
 }
 
 <div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column; margin-top: 20px;">
+    <span>Name</span>
+    <form method="post" asp-controller="Env" asp-action="Rename" >
+        <input type="hidden" asp-for="ID" />
+        <input asp-for="DisplayName" value=@Model.DisplayName class="form-control" />
+        <br />
+        <button type="submit" class="btn btn-primary">Change Name</button>
+    </form>
+    <br />
     <h2>Php Settings</h2>
     <form method="post" asp-controller="Env" asp-action="Update" asp- style="width: 400px;">
         <input type="hidden" asp-for="ID" />
@@ -16,7 +24,7 @@
             <select asp-for="Version" asp-items="Model.PhpVersions" class="form-select"></select>
             <span asp-validation-for="Version" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="submit" class="btn btn-primary">Update PHP</button>
     </form>
     <br />
     <h2>Elastic Search Settings</h2>

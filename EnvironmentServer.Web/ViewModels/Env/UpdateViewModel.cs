@@ -11,6 +11,7 @@ namespace EnvironmentServer.Web.ViewModels.Env
     {
         public long ID { get; set; }
         public string EnvironmentName { get; set; }
+        public string DisplayName { get; set; }
         public int Version { get; set; }
         public IEnumerable<SelectListItem> PhpVersions { get; set; }
         public EnvironmentES ElasticSearch { get; set; }

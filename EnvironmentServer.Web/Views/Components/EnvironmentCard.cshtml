@@ -38,8 +38,8 @@
                         <i style="padding-right: 10px; line-height: 0px; font-size: 90px; color: #007eda;" class="bi bi-gear"></i>
                     }
                 </div>
-                <div title="@Model.Name" style="grid-area: name; margin-bottom: 10px; overflow: hidden;">
-                    <h5 class="card-title">@Model.Name</h5>
+                <div title="@Model.InternalName" style="grid-area: name; margin-bottom: 10px; overflow: hidden;">
+                    <h5 class="card-title">@Model.InternalName</h5>
                 </div>
                 <div style="grid-area: buttons; width: 100%;">
                     <div class="btn-group" role="group" style="width: 100%;" ;>
@@ -55,7 +55,7 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">Edit</a></li>
                                 <li><a class="dropdown-item" asp-controller="Env" asp-action="Sorting">Sorting</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.Name)');return false;">Copy DB-User</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.InternalName)');return false;">Copy DB-User</a></li>
                                 <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy DB-Password</a></li>
                                 <li><a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a></li>
                                 <li><a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a></li>

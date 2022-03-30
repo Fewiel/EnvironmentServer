@@ -86,14 +86,15 @@ namespace EnvironmentServer.DAL.Repositories
             {
                 ID = reader.GetInt64(0),
                 UserID = reader.GetInt64(1),
-                Name = reader.GetString(2),
-                Address = reader.GetString(3),
-                Version = (PhpVersion)reader.GetInt32(4),
-                DBPassword = reader.GetString(5),
+                DisplayName = reader.GetString(2),
+                InternalName = reader.GetString(3),
+                Address = reader.GetString(4),
+                Version = (PhpVersion)reader.GetInt32(5),
+                DBPassword = reader.GetString(6),
                 Settings = new List<EnvironmentSettingValue>(GetSettingValues(reader.GetInt64(0))),
-                Sorting = reader.GetInt32(6),
-                LatestUse = reader.GetDateTime(7),
-                Stored = reader.GetBoolean(8)
+                Sorting = reader.GetInt32(7),
+                LatestUse = reader.GetDateTime(8),
+                Stored = reader.GetBoolean(9)
             };
         }
 
@@ -127,8 +128,8 @@ namespace EnvironmentServer.DAL.Repositories
 
         public async Task<long> InsertAsync(Environment environment, User user, bool sw6)
         {
-            DB.Logs.Add("DAL", "Insert Environment " + environment.Name + " for " + user.Username);
-            var dbString = user.Username + "_" + environment.Name;
+            DB.Logs.Add("DAL", "Insert Environment " + environment.InternalName + " for " + user.Username);
+            var dbString = user.Username + "_" + environment.InternalName;
             long lastID;
 
             var dbPassword = UsersRepository.RandomPasswordString(16);
@@ -140,7 +141,7 @@ namespace EnvironmentServer.DAL.Repositories
                     "VALUES (NULL, @userID, @envName, @envAddress, @version, @dbpassword); SELECT LAST_INSERT_ID();", new
                     {
                         userID = environment.UserID,
-                        envName = environment.Name,
+                        envName = environment.InternalName,
                         envAddress = environment.Address,
                         version = environment.Version,
                         dbpassword = dbPassword
@@ -162,25 +163,25 @@ namespace EnvironmentServer.DAL.Repositories
             }
 
             //Create environment dir            
-            Directory.CreateDirectory($"/home/{user.Username}/files/{environment.Name}");
+            Directory.CreateDirectory($"/home/{user.Username}/files/{environment.InternalName}");
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}/files/{environment.Name}\"")
+                .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}/files/{environment.InternalName}\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/{environment.Name}\"")
+                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/{environment.InternalName}\"")
                 .ExecuteAsync();
             //Create log dir
-            Directory.CreateDirectory($"/home/{user.Username}/files/logs/{environment.Name}");
+            Directory.CreateDirectory($"/home/{user.Username}/files/logs/{environment.InternalName}");
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}/files/logs/{environment.Name}\"")
+                .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}/files/logs/{environment.InternalName}\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/logs/{environment.Name}\"")
+                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/logs/{environment.InternalName}\"")
                 .ExecuteAsync();
 
             //Create Apache2 configuration            
-            var docRoot = $"/home/{user.Username}/files/{environment.Name}{(sw6 ? "/public" : "")}";
-            var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
+            var docRoot = $"/home/{user.Username}/files/{environment.InternalName}{(sw6 ? "/public" : "")}";
+            var logRoot = $"/home/{user.Username}/files/logs/{environment.InternalName}";
 
             var builder = ApacheConfConstructor.Construct
                 .WithVersion(environment.Version)
@@ -195,12 +196,12 @@ namespace EnvironmentServer.DAL.Repositories
 
             var conf = File.Exists(".nossl") ? builder.Build() : builder.BuildSSL();
 
-            File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
+            File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf", conf);
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
+                .WithArguments($"-c \"a2ensite {user.Username}_{environment.InternalName}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
@@ -223,7 +224,7 @@ namespace EnvironmentServer.DAL.Repositories
             }
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
+                .WithArguments($"-c \"a2dissite {user.Username}_{environment.InternalName}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
@@ -232,8 +233,8 @@ namespace EnvironmentServer.DAL.Repositories
             var envVersion = environment.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
             var sw_version = envVersion == null ? "N/A" : envVersion.Value;
 
-            var docRoot = $"/home/{user.Username}/files/{environment.Name}{(sw_version[0] == '6' ? "/public" : "")}";
-            var logRoot = $"/home/{user.Username}/files/logs/{environment.Name}";
+            var docRoot = $"/home/{user.Username}/files/{environment.InternalName}{(sw_version[0] == '6' ? "/public" : "")}";
+            var logRoot = $"/home/{user.Username}/files/logs/{environment.InternalName}";
 
             var conf = ApacheConfConstructor.Construct
                 .WithVersion(version)
@@ -246,16 +247,22 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithSSLChainFile(DB.Settings.Get("SSLCertificateChainFile").Value)
                 .WithUsername(user.Username).BuildSSL();
 
-            File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf", conf);
+            File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf", conf);
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
             var cmd = await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{environment.Name}.conf\"")
+                .WithArguments($"-c \"a2ensite {user.Username}_{environment.InternalName}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
+        }
+
+        public void SetDisplayName(long id, string dname)
+        {
+            using var connection = DB.GetConnection();
+            connection.Execute("Update `environments` set `DisplayName` = @dname where `ID` = @id;", new { id, dname });
         }
 
         public void SetTaskRunning(long id, bool running)
@@ -311,16 +318,16 @@ namespace EnvironmentServer.DAL.Repositories
 
         public async Task DeleteAsync(Environment environment, User user)
         {
-            DB.Logs.Add("DAL", "Delete Environment " + environment.Name + " for " + user.Username);
+            DB.Logs.Add("DAL", "Delete Environment " + environment.InternalName + " for " + user.Username);
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{environment.Name}.conf\"")
+                .WithArguments($"-c \"a2dissite {user.Username}_{environment.InternalName}.conf\"")
                 .ExecuteAsync();
             await Cli.Wrap("/bin/bash")
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
-            File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.Name}.conf");
+            File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf");
 
             using var connection = DB.GetConnection();
             var Command = new MySqlCommand("DELETE FROM `environments` WHERE `environments`.`ID` = @id");
@@ -333,7 +340,7 @@ namespace EnvironmentServer.DAL.Repositories
             Command.Connection = connection;
             Command.ExecuteNonQuery();
 
-            var dbString = user.Username + "_" + environment.Name;
+            var dbString = user.Username + "_" + environment.InternalName;
 
             Command = new MySqlCommand("DROP DATABASE " + dbString + ";");
             Command.Connection = connection;
@@ -341,8 +348,8 @@ namespace EnvironmentServer.DAL.Repositories
 
             connection.Execute($"drop user {MySqlHelper.EscapeString(dbString)}@'localhost';");
 
-            Directory.Delete($"/home/{user.Username}/files/{environment.Name}", true);
-            Directory.Delete($"/home/{user.Username}/files/logs/{environment.Name}", true);
+            Directory.Delete($"/home/{user.Username}/files/{environment.InternalName}", true);
+            Directory.Delete($"/home/{user.Username}/files/logs/{environment.InternalName}", true);
         }
 
         public static string FixEnvironmentName(string name) => name.ToLower().Replace(" ", "_").Replace(".", "_").Replace("-", "_");

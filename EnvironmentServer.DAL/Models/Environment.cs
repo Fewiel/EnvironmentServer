@@ -14,7 +14,8 @@ namespace EnvironmentServer.DAL.Models
         public long ID { get; set; }
         [Description("users_ID_fk")]
         public long UserID { get; set; }
-        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public string InternalName { get; set; }
         public string Address { get; set; }
         public string DBPassword { get; set; }
         public PhpVersion Version { get; set; }

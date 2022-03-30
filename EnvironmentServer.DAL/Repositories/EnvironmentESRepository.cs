@@ -55,7 +55,7 @@ public class EnvironmentESRepository
         int port = 9000;
         port += Get().Count();
 
-        var envName = DB.Environments.Get(id).Name;
+        var envName = DB.Environments.Get(id).InternalName;
         var dID = "es_docker_" + envName + "_uid_" + DB.Environments.Get(id).UserID;
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"docker run -d --name {dID} -p 127.0.0.1:{port}:9200 -p 127.0.0.1:{port + 100}:9300 -e \"discovery.type=single-node\" -it docker.elastic.co/elasticsearch/elasticsearch:{esVersion}\"")
