@@ -1,6 +1,7 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Attributes;
+using EnvironmentServer.Web.Extensions;
 using EnvironmentServer.Web.ViewModels.Login;
 using EnvironmentServer.Web.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -67,8 +68,13 @@ namespace EnvironmentServer.Web.Controllers
                 return View();
             }
 
-            var usr = new User { Username = rvm.Username, Email = rvm.Email, 
-                Password = PasswordHasher.Hash(rvm.Password), ExpirationDate = rvm.ExpirationDate };
+            var usr = new User
+            {
+                Username = rvm.Username,
+                Email = rvm.Email,
+                Password = PasswordHasher.Hash(rvm.Password),
+                ExpirationDate = rvm.ExpirationDate
+            };
             await DB.Users.InsertAsync(usr, rvm.Password).ConfigureAwait(false);
 
             AddInfo("User created");
@@ -85,6 +91,13 @@ namespace EnvironmentServer.Web.Controllers
             };
 
             return View(auvm);
+        }
+
+        public IActionResult LoginAsUser(long id)
+        {
+            HttpContext.Session.Clear();
+            HttpContext.Session.SetObject("user", DB.Users.GetByID(id));
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
@@ -116,7 +129,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         public IActionResult UpdateChroot()
-        {            
+        {
             DB.CmdAction.CreateTask(new CmdAction
             {
                 Action = "update_chroot",
