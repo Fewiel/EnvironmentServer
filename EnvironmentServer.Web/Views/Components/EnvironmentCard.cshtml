@@ -34,7 +34,7 @@
                     <h5 class="card-title">@Model.Name</h5>
                 </div>
                 <div style="grid-area: buttons; width: 100%;">
-                    <div class="btn-group" role="group" style="width: 100%;";>
+                    <div class="btn-group" role="group" style="width: 100%;" ;>
 
                         <a class="btn btn-primary me-auto" asp-controller="Env" asp-action="OpenFrontend" asp-route-id=@Model.ID target="_blank">Frontend</a>
 
@@ -57,7 +57,16 @@
                     </div>
                 </div>
                 <div style="grid-area: pills;">
-
+                    <span class="badge rounded-pill bg-primary">@sw_version</span>
+                    <span class="badge rounded-pill bg-secondary">@Model.Version.AsString()</span>
+                    @if (Model.Stored)
+                    {
+                        <span class="badge rounded-pill bg-info">Stored</span>
+                    }
+                    @if (taskRunning)
+                    {
+                        <span class="badge rounded-pill bg-danger">Task Running</span>
+                    }                    
                 </div>
             </div>
 
