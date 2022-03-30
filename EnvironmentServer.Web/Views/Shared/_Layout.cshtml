@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http
 @using EnvironmentServer.Web.Extensions
+@inject VersionInfo VersionInfo
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
@@ -12,7 +13,7 @@
     <title>@ViewData["Title"] - EnvironmentServer</title>
     <link rel="stylesheet" href="~/lib/bootstrap-dark-5/dist/css/bootstrap-night.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css?@VersionInfo.Version" />
 </head>
 <body class="fullHeight">
     <header>
@@ -61,10 +62,10 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://github.com/Fewiel/EnvironmentServer">GitHub</a>
+                            <a class="nav-link" target="_blank" href="https://shopdev.de/pma/index.php">PhpMyAdmin</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://github.com/Fewiel/EnvironmentServer/issues">Support</a>
+                            <a class="nav-link" target="_blank" href="https://github.com/Fewiel/EnvironmentServer/issues">Support</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="mailto:p.weitkamp@shopware.com">Contact</a>
@@ -97,7 +98,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - EnvironmentServer - Phillip Weitkamp - <a href="https://github.com/Fewiel/EnvironmentServer">GitHub</a>
+            &copy; 2022 - EnvironmentServer - Phillip Weitkamp - <a href="https://github.com/Fewiel/EnvironmentServer">GitHub</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
