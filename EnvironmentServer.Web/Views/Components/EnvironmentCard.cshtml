@@ -18,22 +18,6 @@
 
 <div class="col-md-3 px-1">
     <div class="card mb-2 hovercard" style="min-height: 420px;">
-        @*<p class="text-center">
-            @if (!Model.Stored)
-            {
-            <img src="~/img/sw@(sw_version[0])-signet.svg" width="100" height="100" style="padding-top: 15px;" />
-            }
-            else
-            {
-            <img src="~/img/zip.png" width="100" height="100" style="padding-top: 15px;" />
-            }
-            <a asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">
-            <i class="bi bi-pencil-square" style="font-size: 20px; float: right; position: absolute; right: 5px;"></i>
-            </a>
-            <a asp-controller="Env" asp-action="Sorting" class="text-decoration-none">
-            <i class="bi bi-sort-numeric-down-alt" style="font-size: 20px; float: right; top: 25px; position: absolute; right: 5px;"></i>
-            </a>
-            </p>*@
         <div class="card-body" style="padding: 5px;">
             <div style="display: grid; grid-template-areas: 'logo name' 'logo buttons' 'pills pills'; grid-template-rows: 62px 38px auto; grid-template-columns: 100px auto;">
                 <div style="grid-area: logo;">
@@ -61,8 +45,13 @@
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-                                <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+                                <li><a asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">Edit</a></li>
+                                <li><a asp-controller="Env" asp-action="Sorting">Sorting</a></li>
+                                <li><a href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.Name)');return false;">Copy DB-User</a></li>
+                                <li><a href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy DB-Password</a></li>
+                                <li><a class="me-auto" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a></li>
+                                <li><a class="me-auto" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a></li>
+                                <li><a class="me-auto" onclick="return confirm('Are you sure to delete your Environment?')" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>Delete</a></li>
                             </ul>
                         </div>
                     </div>
