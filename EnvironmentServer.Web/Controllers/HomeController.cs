@@ -34,7 +34,7 @@ namespace EnvironmentServer.Web.Controllers
                 Htaccess = DB.Settings.Get("pma_htacces_login").Value };
             DB.Users.UpdateLastUse(GetSessionUser());
 
-            if (DB.Users.GetByUsername(GetSessionUser().Username) == null)
+            if (DB.Users.GetByUsername(GetSessionUser().Username) == null || !DB.Users.GetByUsername(GetSessionUser().Username).Active)
                 HttpContext.Session.Clear();
 
             return View(dash);

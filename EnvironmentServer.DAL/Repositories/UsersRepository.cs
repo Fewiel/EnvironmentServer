@@ -74,7 +74,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         public User GetByUsername(string username)
         {
             using var connection = DB.GetConnection();
-            var usr = connection.QuerySingleOrDefault<User>("select * from users where Username = @username AND `active` = 1;", new
+            var usr = connection.QuerySingleOrDefault<User>("select * from users where Username = @username", new
             {
                 username
             });

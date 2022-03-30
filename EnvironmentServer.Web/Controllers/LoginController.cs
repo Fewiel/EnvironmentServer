@@ -60,6 +60,13 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToRoute("login");
             }
 
+            if (!usr.Active)
+            {
+                DB.Logs.Add("Web", "Login failed for: " + lvm.Username + ". User inactive.");
+                AddError("Login failed for: " + lvm.Username + ". User inactive. Please contact your Teamlead.");
+                return RedirectToRoute("login");
+            }
+
             if (PasswordHasher.Verify(lvm.Password, usr.Password))
             {
                 DB.Logs.Add("Web", "User " + lvm.Username + " logged in!");
