@@ -137,10 +137,11 @@ namespace EnvironmentServer.DAL.Repositories
             //Create database for environment
             using (var connection = DB.GetConnection())
             {
-                lastID = connection.QuerySingle<int>("INSERT INTO `environments` (`ID`, `users_ID_fk`, `Name`, `Address`, `Version`, `DBPassword`) " +
-                    "VALUES (NULL, @userID, @envName, @envAddress, @version, @dbpassword); SELECT LAST_INSERT_ID();", new
+                lastID = connection.QuerySingle<int>("INSERT INTO `environments` (`ID`, `users_ID_fk`, `DisplayName`, `InternalName`, `Address`, `Version`, `DBPassword`) " +
+                    "VALUES (NULL, @userID, @displayName, @envName, @envAddress, @version, @dbpassword); SELECT LAST_INSERT_ID();", new
                     {
                         userID = environment.UserID,
+                        displayName = environment.DisplayName,
                         envName = environment.InternalName,
                         envAddress = environment.Address,
                         version = environment.Version,
