@@ -56,8 +56,8 @@
                         </div>
                     </div>
                 </div>
-                <div style="grid-area: pills;">
-                    <span class="badge rounded-pill bg-primary">@sw_version</span>
+                <div style="grid-area: pills; margin-top: 10px;">
+                    <span class="badge rounded-pill bg-primary">Shopware Version: @sw_version</span>
                     <span class="badge rounded-pill bg-secondary">@Model.Version.AsString()</span>
                     @if (Model.Stored)
                     {
@@ -69,28 +69,6 @@
                     }                    
                 </div>
             </div>
-
-            @*<span class="card-text">SW Version: @sw_version</span><br />
-                <span class="card-text">PHP Version: @Model.Version.AsString()</span><br />
-                <span class="card-text">DB-Name: @(usr.Username + "_" + @Model.Name)</span><a href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.Name)');return false;"> Copy</a><br />
-                <span class="card-text">DB-User: @(usr.Username + "_" + @Model.Name)</span><a href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.Name)');return false;"> Copy</a><br />
-                <span class="card-text">DB-Password: </span><a href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy password</a><br />
-
-
-
-                <a class="btn btn-primary me-auto" asp-controller="Env" asp-action="OpenFrontend" asp-route-id=@Model.ID target="_blank">Frontend</a>
-                <a class="btn btn-primary" asp-controller="Env" asp-action="OpenBackend" asp-route-id=@Model.ID target="_blank">@(sw_version[0] == '5' ? "Backend" : "Admin")</a>
-
-                <a class="me-auto" asp-controller="Snapshot" asp-route-id=@Model.ID>
-                <i class="bi bi-card-list" style="font-size: 30px;"></i>
-                </a>
-                <a class="me-auto" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>
-                <i class="bi bi-plus-circle" style="font-size: 30px;"></i>
-                </a>
-                <a class="me-auto" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>
-                <i class="bi bi-x-circle" onclick="return confirm('Are you sure to delete your Environment?')" style="font-size: 30px;"></i>
-                </a>*@
-
         </div>
     </div>
 </div>
