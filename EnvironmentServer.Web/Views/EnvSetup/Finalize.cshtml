@@ -5,7 +5,8 @@
 }
 <div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
     <form method="post" asp-action="Create" style="width: 800px;">
-        <input type="hidden" asp-for="Name" />
+        <input type="hidden" asp-for="InternalName" />
+        <input type="hidden" asp-for="DisplayName" />
         <input type="hidden" asp-for="WgetURL" />
         <input type="hidden" asp-for="GitURL" />
         <input type="hidden" asp-for="MajorShopwareVersion" />
@@ -16,7 +17,7 @@
 
         <dl class="row">
             <dt class="col-sm-6">Environment Name</dt>
-            <dd class="col-sm-6">@Model.Name</dd>
+            <dd class="col-sm-6">@Model.InternalName</dd>
 
             <dt class="col-sm-6">Download Link</dt>
             <dd class="col-sm-6">@Model.WgetURL</dd>
@@ -43,7 +44,8 @@
     @if (string.IsNullOrEmpty(@Model.ExhibitionFile))
     {
         <form method="post" asp-action="CreateWithAutoinstaller" style="width: 800px;">
-        <input type="hidden" asp-for="Name" />
+        <input type="hidden" asp-for="InternalName" />
+        <input type="hidden" asp-for="DisplayName" />
         <input type="hidden" asp-for="WgetURL" />
         <input type="hidden" asp-for="GitURL" />
         <input type="hidden" asp-for="MajorShopwareVersion" />

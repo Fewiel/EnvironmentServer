@@ -5,7 +5,8 @@
 }
 <div class="d-flex align-items-center justify-content-center fullHeight">
     <form method="post" asp-action="PhpVersion">
-        <input type="hidden" asp-for="Name" />
+        <input type="hidden" asp-for="InternalName" />
+        <input type="hidden" asp-for="DisplayName" />
         <div class="mb-3">
             <label asp-for="WgetURL" class="form-label">Zip Link</label>
             <input asp-for="WgetURL" class="form-control" />

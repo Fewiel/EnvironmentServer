@@ -15,7 +15,8 @@
                     </div>
                     <div class="col-md-2 float-right">
                         <form method="post" asp-action="Finalize">
-                            <input type="hidden" asp-for="Name" />
+                            <input type="hidden" asp-for="InternalName" />
+                            <input type="hidden" asp-for="DisplayName" />
                             <input type="hidden" asp-for="WgetURL" />
                             <input type="hidden" asp-for="GitURL" />
                             <input type="hidden" asp-for="MajorShopwareVersion" />

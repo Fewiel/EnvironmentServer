@@ -21,17 +21,17 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public IActionResult MajorVersion([FromForm] EnvSetupViewModel esv)
         {
-            if (!ModelState.IsValid || string.IsNullOrEmpty(esv.Name))
+            if (!ModelState.IsValid || string.IsNullOrEmpty(esv.InternalName))
                 return RedirectToAction("BaseData", esv);
 
-            if (esv.Name != DAL.Repositories.EnvironmentRepository.FixEnvironmentName(esv.Name))
+            if (esv.InternalName != DAL.Repositories.EnvironmentRepository.FixEnvironmentName(esv.InternalName))
             {
-                esv.Name = DAL.Repositories.EnvironmentRepository.FixEnvironmentName(esv.Name);
+                esv.InternalName = DAL.Repositories.EnvironmentRepository.FixEnvironmentName(esv.InternalName);
                 AddError("Your environment name was fixed - No spaces and capital letters allowed");
                 return RedirectToAction("BaseData", esv);
             }
 
-            if (string.IsNullOrEmpty(esv.Name))
+            if (string.IsNullOrEmpty(esv.InternalName))
             {
                 AddError("Please enter a name - lower case, no special chars, no spaces");
                 return RedirectToAction("BaseData", esv);
@@ -41,7 +41,7 @@ namespace EnvironmentServer.Web.Controllers
 
             foreach (var i in tmp_env_list)
             {
-                if (i.InternalName.ToLower() == esv.Name.ToLower())
+                if (i.InternalName.ToLower() == esv.InternalName.ToLower())
                 {
                     AddError("Environment Name already in use");
                     return RedirectToAction("BaseData", esv);
@@ -101,8 +101,8 @@ namespace EnvironmentServer.Web.Controllers
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
-                InternalName = esv.Name,
-                Address = esv.Name.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
+                InternalName = esv.InternalName,
+                Address = esv.InternalName.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion
             };
 
@@ -144,7 +144,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (!string.IsNullOrEmpty(esv.ExhibitionFile))
             {
-                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt", esv.ExhibitionFile);
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/dl.txt", esv.ExhibitionFile);
 
                 DB.CmdAction.CreateTask(new CmdAction
                 {
@@ -157,7 +157,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (!string.IsNullOrEmpty(esv.WgetURL) && System.Uri.IsWellFormedUriString(esv.WgetURL, System.UriKind.RelativeOrAbsolute))
             {
-                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt", esv.WgetURL);
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/dl.txt", esv.WgetURL);
 
                 DB.CmdAction.CreateTask(new CmdAction
                 {
@@ -170,7 +170,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (!string.IsNullOrEmpty(esv.ShopwareVersionDownload))
             {
-                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt",
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/dl.txt",
                     esv.ShopwareVersionDownload);
 
                 DB.CmdAction.CreateTask(new CmdAction
@@ -184,7 +184,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (!string.IsNullOrEmpty(esv.GitURL) && System.Uri.IsWellFormedUriString(esv.GitURL, System.UriKind.RelativeOrAbsolute))
             {
-                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt", esv.GitURL);
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/dl.txt", esv.GitURL);
 
                 DB.CmdAction.CreateTask(new CmdAction
                 {
@@ -204,8 +204,8 @@ namespace EnvironmentServer.Web.Controllers
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
-                InternalName = esv.Name,
-                Address = esv.Name.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
+                InternalName = esv.InternalName,
+                Address = esv.InternalName.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion
             };
 
@@ -247,7 +247,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (!string.IsNullOrEmpty(esv.ShopwareVersionDownload))
             {
-                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.Name}/dl.txt",
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/dl.txt",
                     esv.ShopwareVersionDownload);
 
                 DB.CmdAction.CreateTask(new CmdAction

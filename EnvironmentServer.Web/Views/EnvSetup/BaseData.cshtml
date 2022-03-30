@@ -8,9 +8,14 @@
 <div class="d-flex align-items-center justify-content-center fullHeight">
     <form method="post" asp-action="MajorVersion" style="width: 400px;">
         <div class="mb-3">
-            <label asp-for="Name" class="form-label">Environment Name</label>
-            <input asp-for="Name" value=@Model.Name class="form-control" />
-            <span asp-validation-for="Name"></span>
+            <label asp-for="DisplayName" class="form-label">Environment Name</label>
+            <input asp-for="DisplayName" value=@Model.DisplayName class="form-control" />
+            <span asp-validation-for="DisplayName"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="InternalName" class="form-label">Environment Domain</label>
+            <input asp-for="InternalName" value=@Model.InternalName class="form-control" style='text-transform:lowercase' />-YourUsername.shopdev.de
+            <span asp-validation-for="InternalName"></span>
             <span style="margin-top: 10px;">No spaces, a-z, 0-9</span>
             <span style="margin-top: 10px;">Example: my1test</span>
         </div>

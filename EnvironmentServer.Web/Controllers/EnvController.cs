@@ -77,6 +77,7 @@ namespace EnvironmentServer.Web.Controllers
             var createViewModel = new UpdateViewModel()
             {
                 ID = id,
+                DisplayName = DB.Environments.Get(id).DisplayName,
                 EnvironmentName = DB.Environments.Get(id).InternalName,
                 PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
                     .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
