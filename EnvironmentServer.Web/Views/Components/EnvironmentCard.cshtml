@@ -21,13 +21,21 @@
         <div class="card-body" style="padding: 5px;">
             <div style="display: grid; grid-template-areas: 'logo name' 'logo buttons' 'pills pills'; grid-template-rows: 62px 38px auto; grid-template-columns: 100px auto;">
                 <div style="grid-area: logo;">
-                    @if (!Model.Stored)
+                    @if (Model.Stored)
                     {
-                        <img src="~/img/sw@(sw_version[0])-signet.svg" width="100" height="100" style="padding-right: 15px;" />
+                        <img src="~/img/zip.png" width="100" height="100" style="padding-right: 10px;" />
+                    }
+                    else if (sw_version[0] == '5')
+                    {
+                        <img src="~/img/sw5-signet.svg" width="100" height="100" style="padding-right: 15px;" />
+                    }
+                    else if (sw_version[0] == '6')
+                    {
+                        <img src="~/img/sw6-signet.svg" width="100" height="100" style="padding-right: 15px;" />
                     }
                     else
                     {
-                        <img src="~/img/zip.png" width="100" height="100" style="padding-right: 10px;" />
+                        <img src="~/img/gear.svg" width="100" height="100" style="padding-right: 10px;" />
                     }
                 </div>
                 <div style="grid-area: name; margin-bottom: 10px; overflow: hidden;">

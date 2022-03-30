@@ -27,6 +27,7 @@
 .hovercard:hover:not(.disabled) {
     background-color: #333333;
     transform: scale(1.025);
+    z-index: 1000;
 }
 
 .accordion-button::after {
