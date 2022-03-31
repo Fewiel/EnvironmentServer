@@ -30,14 +30,22 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index", "Profile");
             }
 
-            var dash = new DashboardModel() { Environments = DB.Environments.GetForUser(GetSessionUser().ID),
-                Htaccess = DB.Settings.Get("pma_htacces_login").Value };
+            var dash = new DashboardModel()
+            {
+                Environments = DB.Environments.GetForUser(GetSessionUser().ID),
+                Htaccess = DB.Settings.Get("pma_htacces_login").Value
+            };
             DB.Users.UpdateLastUse(GetSessionUser());
 
             if (DB.Users.GetByUsername(GetSessionUser().Username) == null || !DB.Users.GetByUsername(GetSessionUser().Username).Active)
                 HttpContext.Session.Clear();
 
             return View(dash);
+        }
+
+        public IActionResult Pma()
+        {
+            return Redirect("https://" + DB.Settings.Get("pma_htacces_login").Value + "@" + DB.Settings.Get("pma_link").Value);
         }
 
         [AdminOnly]
