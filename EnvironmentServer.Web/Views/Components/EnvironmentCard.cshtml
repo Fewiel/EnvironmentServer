@@ -21,11 +21,7 @@
         <div class="card-body" style="padding: 5px;">
             <div style="display: grid; grid-template-areas: 'logo name' 'logo buttons' 'pills pills'; grid-template-rows: 62px 38px auto; grid-template-columns: 100px auto;">
                 <div style="grid-area: logo;">
-                    @if (Model.Stored)
-                    {
-                        <img src="~/img/zip.png" width="100" height="100" style="padding-right: 10px;" />
-                    }
-                    else if (sw_version[0] == '5')
+                    if (sw_version[0] == '5')
                     {
                         <img src="~/img/sw5-signet.svg" width="100" height="100" style="padding-right: 15px;" />
                     }
