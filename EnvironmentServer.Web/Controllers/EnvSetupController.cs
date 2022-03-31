@@ -205,6 +205,7 @@ namespace EnvironmentServer.Web.Controllers
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
+                DisplayName = esv.DisplayName,
                 InternalName = esv.InternalName,
                 Address = esv.InternalName.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion
