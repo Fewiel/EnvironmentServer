@@ -75,7 +75,7 @@ namespace EnvironmentServer.DAL.Repositories
 
         public void SetExecuted(long id, DateTime time)
         {
-            DB.Logs.Add("DAL", "Completed Task " + id);
+            DB.Logs.Add("DAL", "Run scheduled task " + id);
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `schedule_actions` SET `LastExecuted` = @time WHERE `schedule_actions`.`Id` = @id;");

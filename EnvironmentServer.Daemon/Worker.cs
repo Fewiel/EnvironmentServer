@@ -50,7 +50,7 @@ namespace EnvironmentServer.Daemon
                 if (!Actions.TryGetValue(task.Action, out var act))
                 {
                     DB.Logs.Add("Deamon", "Undefined action called: " + task.Action);
-                    DB.CmdAction.SetExecuted(task.Id);
+                    DB.CmdAction.SetExecuted(task.Id, task.Action, task.ExecutedById);
                     continue;
                 }
 
@@ -70,7 +70,7 @@ namespace EnvironmentServer.Daemon
                 }
 
                 //Set executed in DB
-                DB.CmdAction.SetExecuted(task.Id);
+                DB.CmdAction.SetExecuted(task.Id, task.Action, task.ExecutedById);
             }
         }
 

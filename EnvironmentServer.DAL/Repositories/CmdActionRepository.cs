@@ -39,9 +39,9 @@ namespace EnvironmentServer.DAL.Repositories
             }
         }
 
-        public void SetExecuted(long id)
+        public void SetExecuted(long id, string name, long uid)
         {
-            DB.Logs.Add("DAL", "Completed Task " + id);
+            DB.Logs.Add("DAL", "Completed Task " + id + " - " + name + " Executed by User ID: " + uid );
             using (var connection = DB.GetConnection())
             {
                 var Command = new MySqlCommand("UPDATE `cmd_actions` SET `Executed` = NOW() WHERE `cmd_actions`.`Id` = @id;");

@@ -20,6 +20,7 @@ internal class LockInactiveAccounts : ScheduledActionBase
         {
             if (usr.LastUsed.AddDays(int.Parse(db.Settings.Get("acc_cleanup_days").Value)) < DateTime.Now)
             {
+                db.Logs.Add("Scheduler", "Inactive account locked: " + usr.Username);
                 db.Users.ChangeActiveState(usr, false);
             }
         }

@@ -77,6 +77,7 @@ namespace EnvironmentServer.Web.Controllers
             };
             await DB.Users.InsertAsync(usr, rvm.Password).ConfigureAwait(false);
 
+            DB.Logs.Add("Web", "New Registration for: " + rvm.Username + " by " + GetSessionUser().Username);
             AddInfo("User created");
             return View();
         }
@@ -89,12 +90,12 @@ namespace EnvironmentServer.Web.Controllers
                 DepartmentList = DB.Department.GetAll()
                     .Select(d => new SelectListItem(d.Name, d.ID.ToString()))
             };
-
             return View(auvm);
         }
 
         public IActionResult LoginAsUser(long id)
         {
+            DB.Logs.Add("Web", "Admin: " + GetSessionUser().Username + " logged in as " + DB.Users.GetByID(id).Username);
             HttpContext.Session.Clear();
             HttpContext.Session.SetObject("user", DB.Users.GetByID(id));
             return RedirectToAction("Index", "Home");
@@ -112,6 +113,7 @@ namespace EnvironmentServer.Web.Controllers
             auvm.User.UserInformation.PrepareForDB();
             DB.UserInformation.Update(auvm.User.UserInformation);
             AddInfo("User updated");
+            DB.Logs.Add("Web", "Update for: " + auvm.User.Username + " by " + GetSessionUser().Username);
             return RedirectToAction("Index");
         }
 
@@ -125,6 +127,7 @@ namespace EnvironmentServer.Web.Controllers
                 ExecutedById = GetSessionUser().ID,
                 Id_Variable = usr.ID
             });
+            DB.Logs.Add("Web", "Delete User: " + usr.Username + " by " + GetSessionUser().Username);
             return RedirectToAction("Index");
         }
 
