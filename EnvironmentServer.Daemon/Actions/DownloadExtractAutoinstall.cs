@@ -71,36 +71,20 @@ internal class DownloadExtractAutoinstall : ActionBase
             {
                 //SW6
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"php7.4 public/recovery/install/index.php --db-host=\\\"localhost\\\" " +
-                    $"--db-port=\\\"3306\\\" --db-user=\\\"{dbname}\\\" --db-password=\\\"{env.DBPassword}\\\" " +
-                    $"--db-name=\\\"{dbname}\\\" --shop-locale=\\\"de-DE\\\" --no-skip-import " +
-                    $"--shop-host=\\\"{env.Address}\\\" --shop-email=\\\"{user.Email}\\\" --admin-username=\\\"demo\\\" " +
-                    $"--admin-password=\\\"demo\\\" --admin-email=\\\"{user.Email}\\\" --admin-firstname=\\\"Shopware\\\" " +
-                    $"--admin-lastname=\\\"Demo\\\" --shop-currency=\\\"EUR\\\" --shop-name=\\\"{env.InternalName}\\\" " +
-                    $"--shop-country=\\\"DEU\\\" --admin-locale=\\\"de-DE\\\" -n\"")
+                    .WithArguments($"-c \"php8.0 bin/console system:setup  --app-env=\\\"prod\\\" " +
+                    $"--env=\\\"prod\\\" -f -vvv " +
+                    $"--database-url=\\\"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}\\\" " +
+                    $"--app-url=\\\"https://{env.Address}\\\" " +
+                    $"--composer-home=\\\"/home/{user.Username}/files/{env.InternalName}/var/cache/composer\\\" " +
+                    $"--app-env=\\\"prod\\\" -n\"")
                     .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                     .ExecuteAsync();
 
                 await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"bin/build.sh\"")
+                    .WithArguments($"-c \"php8.0 bin/console system:install --create-database --basic-setup " +
+                    $"--shop-locale=\\\"de-DE\\\" --shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
+                    $"--shop-currency=\\\"EUR\\\" -n\"")
                     .WithValidation(CommandResultValidation.None)
-                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                    .ExecuteAsync();
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"bin/build-js.sh\"")
-                    .WithValidation(CommandResultValidation.None)
-                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                    .ExecuteAsync();
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"php7.4 bin/console theme:change --all Storefront\"")
-                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                    .ExecuteAsync();
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"php7.4 bin/console theme:compile\"")
-                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                    .ExecuteAsync();
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"php7.4 bin/console cache:clear\"")
                     .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                     .ExecuteAsync();
             }
