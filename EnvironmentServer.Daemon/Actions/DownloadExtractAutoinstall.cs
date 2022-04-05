@@ -97,7 +97,7 @@ internal class DownloadExtractAutoinstall : ActionBase
                     $"--db-password=\\\"{env.DBPassword}\\\" --db-name=\\\"{dbname}\\\" " +
                     $"--shop-locale=\\\"de_DE\\\" --shop-host=\\\"{env.Address}\\\" " +
                     $"--shop-name=\\\"{env.InternalName}\\\" --shop-email=\\\"{user.Email}\\\" " +
-                    $"--shop-currency=\\\"EUR\\\" --admin-username=\\\"demo\\\" --admin-password=\\\"demo\\\" " +
+                    $"--shop-currency=\\\"EUR\\\" --admin-username=\\\"admin\\\" --admin-password=\\\"shopware\\\" " +
                     $"--admin-email=\\\"{user.Email}\\\" --admin-name=\\\"Shopware Demo\\\" --admin-locale=\\\"de_DE\\\"\"")
                     .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                     .ExecuteAsync();

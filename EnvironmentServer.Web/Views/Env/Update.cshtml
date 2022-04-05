@@ -32,8 +32,8 @@
         <input type="hidden" asp-for="ID" />
         <input type="hidden" asp-for="ElasticSearch.DockerID" />
         <div class="alert alert-info">
-            You can control the Docker container via SSH. Use the container name for this.<br /> <br />
-            Use the Start button to start the container!<br /><br />
+            You can control the Docker container via SSH. Use the container name for this.<br />
+            Use the Start button to start the container!<br />
             Important: <br />
             - All containers will be stopped at 02:00!<br />
             - Unused containers will be deleted after 30 days.
@@ -55,12 +55,4 @@
         </div>
         <button type="submit" class="btn btn-primary">Start/Stop</button>
     </form>
-    <h2>Delete Environment</h2>
-    <span>If the automatic installation got stuck, you can delete the environment here.</span>
-    <form method="post" asp-controller="Env" asp-action="Delete" >
-        <input type="hidden" asp-for="ID" />
-        <br />
-        <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-danger">Delete Environment</button>
-    </form>
-    <br />
 </div>
