@@ -11,15 +11,16 @@
 {
     <div class="row row-cols-md-4" style="margin-top: 15px;">
         <div class="col-md-6 px-1">
-            <div class="card mb-2 align-middle d-flex align-content-center" style="height: 200px;">
+            <div class="card mb-2 align-middle d-flex align-content-center" style="height: 200px; padding: 5px;">
                 <h3>Admin Dashboard</h3>
                 <p class="card-text">CPU usage: @Model.PerformanceData["cpu"]%</p>
                 <p class="card-text">Memory usage: @Model.PerformanceData["memory"]%</p>
-                <p class="card-text">Free disk space: @Model.PerformanceData["diskspace"] GB</p>
+                <p class="card-text">Free disk space: @Model.PerformanceData["diskspace"] GiB</p>
             </div>
         </div>
         <div class="col-md-6 px-1">
-            <div class="card mb-2 align-middle d-flex align-content-center" style="height: 200px;">
+            <div class="card mb-2 align-middle d-flex align-content-center" style="height: 200px; padding: 5px;">
+                <h3>Statistics</h3>
                 <p class="card-text">Environments: @Model.EnvironmentCount</p>
                 <p class="card-text">Stored Environments: @Model.StoredCount</p>
                 <p class="card-text">Users: @Model.UserCount</p>

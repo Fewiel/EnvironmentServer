@@ -41,7 +41,7 @@ namespace EnvironmentServer.Daemon.ScheduleActions
 
             db.Performance.Set("memory", ((usedMemory * 100) / totalMemory).ToString("N" + DigitsInResult));
             var diskspace = new DriveInfo("/").AvailableFreeSpace;
-            diskspace = diskspace / 1000 / 1000 / 1000;
+            diskspace = diskspace / 1024 / 1024 / 1024;
             db.Performance.Set("diskspace", diskspace.ToString("N" + DigitsInResult));
         }
 
