@@ -55,6 +55,6 @@ public class PerformanceRepository
     public int GetQueue()
     {
         using var connection = DB.GetConnection();
-        return connection.QuerySingle<int>("SELECT COUNT(*) FROM `cmd_actions` where `Executed` = NULL;");
+        return connection.QuerySingle<int>("SELECT COUNT(*) FROM `cmd_actions` where `Executed` is NULL;");
     }
 }
