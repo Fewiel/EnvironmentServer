@@ -24,7 +24,7 @@ internal class PackEnvironments : ScheduledActionBase
             try
             {
 
-                if (env.LatestUse.AddDays(7) < DateTime.Now)
+                if (env.LatestUse.AddDays(7) < DateTime.Now && !env.Stored)
                 {
                     var usr = db.Users.GetByID(env.UserID);
 
