@@ -42,7 +42,11 @@ namespace EnvironmentServer.Daemon.ScheduleActions
             db.Performance.Set("memory", ((usedMemory * 100) / totalMemory).ToString("N" + DigitsInResult));
             var diskspace = new DriveInfo("/").AvailableFreeSpace;
             diskspace = diskspace / 1024 / 1024 / 1024;
-            db.Performance.Set("diskspace", diskspace.ToString("N" + DigitsInResult));
+            db.Performance.Set("diskspace", diskspace.ToString("N0"));
+
+            var disksize = new DriveInfo("/").TotalSize;
+            disksize = disksize / 1024 / 1024 / 1024;
+            db.Performance.Set("disksize", disksize.ToString("N0"));
         }
 
         private static double GetUsedMemoryForAllProcessesInKb()
