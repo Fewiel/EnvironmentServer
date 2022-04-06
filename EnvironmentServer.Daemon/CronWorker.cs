@@ -82,7 +82,8 @@ namespace EnvironmentServer.Daemon
                 "delete_expired_users",
                 "lock_inactive_accounts",
                 "es_cleanup",
-                "pack_environments"
+                "pack_environments",
+                "performance_cpu_mem"
             };
 
             foreach (var a in actionList)
@@ -144,7 +145,8 @@ namespace EnvironmentServer.Daemon
                 new DeleteExpiredUsers(sp),
                 new LockInactiveAccounts(sp),
                 new ESCleanup(sp),
-                new PackEnvironments(sp)
+                new PackEnvironments(sp),
+                new PerformanceCheckCPUMem(sp)
             };
 
             foreach (var a in l)

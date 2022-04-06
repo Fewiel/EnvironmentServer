@@ -29,12 +29,22 @@ namespace EnvironmentServer.Web.Controllers
                 AddError("Please change your Passwort! Do not use darkstar as password!");
                 return RedirectToAction("Index", "Profile");
             }
-
+                        
             var dash = new DashboardModel()
             {
                 Environments = DB.Environments.GetForUser(GetSessionUser().ID),
                 Htaccess = DB.Settings.Get("pma_htacces_login").Value
             };
+
+            if (DB.Users.GetByID(GetSessionUser().ID).IsAdmin)
+            {
+                dash.PerformanceData = DB.Performance.Get();
+                dash.Queue = DB.Performance.GetQueue();
+                dash.UserCount = DB.Performance.GetUsers();
+                dash.EnvironmentCount = DB.Performance.GetEnvironments();
+                dash.StoredCount = DB.Performance.GetStoredEnvironments();
+            }
+
             DB.Users.UpdateLastUse(GetSessionUser());
 
             if (DB.Users.GetByUsername(GetSessionUser().Username) == null || !DB.Users.GetByUsername(GetSessionUser().Username).Active)
