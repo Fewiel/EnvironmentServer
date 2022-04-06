@@ -34,14 +34,12 @@ namespace EnvironmentServer.Daemon.ScheduleActions
             var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
             cpuUsageTotal *= 100;
 
-            db.Performance.Set("cpu", cpuUsageTotal.ToString());
+            db.Performance.Set("cpu", cpuUsageTotal.ToString("N" + DigitsInResult));
 
             var totalMemory = GetTotalMemoryInKb();
             var usedMemory = GetUsedMemoryForAllProcessesInKb();
 
-            var percentage = Math.Round((usedMemory * 100) / totalMemory, DigitsInResult);
-
-            db.Performance.Set("memory", percentage.ToString());
+            db.Performance.Set("memory", ((usedMemory * 100) / totalMemory).ToString("N" + DigitsInResult));
             var diskspace = new DriveInfo("/").AvailableFreeSpace;
             diskspace = diskspace / 1000 / 1000 / 1000;
             db.Performance.Set("diskspace", diskspace.ToString("N" + DigitsInResult));
