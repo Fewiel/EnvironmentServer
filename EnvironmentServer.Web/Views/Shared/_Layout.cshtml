@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Http
 @using EnvironmentServer.Web.Extensions
 @inject VersionInfo VersionInfo
+@inject EnvironmentServer.DAL.Database DB
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
@@ -101,7 +102,8 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - EnvironmentServer - Phillip Weitkamp - <a href="https://github.com/Fewiel/EnvironmentServer">GitHub</a>
+            &copy; 2022 - EnvironmentServer - <a href="https://github.com/Fewiel/EnvironmentServer">GitHub</a> 
+            <span class="badge rounded-pill bg-info text-dark" style="float: right">Current Workload: @DB.Performance.GetQueue() Tasks</span>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
