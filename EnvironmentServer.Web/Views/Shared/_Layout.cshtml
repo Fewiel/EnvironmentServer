@@ -101,9 +101,13 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - EnvironmentServer - <a href="https://github.com/Fewiel/EnvironmentServer">GitHub</a> 
-            <span class="badge rounded-pill bg-info text-dark" style="float: right">Current Workload: @DB.Performance.GetQueue() Tasks</span>
+        <div class="container" style="display: flex; justify-content: space-between;">
+            <div>
+                &copy; 2022 - EnvironmentServer - <a href="https://github.com/Fewiel/EnvironmentServer">GitHub</a> 
+            </div>
+            <div>
+                <span class="badge rounded-pill bg-light text-dark" style="float: right">Current Workload: @DB.Performance.GetQueue() Tasks</span>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
