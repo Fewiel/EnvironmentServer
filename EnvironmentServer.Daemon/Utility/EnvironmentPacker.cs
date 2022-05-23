@@ -148,7 +148,7 @@ internal static class EnvironmentPacker
         var templatePath = $"/root/templates/{usr.Username}/{template.Name}";
         Directory.CreateDirectory(templatePath);
 
-        var tmpPath = $"/root/templates/tmp/{usr.Username}";
+        var tmpPath = $"/root/templates/tmp/{usr.Username}/{template.Name}";
         Directory.CreateDirectory(tmpPath);
 
         await Cli.Wrap("/bin/bash")
@@ -165,7 +165,7 @@ internal static class EnvironmentPacker
             .ExecuteAsync();
 
         //Replace parts in Config
-        var sw6 = Directory.Exists($"{tmpPath}/{template.Name}/public");
+        var sw6 = Directory.Exists($"{tmpPath}/public");
 
         if (sw6)
         {
