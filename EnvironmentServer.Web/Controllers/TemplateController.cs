@@ -33,7 +33,7 @@ namespace EnvironmentServer.Web.Controllers
             var env = DB.Environments.Get(ctvm.EnvironmentID);
 
             //Logging
-            Console.WriteLine(env.Settings.Find(s => s.EnvironmentSettingID == 3).Value);
+            Console.WriteLine(JsonConvert.SerializeObject(env.Settings));
 
             var tpl = new Template
             {
