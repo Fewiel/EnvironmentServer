@@ -3,6 +3,7 @@ using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.ViewModels.Templates;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
 
 namespace EnvironmentServer.Web.Controllers
 {
@@ -30,6 +31,9 @@ namespace EnvironmentServer.Web.Controllers
         {
 
             var env = DB.Environments.Get(ctvm.EnvironmentID);
+
+            //Logging
+            Console.WriteLine(env.Settings.Find(s => s.EnvironmentSettingID == 3).Value);
 
             var tpl = new Template
             {
