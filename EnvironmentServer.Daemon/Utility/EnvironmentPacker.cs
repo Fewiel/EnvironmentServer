@@ -165,7 +165,7 @@ internal static class EnvironmentPacker
             .ExecuteAsync();
 
         //Replace parts in Config
-        var sw6 = Directory.Exists($"{tmpPath}/{env.InternalName}/public");
+        var sw6 = Directory.Exists($"{tmpPath}/{template.Name}/public");
 
         if (sw6)
         {
