@@ -180,9 +180,9 @@ internal static class EnvironmentPacker
         else
         {
             var cnf = File.ReadAllText($"{tmpPath}/config.php");
-            cnf = Regex.Replace(cnf, PatternSW5Username, "$1{{DBUSER}}$2");
-            cnf = Regex.Replace(cnf, PatternSW5Password, "$1{{DBPASSWORD}}$2");
-            cnf = Regex.Replace(cnf, PatternSW5DBName, "$1{{DBNAME}}$2");
+            cnf = Regex.Replace(cnf, PatternSW5Username, "$1{{DBUSER}}$3");
+            cnf = Regex.Replace(cnf, PatternSW5Password, "$1{{DBPASSWORD}}$3");
+            cnf = Regex.Replace(cnf, PatternSW5DBName, "$1{{DBNAME}}$3");
             File.WriteAllText($"{tmpPath}/config.php", cnf);
         }
 
