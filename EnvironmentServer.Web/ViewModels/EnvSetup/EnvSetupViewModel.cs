@@ -23,10 +23,12 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
         public string GitURL { get; set; }
         public string CustomSetupType { get; set; }
         public string ExhibitionFile { get; set; }
+        public long TemplateID { get; set; }
 
         //Display Data
         public IEnumerable<PhpVersion> PhpVersions { get; set; }
         public IEnumerable<ShopwareVersionInfo> ShopwareVersions { get; set; }
         public IEnumerable<ExhibitionVersion> ExhibitionVersions { get; set;}
+        public IEnumerable<Template> Templates { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.ViewModels.EnvSetup;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,6 +63,8 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction(nameof(WGetSource), esv);
             if (esv.CustomSetupType == "exhibition")
                 return RedirectToAction(nameof(Exhibition), esv);
+            if (esv.CustomSetupType == "template")
+                return RedirectToAction(nameof(Template), esv);
 
             esv.ShopwareVersions = DB.ShopwareVersionInfos.GetForMajor(esv.MajorShopwareVersion);
             return View(esv);
@@ -80,6 +83,12 @@ namespace EnvironmentServer.Web.Controllers
         public IActionResult Exhibition(EnvSetupViewModel esv)
         {
             esv.ExhibitionVersions = DB.ExhibitionVersion.Get();
+            return View(esv);
+        }
+
+        public IActionResult Template(EnvSetupViewModel esv)
+        {
+            esv.Templates = DB.Templates.GetAll();
             return View(esv);
         }
 
@@ -190,6 +199,20 @@ namespace EnvironmentServer.Web.Controllers
                 DB.CmdAction.CreateTask(new CmdAction
                 {
                     Action = "clone_repo",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+                DB.Environments.SetTaskRunning(lastID, true);
+            }
+
+            if (esv.TemplateID != 0)
+            {
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/template.txt", 
+                    esv.TemplateID.ToString());
+                
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "fast_deploy",
                     Id_Variable = lastID,
                     ExecutedById = GetSessionUser().ID
                 });

@@ -34,6 +34,8 @@ namespace EnvironmentServer.DAL
         public DepartmentRepository Department { get; }
         public ExhibitionVersionRepository ExhibitionVersion { get; }
         public PerformanceRepository Performance { get; }
+        public TemplateRepository Templates { get; }
+        public CmdActionDetailsRepository CmdActionDetail { get; }
 
         public Database(string connString)
         {
@@ -60,6 +62,8 @@ namespace EnvironmentServer.DAL
             Department = new DepartmentRepository(this);
             ExhibitionVersion = new ExhibitionVersionRepository(this);
             Performance = new PerformanceRepository(this);
+            Templates = new TemplateRepository(this);
+            CmdActionDetail = new CmdActionDetailsRepository(this);
 
             if (Users.GetByUsername("Admin") == null)
             {

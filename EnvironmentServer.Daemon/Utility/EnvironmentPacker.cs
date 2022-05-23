@@ -20,6 +20,7 @@ internal static class EnvironmentPacker
 
     private const string PatternSW6AppURL = "(APP_URL=\")(.*)(\")";
     private const string PatternSW6DatabaseURL = "(DATABASE_URL=\")(.*)(\")";
+
     private const string PatternSW6ComposerHome = "(COMPOSER_HOME=\")(.*)(\")";
     private const string PatternSW6ESEnabled = "(SHOPWARE_ES_ENABLED=\")(.*)(\")";
     private const string PatternSW6ESHost = "(SHOPWARE_ES_HOSTS=\")(.*)(\")";
@@ -120,7 +121,7 @@ internal static class EnvironmentPacker
         db.Environments.SetStored(env.ID, false);
     }
 
-    public static async Task CreateTemplateAsync(Database db, Environment env, string templateName)
+    public static async Task CreateTemplateAsync(Database db, Environment env, Template template)
     {
         var usr = db.Users.GetByID(env.UserID);
 
@@ -144,12 +145,12 @@ internal static class EnvironmentPacker
                 .ExecuteAsync();
 
         //Move Environment to tmp folder
-        var templatePath = $"/root/templates/{usr.Username}/{templateName}";
+        var templatePath = $"/root/templates/{usr.Username}/{template.Name}";
         Directory.CreateDirectory(templatePath);
 
-        var tmpPath = $"/root/templates/tmp/{usr.Username}/{templateName}";
+        var tmpPath = $"/root/templates/tmp/{usr.Username}/{template.Name}";
         Directory.CreateDirectory(tmpPath);
-        
+
         await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"cp {env.InternalName} {tmpPath}")
                 .WithWorkingDirectory($"/home/{usr.Username}/files/")
@@ -168,54 +169,102 @@ internal static class EnvironmentPacker
 
         if (sw6)
         {
-            var cnf = File.ReadAllText($"{tmpPath}/{templateName}/.env");
+            var cnf = File.ReadAllText($"{tmpPath}/{template.Name}/.env");
             cnf = Regex.Replace(cnf, PatternSW6AppURL, "$1{{APPURL}}$3");
             cnf = Regex.Replace(cnf, PatternSW6ESHost, "$1$3");
             cnf = Regex.Replace(cnf, PatternSW6ESEnabled, "SHOPWARE_ES_ENABLED=\"0\"");
             cnf = Regex.Replace(cnf, PatternSW6DatabaseURL, "$1{{DATABASEURL}}$3");
-            File.WriteAllText($"{tmpPath}/{templateName}/.env", cnf);
+            cnf = Regex.Replace(cnf, PatternSW6ComposerHome, "$1{{COMPOSER}}$3");
+            File.WriteAllText($"{tmpPath}/{template.Name}/.env", cnf);
         }
         else
         {
-            var cnf = File.ReadAllText($"{tmpPath}/{templateName}/config.php");
+            var cnf = File.ReadAllText($"{tmpPath}/{template.Name}/config.php");
             cnf = Regex.Replace(cnf, PatternSW5Username, "$1{{DBUSER}}$2");
             cnf = Regex.Replace(cnf, PatternSW5Password, "$1{{DBPASSWORD}}$2");
             cnf = Regex.Replace(cnf, PatternSW5DBName, "$1{{DBNAME}}$2");
-            File.WriteAllText($"{tmpPath}/{templateName}/config.php", cnf);
+            File.WriteAllText($"{tmpPath}/{template.Name}/config.php", cnf);
         }
 
         //Replace parts in DB Dump
-        var dbfile = File.ReadAllText($"{tmpPath}/{templateName}/db.sql");
+        var dbfile = File.ReadAllText($"{tmpPath}/{template.Name}/db.sql");
         dbfile = dbfile.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
         dbfile = dbfile.Replace($"{usr.Username}", "{{USERNAME}}");
-        File.WriteAllText(dbfile, $"{tmpPath}/{templateName}/db.sql");
+        File.WriteAllText($"{tmpPath}/{template.Name}/db.sql", dbfile);
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"zip -r {templatePath}/{templateName}.zip {tmpPath}/{templateName}\"")
+            .WithArguments($"-c \"zip -r {templatePath}/{template.Name}.zip {tmpPath}/{template.Name}\"")
             .WithWorkingDirectory($"{templatePath}")
             .ExecuteAsync();
 
         //Remove tmp folder
-        Directory.Delete($"{tmpPath}/{templateName}", true);
+        Directory.Delete($"{tmpPath}/{template.Name}", true);
 
         //Add Template to DB
-
+        db.Templates.Create(template);
     }
 
-    public static void DeployTemplate()
+    public static async Task DeployTemplateAsync(Database db, Environment env, long tmpID)
     {
-        //Create Empty Environment
+        var template = db.Templates.Get(tmpID);
+        var templateCreator = db.Users.GetByID(template.UserID);
+        var user = db.Users.GetByID(env.UserID);
+
         //Unzip template
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"unzip /root/templates/{templateCreator.Username}/{template.Name}/{template.Name}.zip\"")
+            .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
+            .ExecuteAsync();
+
+        //Set Privileges to user
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
+            .ExecuteAsync();
+
         //Replace parts in config
+        var sw6 = Directory.Exists($"/home/{user.Username}/files/{env.InternalName}/public");
+
+        if (sw6)
+        {
+            var cnf = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/.env");
+            cnf = cnf.Replace("{{APPURL}}", $"http://{env.InternalName}-{user.Username}.{db.Settings.Get("domain").Value}");
+            cnf = cnf.Replace("{{DATABASEURL}}", 
+                $"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}");
+            cnf = cnf.Replace("{{COMPOSER}}", $"/home/{user.Username}/files/{env.InternalName}/var/cache/composer");
+            File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/.env", cnf);
+        }
+        else
+        {
+            var cnf = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/config.php");
+            cnf = cnf.Replace("{{DBUSER}}", $"{user.Username}_{env.InternalName}");
+            cnf = cnf.Replace("{{DBPASSWORD}}", env.DBPassword);
+            cnf = cnf.Replace("{{DBNAME}}", $"{user.Username}_{env.InternalName}");
+            File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/config.php", cnf);
+        }
+
         //Replace parts in DB Dump
+        var dbfile = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql");
+        dbfile = dbfile.Replace("{{INTERNALNAME}}", env.InternalName);
+        dbfile = dbfile.Replace("{{USERNAME}}", user.Username);
+
         //Import DB
+        await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"mysql -u {user.Username}_{env.InternalName} -p{env.DBPassword} {user.Username}_{env.InternalName} < db.sql\"")
+                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
+                .ExecuteAsync();
     }
 
-    public static void DeleteTemplate()
+    public static void DeleteTemplate(Database db, long tmpID)
     {
+        var template = db.Templates.Get(tmpID);
+        var usr = db.Users.GetByID(template.UserID);
+
         //Delete Template file
+        File.Delete($"/root/templates/{usr.Username}/{template.Name}");
+
         //Delete DB entry
+        db.Templates.Delete(tmpID);
     }
 
     private static void DeleteCache(string username, string environmentInternalName)
