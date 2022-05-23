@@ -175,7 +175,7 @@ internal static class EnvironmentPacker
             cnf = Regex.Replace(cnf, PatternSW6ESEnabled, "SHOPWARE_ES_ENABLED=\"0\"");
             cnf = Regex.Replace(cnf, PatternSW6DatabaseURL, "$1{{DATABASEURL}}$3");
             cnf = Regex.Replace(cnf, PatternSW6ComposerHome, "$1{{COMPOSER}}$3");
-            File.WriteAllText($"{tmpPath}/{template.Name}/.env", cnf);
+            File.WriteAllText($"{tmpPath}/.env", cnf);
         }
         else
         {
