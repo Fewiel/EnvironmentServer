@@ -14,6 +14,7 @@
         <input type="hidden" asp-for="ShopwareVersionDownload" />
         <input type="hidden" asp-for="ExhibitionFile" />
         <input type="hidden" asp-for="PhpVersion" />
+        <input type="hidden" asp-for="TemplateID" />
 
         <dl class="row">
             <dt class="col-sm-6">Environment Name</dt>
@@ -44,7 +45,7 @@
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 
-    @if (string.IsNullOrEmpty(@Model.ExhibitionFile))
+    @if (Model.TemplateID == 0)
     {
         <form method="post" asp-action="CreateWithAutoinstaller" style="width: 800px;">
             <input type="hidden" asp-for="InternalName" />
