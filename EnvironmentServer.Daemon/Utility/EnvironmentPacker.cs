@@ -152,7 +152,7 @@ internal static class EnvironmentPacker
         Directory.CreateDirectory(tmpPath);
 
         await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"cp {env.InternalName} {tmpPath}")
+                .WithArguments($"-c \"cp {env.InternalName} {tmpPath}\"")
                 .WithWorkingDirectory($"/home/{usr.Username}/files/")
                 .ExecuteAsync();
 
