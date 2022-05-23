@@ -152,7 +152,7 @@ internal static class EnvironmentPacker
         Directory.CreateDirectory(tmpPath);
 
         await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"cp -a {env.InternalName} {tmpPath}\"")
+                .WithArguments($"-c \"cp -a {env.InternalName}/. {tmpPath}\"")
                 .WithWorkingDirectory($"/home/{usr.Username}/files")
                 .ExecuteAsync();
 
@@ -169,7 +169,7 @@ internal static class EnvironmentPacker
 
         if (sw6)
         {
-            var cnf = File.ReadAllText($"{tmpPath}/{template.Name}/.env");
+            var cnf = File.ReadAllText($"{tmpPath}/.env");
             cnf = Regex.Replace(cnf, PatternSW6AppURL, "$1{{APPURL}}$3");
             cnf = Regex.Replace(cnf, PatternSW6ESHost, "$1$3");
             cnf = Regex.Replace(cnf, PatternSW6ESEnabled, "SHOPWARE_ES_ENABLED=\"0\"");
@@ -179,18 +179,18 @@ internal static class EnvironmentPacker
         }
         else
         {
-            var cnf = File.ReadAllText($"{tmpPath}/{template.Name}/config.php");
+            var cnf = File.ReadAllText($"{tmpPath}/config.php");
             cnf = Regex.Replace(cnf, PatternSW5Username, "$1{{DBUSER}}$2");
             cnf = Regex.Replace(cnf, PatternSW5Password, "$1{{DBPASSWORD}}$2");
             cnf = Regex.Replace(cnf, PatternSW5DBName, "$1{{DBNAME}}$2");
-            File.WriteAllText($"{tmpPath}/{template.Name}/config.php", cnf);
+            File.WriteAllText($"{tmpPath}/config.php", cnf);
         }
 
         //Replace parts in DB Dump
-        var dbfile = File.ReadAllText($"{tmpPath}/{template.Name}/db.sql");
+        var dbfile = File.ReadAllText($"{tmpPath}/db.sql");
         dbfile = dbfile.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
         dbfile = dbfile.Replace($"{usr.Username}", "{{USERNAME}}");
-        File.WriteAllText($"{tmpPath}/{template.Name}/db.sql", dbfile);
+        File.WriteAllText($"{tmpPath}/db.sql", dbfile);
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
