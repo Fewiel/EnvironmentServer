@@ -21,19 +21,15 @@ namespace EnvironmentServer.Web.Controllers
             DB = db;
         }
 
-        public IActionResult Create()
+        public IActionResult Create(long id)
         {
-            return View();
+            return View(new CreateTemplateViewModel { EnvironmentID = id});
         }
 
         [HttpPost]
         public IActionResult Create([FromForm] CreateTemplateViewModel ctvm)
         {
-
             var env = DB.Environments.Get(ctvm.EnvironmentID);
-
-            //Logging
-            Console.WriteLine(JsonConvert.SerializeObject(env.Settings));
 
             var tpl = new Template
             {
