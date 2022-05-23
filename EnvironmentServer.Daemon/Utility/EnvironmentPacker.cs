@@ -152,7 +152,7 @@ internal static class EnvironmentPacker
         Directory.CreateDirectory(tmpPath);
 
         await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"cp -r {env.InternalName} {tmpPath}\"")
+                .WithArguments($"-c \"cp -a {env.InternalName} {tmpPath}\"")
                 .WithWorkingDirectory($"/home/{usr.Username}/files")
                 .ExecuteAsync();
 
@@ -194,12 +194,12 @@ internal static class EnvironmentPacker
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"zip -r {templatePath}/{template.Name}.zip {tmpPath}/{template.Name}\"")
+            .WithArguments($"-c \"zip -r {templatePath}/{template.Name}.zip {tmpPath}\"")
             .WithWorkingDirectory($"{templatePath}")
             .ExecuteAsync();
 
         //Remove tmp folder
-        Directory.Delete($"{tmpPath}/{template.Name}", true);
+        Directory.Delete($"{tmpPath}", true);
 
         //Add Template to DB
         db.Templates.Create(template);
