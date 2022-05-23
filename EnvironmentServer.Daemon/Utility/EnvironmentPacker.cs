@@ -153,7 +153,7 @@ internal static class EnvironmentPacker
 
         await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"cp -r {env.InternalName} {tmpPath}\"")
-                .WithWorkingDirectory($"/home/{usr.Username}/files/")
+                .WithWorkingDirectory($"/home/{usr.Username}/files")
                 .ExecuteAsync();
 
         //Enable Site
