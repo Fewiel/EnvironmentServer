@@ -19,7 +19,7 @@ public class TemplateRepository
         using var connection = DB.GetConnection();
         return connection.QuerySingle<int>("Insert into `templates` (`ID`, `Name`, `Description`, " +
             "`UserID`, `FastDeploy`, `ShopwareVersion`, `Created`) values " +
-            "NULL, @name, @desc, @userid, @fd, @sv, CURRENT_TIMESTAMP); SELECT LAST_INSERT_ID();", new
+            "(NULL, @name, @desc, @userid, @fd, @sv, CURRENT_TIMESTAMP); SELECT LAST_INSERT_ID();", new
             {
                 name = template.Name,
                 desc = template.Description,
