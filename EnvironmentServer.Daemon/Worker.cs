@@ -89,7 +89,9 @@ namespace EnvironmentServer.Daemon
                 new DownloadExtractAutoinstall(),
                 new SetupExhibition(),
                 new RestoreEnvironment(),
-                new RegeneratePhpConfig()
+                new RegeneratePhpConfig(),
+                new FastDeploy(),
+                new CreateTemplate()
             };
 
             foreach (var a in l)
