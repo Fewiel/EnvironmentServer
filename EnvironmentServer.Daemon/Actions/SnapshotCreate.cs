@@ -45,6 +45,10 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R root:root /home/{user.Username}/files/{env.InternalName}\"")
+                .ExecuteAsync();
+
             db.Logs.Add("Daemon", "SnapshotCreate - Git init: " + env.InternalName);
             //check for git init
             await Cli.Wrap("/bin/bash")
@@ -82,6 +86,10 @@ namespace EnvironmentServer.Daemon.Actions
                 Command.Connection = connection;
                 Command.ExecuteNonQuery();
             }
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/files/{env.InternalName}\"")
+                .ExecuteAsync();
 
             db.Logs.Add("Daemon", "SnapshotCreate - Enable Site: " + env.InternalName);
             //restart site

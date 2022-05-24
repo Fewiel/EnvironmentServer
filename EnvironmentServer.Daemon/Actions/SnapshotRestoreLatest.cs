@@ -38,6 +38,10 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R root:root /home/{user.Username}/files/{env.InternalName}\"")
+                .ExecuteAsync();
+
             db.Logs.Add("Daemon", "SnapshotRestoreLatest - git checkout: " + env.InternalName);
             //Git checkout
             await Cli.Wrap("/bin/bash")

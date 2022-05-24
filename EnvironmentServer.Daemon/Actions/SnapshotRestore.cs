@@ -38,8 +38,13 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R root:root /home/{user.Username}/files/{env.InternalName}\"")
+                .ExecuteAsync();
+
             db.Logs.Add("Daemon", "SnapshotRestore - git reset --hard: " + env.InternalName);
-            //Git reset
+            //Git reset            
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git reset --hard {snap.Hash}\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
@@ -82,7 +87,7 @@ namespace EnvironmentServer.Daemon.Actions
                 .ExecuteAsync();
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
+                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/files/{env.InternalName}\"")
                 .ExecuteAsync();
 
             db.Logs.Add("Daemon", "SnapshotRestore - Enable Site: " + env.InternalName);
