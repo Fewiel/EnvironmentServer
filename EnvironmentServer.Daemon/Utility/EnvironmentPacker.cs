@@ -188,10 +188,10 @@ internal static class EnvironmentPacker
         }
 
         //Replace parts in DB Dump
-        var dbfile = File.ReadAllText($"{tmpPath}/db.sql");
+        var dbfile = File.ReadAllText($"{tmpPath}/db.sql", Encoding.UTF8);
         dbfile = dbfile.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
         dbfile = dbfile.Replace($"{usr.Username}", "{{USERNAME}}");
-        File.WriteAllText($"{tmpPath}/db.sql", dbfile);
+        File.WriteAllText($"{tmpPath}/db.sql", dbfile, Encoding.UTF8);
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
@@ -245,10 +245,10 @@ internal static class EnvironmentPacker
         }
 
         //Replace parts in DB Dump
-        var dbfile = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql");
+        var dbfile = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", Encoding.UTF8);
         dbfile = dbfile.Replace("{{INTERNALNAME}}", env.InternalName);
         dbfile = dbfile.Replace("{{USERNAME}}", user.Username);
-        File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile);
+        File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile, Encoding.UTF8);
 
         //Import DB
         await Cli.Wrap("/bin/bash")
