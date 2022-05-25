@@ -191,7 +191,7 @@ internal static class EnvironmentPacker
         var dbfile = File.ReadAllText($"{tmpPath}/db.sql", Encoding.UTF8);
         dbfile = dbfile.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
         dbfile = dbfile.Replace($"{usr.Username}", "{{USERNAME}}");
-        File.WriteAllText($"{tmpPath}/db.sql", dbfile, Encoding.UTF8);
+        File.WriteAllText($"{tmpPath}/db.sql", dbfile, new UTF8Encoding(false));
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
@@ -248,7 +248,7 @@ internal static class EnvironmentPacker
         var dbfile = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", Encoding.UTF8);
         dbfile = dbfile.Replace("{{INTERNALNAME}}", env.InternalName);
         dbfile = dbfile.Replace("{{USERNAME}}", user.Username);
-        File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile, Encoding.UTF8);
+        File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile, new UTF8Encoding(false));
 
         //Import DB
         await Cli.Wrap("/bin/bash")
