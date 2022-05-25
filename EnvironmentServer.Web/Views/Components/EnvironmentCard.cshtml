@@ -55,6 +55,7 @@
                                 <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy DB-Password</a></li>
                                 <li><a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a></li>
                                 <li><a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a></li>
+                                <li><a class="dropdown-item" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>Create Template</a></li>
                                 <li><a class="dropdown-item" onclick="return confirm('Are you sure to delete your Environment?')" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>Delete</a></li>
                             </ul>
                         </div>

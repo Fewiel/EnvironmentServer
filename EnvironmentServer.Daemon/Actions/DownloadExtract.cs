@@ -32,6 +32,7 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithArguments("-c \"rm dl.txt\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
+
             if (!Directory.Exists("/root/env/dl-cache"))
                 Directory.CreateDirectory("/root/env/dl-cache/");
 
@@ -44,7 +45,7 @@ namespace EnvironmentServer.Daemon.Actions
                     .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                     .ExecuteAsync();
             }
-            else
+            else if (filename.Contains("install_"))
             {
                 db.Logs.Add("Daemon", "Download File for: " + env.InternalName + " File: " + url);
                 await Cli.Wrap("/bin/bash")
@@ -58,12 +59,27 @@ namespace EnvironmentServer.Daemon.Actions
                     .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                     .ExecuteAsync();
             }
+            else
+            {
+                db.Logs.Add("Daemon", "Download File for: " + env.InternalName + " File: " + url);
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"wget {url} -O /home/{user.Username}/files/{env.InternalName}/{filename}\"")
+                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
+                    .ExecuteAsync();
+
+                db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"unzip {filename}\"")
+                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
+                    .ExecuteAsync();
+            }
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
                 .ExecuteAsync();
 
             db.Environments.SetTaskRunning(env.ID, false);
+
             var usr = db.Users.GetByID(env.UserID);
             if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
             {
@@ -72,7 +88,7 @@ namespace EnvironmentServer.Daemon.Actions
                 if (success)
                     return;
             }
-            db.Mail.Send($"Download and Extract finished for {env.InternalName}!", 
+            db.Mail.Send($"Download and Extract finished for {env.InternalName}!",
                 string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.InternalName), user.Email);
         }
     }
