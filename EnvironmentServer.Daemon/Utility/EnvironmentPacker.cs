@@ -141,7 +141,7 @@ internal static class EnvironmentPacker
         var dbString = usr.Username + "_" + env.InternalName;
 
         await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"mysqldump -u {dbString} -p{env.DBPassword} --hex-blob " + dbString + " > db.sql\"")
+                .WithArguments($"-c \"mysqldump -u {dbString} -p{env.DBPassword} --hex-blob --default-character-set=utf8 " + dbString + " --result-file=db.sql\"")
                 .WithWorkingDirectory($"/home/{usr.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
