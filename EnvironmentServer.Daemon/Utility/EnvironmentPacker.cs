@@ -194,7 +194,7 @@ internal static class EnvironmentPacker
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"zip -r {templatePath}/{template.Name}.zip {tmpPath}\"")
+            .WithArguments($"-c \"zip -r {templatePath}/{template.Name}.zip .\"")
             .WithWorkingDirectory($"{tmpPath}")
             .ExecuteAsync();
 
