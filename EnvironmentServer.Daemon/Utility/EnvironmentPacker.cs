@@ -203,7 +203,7 @@ internal static class EnvironmentPacker
         dbfile = ReplaceBytesAll(dbfile, internalBin, internalBinReplace);
         dbfile = ReplaceBytesAll(dbfile, usernameBin, usernameBinReplace);
 
-        File.WriteAllBytes($"{tmpPath}/db.sql", dbfile);
+        File.WriteAllBytes($"{tmpPath}/db-neu.sql", dbfile);
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
@@ -267,12 +267,12 @@ internal static class EnvironmentPacker
         var internalBinReplace = Encoding.UTF8.GetBytes("{{INTERNALNAME}}");
         var usernameBinReplace = Encoding.UTF8.GetBytes("{{USERNAME}}");
 
-        var dbfile = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql");
+        var dbfile = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db-neu.sql");
 
         dbfile = ReplaceBytesAll(dbfile, internalBinReplace, internalBin);
         dbfile = ReplaceBytesAll(dbfile, usernameBinReplace, usernameBin);
 
-        File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile);
+        File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db-fin.sql", dbfile);
 
         //Import DB
         await Cli.Wrap("/bin/bash")
