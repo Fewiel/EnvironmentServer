@@ -259,8 +259,8 @@ internal static class EnvironmentPacker
 
         var dbbin = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql");
         var dbstr = Encoding.UTF8.GetString(dbbin);
-        dbstr = dbstr.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
-        dbstr = dbstr.Replace($"{user.Username}", "{{USERNAME}}");
+        dbstr = dbstr.Replace("{{INTERNALNAME}}", env.InternalName);
+        dbstr = dbstr.Replace("{{USERNAME}}", user.Username);
         dbbin = Encoding.UTF8.GetBytes(dbstr);
         File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbbin);
 
