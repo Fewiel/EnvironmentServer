@@ -28,5 +28,7 @@ public class FastDeploy : ActionBase
             await em.SendMessageAsync(string.Format(db.Settings.Get("fast_deploy_finished").Value, env.InternalName),
                 usr.UserInformation.SlackID);
         }
+
+        db.Environments.SetTaskRunning(env.ID, false);
     }
 }
