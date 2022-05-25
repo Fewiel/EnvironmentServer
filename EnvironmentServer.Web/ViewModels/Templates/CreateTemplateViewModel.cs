@@ -7,7 +7,7 @@ namespace EnvironmentServer.Web.ViewModels.Templates
         [MinLength(4), MaxLength(24), DataType(DataType.Text)]
         public string Name { get; set; }
 
-        [MinLength(4), MaxLength(32), DataType(DataType.Text)]
+        [MinLength(4), DataType(DataType.Text)]
         public string Descirption { get; set; }
         public long EnvironmentID { get; set; }
     }

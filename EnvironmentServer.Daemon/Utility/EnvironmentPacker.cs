@@ -146,7 +146,7 @@ internal static class EnvironmentPacker
                 .ExecuteAsync();
 
         //Move Environment to tmp folder
-        var templatePath = $"/root/templates/{usr.Username}/{template.Name}";
+        var templatePath = $"/root/templates/{template.ID}-{template.Name}";
         Directory.CreateDirectory(templatePath);
 
         var tmpPath = $"/root/templates/tmp/{usr.Username}/{template.Name}";
@@ -155,8 +155,8 @@ internal static class EnvironmentPacker
         await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"cp -a {env.InternalName}/. {tmpPath}\"")
                 .WithWorkingDirectory($"/home/{usr.Username}/files")
-                .ExecuteAsync();
 
+                .ExecuteAsync();
         //Enable Site
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"a2ensite {usr.Username}_{env.InternalName}.conf\"")
@@ -220,12 +220,11 @@ internal static class EnvironmentPacker
     public static async Task DeployTemplateAsync(Database db, Environment env, long tmpID)
     {
         var template = db.Templates.Get(tmpID);
-        var templateCreator = db.Users.GetByID(template.UserID);
         var user = db.Users.GetByID(env.UserID);
 
         //Unzip template
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"unzip /root/templates/{templateCreator.Username}/{template.Name}/{template.Name}.zip\"")
+            .WithArguments($"-c \"unzip /root/templates/{template.ID}-{template.Name}/{template.Name}.zip\"")
             .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
             .ExecuteAsync();
 

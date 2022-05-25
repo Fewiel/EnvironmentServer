@@ -31,6 +31,8 @@ namespace EnvironmentServer.Web.Controllers
         {
             var env = DB.Environments.Get(ctvm.EnvironmentID);
 
+            ctvm.Name = ctvm.Name.ToLower().Replace(" ", "_");
+
             var tpl = new Template
             {
                 Name = ctvm.Name,
