@@ -215,9 +215,6 @@ internal static class EnvironmentPacker
 
         //Remove tmp folder
         Directory.Delete($"{tmpPath}", true);
-
-        //Add Template to DB
-        db.Templates.Create(template);
     }
 
     public static async Task DeployTemplateAsync(Database db, Environment env, long tmpID)
