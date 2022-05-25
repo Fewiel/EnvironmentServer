@@ -28,10 +28,16 @@ namespace EnvironmentServer.Web.Controllers
             return View(DB.Templates.GetAll());
         }
 
-        [AdminOnly]
+
         public IActionResult Delete(long id)
         {
-            DB.Templates.Delete(id);
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "delete_template",
+                Id_Variable = id,
+                ExecutedById = GetSessionUser().ID
+            });
+
             return RedirectToAction("Index");
         }
 

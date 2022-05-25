@@ -91,7 +91,8 @@ namespace EnvironmentServer.Daemon
                 new RestoreEnvironment(),
                 new RegeneratePhpConfig(),
                 new FastDeploy(),
-                new CreateTemplate()
+                new CreateTemplate(),
+                new DeleteTemplate()
             };
 
             foreach (var a in l)
