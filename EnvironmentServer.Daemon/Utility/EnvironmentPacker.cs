@@ -327,8 +327,8 @@ internal static class EnvironmentPacker
             System.Buffer.BlockCopy(src, 0, dst, 0, index);
             System.Buffer.BlockCopy(repl, 0, dst, index, repl.Length);
             System.Buffer.BlockCopy(src, index + search.Length, dst, index + repl.Length, src.Length - (index + search.Length));
-            index = FindBytes(src, search);
             src = dst;
+            index = FindBytes(src, search);
         }
         while (index >= 0);
         return dst;
