@@ -53,6 +53,15 @@ public class TemplateRepository
         });
     }
 
+    public void StartDelete(long id)
+    {
+        using var connection = DB.GetConnection();
+        connection.Execute("Update `templates` set `Name` = 'DELETE IN PROGRESS' where ID = @id", new
+        {
+            id
+        });
+    }
+
     public void Delete(long id)
     {
         using var connection = DB.GetConnection();

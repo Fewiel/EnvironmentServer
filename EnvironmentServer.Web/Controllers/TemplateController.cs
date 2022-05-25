@@ -31,6 +31,8 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Delete(long id)
         {
+            DB.Templates.StartDelete(id);
+
             DB.CmdAction.CreateTask(new CmdAction
             {
                 Action = "delete_template",

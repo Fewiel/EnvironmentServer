@@ -284,13 +284,11 @@ internal static class EnvironmentPacker
     public static void DeleteTemplate(Database db, long tmpID)
     {
         var template = db.Templates.Get(tmpID);
-        var usr = db.Users.GetByID(template.UserID);
+
+        db.Templates.Delete(tmpID);
 
         //Delete Template file
         Directory.Delete($"/root/templates/{template.ID}-{template.Name}", true);
-
-        //Delete DB entry
-        db.Templates.Delete(tmpID);
     }
 
     private static void DeleteCache(string username, string environmentInternalName)
