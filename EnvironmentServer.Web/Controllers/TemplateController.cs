@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.ViewModels.Templates;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -19,6 +20,19 @@ namespace EnvironmentServer.Web.Controllers
         public TemplateController(Database db)
         {
             DB = db;
+        }
+
+        [AdminOnly]
+        public IActionResult Index()
+        {
+            return View(DB.Templates.GetAll());
+        }
+
+        [AdminOnly]
+        public IActionResult Delete(long id)
+        {
+            DB.Templates.Delete(id);
+            return RedirectToAction("Index");
         }
 
         public IActionResult Create(long id)
