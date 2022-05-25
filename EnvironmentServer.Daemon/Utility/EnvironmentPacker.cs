@@ -287,7 +287,7 @@ internal static class EnvironmentPacker
         var usr = db.Users.GetByID(template.UserID);
 
         //Delete Template file
-        File.Delete($"/root/templates/{usr.Username}/{template.Name}");
+        Directory.Delete($"/root/templates/{template.ID}-{template.Name}", true);
 
         //Delete DB entry
         db.Templates.Delete(tmpID);
