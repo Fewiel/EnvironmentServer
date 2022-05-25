@@ -193,12 +193,17 @@ internal static class EnvironmentPacker
         //dbfile = dbfile.Replace($"{usr.Username}", "{{USERNAME}}");
         //File.WriteAllText($"{tmpPath}/db.sql", dbfile, new UTF8Encoding(false));
 
-        var dbbin = File.ReadAllBytes($"{tmpPath}/db.sql");
-        var dbstr = Encoding.UTF8.GetString(dbbin);
-        dbstr = dbstr.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
-        dbstr = dbstr.Replace($"{usr.Username}", "{{USERNAME}}");
-        dbbin = Encoding.UTF8.GetBytes(dbstr);
-        File.WriteAllBytes($"{tmpPath}/db.sql", dbbin);
+        var internalBin = Encoding.UTF8.GetBytes($"{env.InternalName}");
+        var usernameBin = Encoding.UTF8.GetBytes($"{usr.Username}");
+        var internalBinReplace = Encoding.UTF8.GetBytes("{{INTERNALNAME}}");
+        var usernameBinReplace = Encoding.UTF8.GetBytes("{{USERNAME}}");
+
+        var dbfile = File.ReadAllBytes($"{tmpPath}/db.sql");
+
+        dbfile = ReplaceBytes(dbfile, internalBin, internalBinReplace);
+        dbfile = ReplaceBytes(dbfile, usernameBin, usernameBinReplace);
+
+        File.WriteAllBytes($"{tmpPath}/db.sql", dbfile);
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
@@ -257,12 +262,17 @@ internal static class EnvironmentPacker
         //dbfile = dbfile.Replace("{{USERNAME}}", user.Username);
         //File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile, new UTF8Encoding(false));
 
-        var dbbin = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql");
-        var dbstr = Encoding.UTF8.GetString(dbbin);
-        dbstr = dbstr.Replace("{{INTERNALNAME}}", env.InternalName);
-        dbstr = dbstr.Replace("{{USERNAME}}", user.Username);
-        dbbin = Encoding.UTF8.GetBytes(dbstr);
-        File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbbin);
+        var internalBin = Encoding.UTF8.GetBytes($"{env.InternalName}");
+        var usernameBin = Encoding.UTF8.GetBytes($"{user.Username}");
+        var internalBinReplace = Encoding.UTF8.GetBytes("{{INTERNALNAME}}");
+        var usernameBinReplace = Encoding.UTF8.GetBytes("{{USERNAME}}");
+
+        var dbfile = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql");
+
+        dbfile = ReplaceBytes(dbfile, internalBinReplace, internalBin);
+        dbfile = ReplaceBytes(dbfile, usernameBinReplace, usernameBin);
+
+        File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile);
 
         //Import DB
         await Cli.Wrap("/bin/bash")
@@ -291,5 +301,34 @@ internal static class EnvironmentPacker
             if (f.Contains("prod"))
                 Directory.Delete(f, true);
         }
+    }
+
+    public static byte[] ReplaceBytes(byte[] src, byte[] search, byte[] repl)
+    {
+        if (repl == null) return src;
+        int index = FindBytes(src, search);
+        if (index < 0) return src;
+        byte[] dst = new byte[src.Length - search.Length + repl.Length];
+        System.Buffer.BlockCopy(src, 0, dst, 0, index);
+        System.Buffer.BlockCopy(repl, 0, dst, index, repl.Length);
+        System.Buffer.BlockCopy(src, index + search.Length, dst, index + repl.Length, src.Length - (index + search.Length));
+        return dst;
+    }
+
+    public static int FindBytes(byte[] src, byte[] find)
+    {
+        if (src == null || find == null || src.Length == 0 || find.Length == 0 || find.Length > src.Length) return -1;
+        for (int i = 0; i < src.Length - find.Length + 1; i++)
+        {
+            if (src[i] == find[0])
+            {
+                for (int m = 1; m < find.Length; m++)
+                {
+                    if (src[i + m] != find[m]) break;
+                    if (m == find.Length - 1) return i;
+                }
+            }
+        }
+        return -1;
     }
 }
