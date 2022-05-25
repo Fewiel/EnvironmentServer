@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -187,10 +188,10 @@ internal static class EnvironmentPacker
         }
 
         //Replace parts in DB Dump
-        var dbfile = File.ReadAllText($"{tmpPath}/db.sql");
+        var dbfile = File.ReadAllText($"{tmpPath}/db.sql", Encoding.UTF8);
         dbfile = dbfile.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
         dbfile = dbfile.Replace($"{usr.Username}", "{{USERNAME}}");
-        File.WriteAllText($"{tmpPath}/db.sql", dbfile);
+        File.WriteAllText($"{tmpPath}/db.sql", dbfile, Encoding.UTF8);
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
