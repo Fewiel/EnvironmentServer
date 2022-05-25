@@ -205,6 +205,8 @@ namespace EnvironmentServer.Web.Controllers
                 DB.Environments.SetTaskRunning(lastID, true);
             }
 
+            DB.Logs.Add("Debug", "Template ID: " + esv.TemplateID);
+
             if (esv.TemplateID != 0)
             {
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/template.txt", 
