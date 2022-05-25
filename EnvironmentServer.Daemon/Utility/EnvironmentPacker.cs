@@ -252,10 +252,17 @@ internal static class EnvironmentPacker
         }
 
         //Replace parts in DB Dump
-        var dbfile = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", Encoding.UTF8);
-        dbfile = dbfile.Replace("{{INTERNALNAME}}", env.InternalName);
-        dbfile = dbfile.Replace("{{USERNAME}}", user.Username);
-        File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile, new UTF8Encoding(false));
+        //var dbfile = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", Encoding.UTF8);
+        //dbfile = dbfile.Replace("{{INTERNALNAME}}", env.InternalName);
+        //dbfile = dbfile.Replace("{{USERNAME}}", user.Username);
+        //File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile, new UTF8Encoding(false));
+
+        var dbbin = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql");
+        var dbstr = Encoding.UTF8.GetString(dbbin);
+        dbstr = dbstr.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
+        dbstr = dbstr.Replace($"{user.Username}", "{{USERNAME}}");
+        dbbin = Encoding.UTF8.GetBytes(dbstr);
+        File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbbin);
 
         //Import DB
         await Cli.Wrap("/bin/bash")
