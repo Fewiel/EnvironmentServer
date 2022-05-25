@@ -200,8 +200,8 @@ internal static class EnvironmentPacker
 
         var dbfile = File.ReadAllBytes($"{tmpPath}/db.sql");
 
-        dbfile = ReplaceBytes(dbfile, internalBin, internalBinReplace);
-        dbfile = ReplaceBytes(dbfile, usernameBin, usernameBinReplace);
+        dbfile = ReplaceBytesAll(dbfile, internalBin, internalBinReplace);
+        dbfile = ReplaceBytesAll(dbfile, usernameBin, usernameBinReplace);
 
         File.WriteAllBytes($"{tmpPath}/db.sql", dbfile);
 
@@ -242,7 +242,7 @@ internal static class EnvironmentPacker
         {
             var cnf = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/.env");
             cnf = cnf.Replace("{{APPURL}}", $"http://{env.InternalName}-{user.Username}.{db.Settings.Get("domain").Value}");
-            cnf = cnf.Replace("{{DATABASEURL}}", 
+            cnf = cnf.Replace("{{DATABASEURL}}",
                 $"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}");
             cnf = cnf.Replace("{{COMPOSER}}", $"/home/{user.Username}/files/{env.InternalName}/var/cache/composer");
             File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/.env", cnf);
@@ -269,8 +269,8 @@ internal static class EnvironmentPacker
 
         var dbfile = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql");
 
-        dbfile = ReplaceBytes(dbfile, internalBinReplace, internalBin);
-        dbfile = ReplaceBytes(dbfile, usernameBinReplace, usernameBin);
+        dbfile = ReplaceBytesAll(dbfile, internalBinReplace, internalBin);
+        dbfile = ReplaceBytesAll(dbfile, usernameBinReplace, usernameBin);
 
         File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile);
 
@@ -312,6 +312,25 @@ internal static class EnvironmentPacker
         System.Buffer.BlockCopy(src, 0, dst, 0, index);
         System.Buffer.BlockCopy(repl, 0, dst, index, repl.Length);
         System.Buffer.BlockCopy(src, index + search.Length, dst, index + repl.Length, src.Length - (index + search.Length));
+        return dst;
+    }
+
+    public static byte[] ReplaceBytesAll(byte[] src, byte[] search, byte[] repl)
+    {
+        if (repl == null) return src;
+        int index = FindBytes(src, search);
+        if (index < 0) return src;
+        byte[] dst;
+        do
+        {
+            dst = new byte[src.Length - search.Length + repl.Length];            
+            System.Buffer.BlockCopy(src, 0, dst, 0, index);
+            System.Buffer.BlockCopy(repl, 0, dst, index, repl.Length);
+            System.Buffer.BlockCopy(src, index + search.Length, dst, index + repl.Length, src.Length - (index + search.Length));
+            index = FindBytes(src, search);
+            src = dst;
+        }
+        while (index >= 0);
         return dst;
     }
 
