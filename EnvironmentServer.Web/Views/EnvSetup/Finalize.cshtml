@@ -38,6 +38,12 @@
             <dt class="col-sm-6">Version</dt>
             <dd class="col-sm-6">@Model.ShopwareVersion</dd>
 
+            @if (Model.TemplateID != 0)
+            {
+                <dt class="col-sm-6">Template ID</dt>
+                <dd class="col-sm-6">@Model.TemplateID</dd>
+            }
+
             <dt class="col-sm-6">Php Version</dt>
             <dd class="col-sm-6">@Model.PhpVersion</dd>
         </dl>
@@ -69,7 +75,7 @@
         <div class="alert alert-info">
             New Login Information for Autoinstallations!<br /> <br />
             User: admin<br />
-            Password: shopware<br />       
+            Password: shopware<br />
         </div>
     }
 </div>
