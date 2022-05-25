@@ -193,8 +193,8 @@ internal static class EnvironmentPacker
         //dbfile = dbfile.Replace($"{usr.Username}", "{{USERNAME}}");
         //File.WriteAllText($"{tmpPath}/db.sql", dbfile, new UTF8Encoding(false));
 
-        var internalBin = Encoding.UTF8.GetBytes($"{env.InternalName}");
-        var usernameBin = Encoding.UTF8.GetBytes($"{usr.Username}");
+        var internalBin = Encoding.UTF8.GetBytes(env.InternalName);
+        var usernameBin = Encoding.UTF8.GetBytes(usr.Username);
         var internalBinReplace = Encoding.UTF8.GetBytes("{{INTERNALNAME}}");
         var usernameBinReplace = Encoding.UTF8.GetBytes("{{USERNAME}}");
 
@@ -203,7 +203,9 @@ internal static class EnvironmentPacker
         dbfile = ReplaceBytesAll(dbfile, internalBin, internalBinReplace);
         dbfile = ReplaceBytesAll(dbfile, usernameBin, usernameBinReplace);
 
-        File.WriteAllBytes($"{tmpPath}/db-neu.sql", dbfile);
+        File.WriteAllBytes($"{tmpPath}/db-tmp.sql", dbfile);
+
+        File.Delete($"{tmpPath}/db.sql");
 
         //Zip all to Template folder
         await Cli.Wrap("/bin/bash")
@@ -262,17 +264,19 @@ internal static class EnvironmentPacker
         //dbfile = dbfile.Replace("{{USERNAME}}", user.Username);
         //File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile, new UTF8Encoding(false));
 
-        var internalBin = Encoding.UTF8.GetBytes($"{env.InternalName}");
-        var usernameBin = Encoding.UTF8.GetBytes($"{user.Username}");
+        var internalBin = Encoding.UTF8.GetBytes(env.InternalName);
+        var usernameBin = Encoding.UTF8.GetBytes(user.Username);
         var internalBinReplace = Encoding.UTF8.GetBytes("{{INTERNALNAME}}");
         var usernameBinReplace = Encoding.UTF8.GetBytes("{{USERNAME}}");
 
-        var dbfile = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db-neu.sql");
+        var dbfile = File.ReadAllBytes($"/home/{user.Username}/files/{env.InternalName}/db-tmp.sql");
 
         dbfile = ReplaceBytesAll(dbfile, internalBinReplace, internalBin);
         dbfile = ReplaceBytesAll(dbfile, usernameBinReplace, usernameBin);
 
-        File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db-fin.sql", dbfile);
+        File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile);
+
+        File.Delete($"/home/{user.Username}/files/{env.InternalName}/db-tmp.sql");
 
         //Import DB
         await Cli.Wrap("/bin/bash")
