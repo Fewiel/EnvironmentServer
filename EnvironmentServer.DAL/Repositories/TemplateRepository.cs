@@ -56,7 +56,7 @@ public class TemplateRepository
     public void Delete(long id)
     {
         using var connection = DB.GetConnection();
-        connection.Execute("Delete from `templates` where ID = @id`", new
+        connection.Execute("Delete from `templates` where ID = @id", new
         {
             id
         });
