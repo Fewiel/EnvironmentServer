@@ -38,7 +38,7 @@
             <dt class="col-sm-6">Version</dt>
             <dd class="col-sm-6">@Model.ShopwareVersion</dd>
 
-            @if (Model.TemplateID == 0)
+            @if (Model.TemplateID != 0)
             {
                 <dt class="col-sm-6">Template ID</dt>
                 <dd class="col-sm-6">@Model.TemplateID</dd>
@@ -51,7 +51,7 @@
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 
-    @if (Model.TemplateID != 0)
+    @if (Model.TemplateID == 0)
     {
         <form method="post" asp-action="CreateWithAutoinstaller" style="width: 800px;">
             <input type="hidden" asp-for="InternalName" />
