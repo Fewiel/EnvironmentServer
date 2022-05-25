@@ -101,6 +101,8 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] EnvSetupViewModel esv)
         {
+            DB.Logs.Add("Debug", "EnvSetupViewModel: " + JsonConvert.SerializeObject(esv));
+
             if (!string.IsNullOrEmpty(esv.ExhibitionFile))
             {
                 esv.ShopwareVersion = "6";
@@ -203,9 +205,7 @@ namespace EnvironmentServer.Web.Controllers
                     ExecutedById = GetSessionUser().ID
                 });
                 DB.Environments.SetTaskRunning(lastID, true);
-            }
-
-            DB.Logs.Add("Debug", "Template ID: " + esv.TemplateID);
+            }            
 
             if (esv.TemplateID != 0)
             {
