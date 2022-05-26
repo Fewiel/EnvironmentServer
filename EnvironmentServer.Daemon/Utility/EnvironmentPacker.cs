@@ -293,6 +293,9 @@ internal static class EnvironmentPacker
 
     private static void DeleteCache(string username, string environmentInternalName)
     {
+        if (!Directory.Exists($"/home/{username}/files/{environmentInternalName}/var/cache"))
+            return;
+
         foreach (var f in Directory.GetDirectories(
             $"/home/{username}/files/{environmentInternalName}/var/cache"))
         {
