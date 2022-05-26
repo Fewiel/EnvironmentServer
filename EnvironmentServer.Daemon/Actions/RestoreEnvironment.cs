@@ -18,9 +18,8 @@ internal class RestoreEnvironment : ActionBase
         var db = sp.GetService<Database>();
         var em = sp.GetService<IExternalMessaging>();
         var env = db.Environments.Get(variableID);
-        var usr = db.Users.GetByID(env.UserID);
 
-        if (!env.Stored)
+        if (env == null || !env.Stored)
             return;
 
         db.Logs.Add("Daemon", $"Starting restore for Environment {env.InternalName}.");
