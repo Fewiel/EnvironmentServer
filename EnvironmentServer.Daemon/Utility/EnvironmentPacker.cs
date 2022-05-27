@@ -126,6 +126,8 @@ internal static class EnvironmentPacker
     {
         var usr = db.Users.GetByID(env.UserID);
 
+        db.Logs.Add("Daemon", $"Create Template for {usr.ID} - {usr.Username} - Template: {template.ID} - {template.Name}");
+
         //Disable Site
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"a2dissite {usr.Username}_{env.InternalName}.conf\"")
@@ -188,11 +190,6 @@ internal static class EnvironmentPacker
         }
 
         //Replace parts in DB Dump
-        //var dbfile = File.ReadAllText($"{tmpPath}/db.sql", Encoding.UTF8);
-        //dbfile = dbfile.Replace($"{env.InternalName}", "{{INTERNALNAME}}");
-        //dbfile = dbfile.Replace($"{usr.Username}", "{{USERNAME}}");
-        //File.WriteAllText($"{tmpPath}/db.sql", dbfile, new UTF8Encoding(false));
-
         var internalBin = Encoding.UTF8.GetBytes(env.InternalName);
         var usernameBin = Encoding.UTF8.GetBytes(usr.Username);
         var internalBinReplace = Encoding.UTF8.GetBytes("{{INTERNALNAME}}");
@@ -215,12 +212,16 @@ internal static class EnvironmentPacker
 
         //Remove tmp folder
         Directory.Delete($"{tmpPath}", true);
+
+        db.Logs.Add("Daemon", $"Create Template successful for {usr.ID} - {usr.Username} - Template: {template.ID} - {template.Name}");
     }
 
     public static async Task DeployTemplateAsync(Database db, Environment env, long tmpID)
     {
         var template = db.Templates.Get(tmpID);
         var user = db.Users.GetByID(env.UserID);
+
+        db.Logs.Add("Daemon", $"Template Deploy for {user.ID} - {user.Username} - Template: {template.ID} - {template.Name}");
 
         //Unzip template
         await Cli.Wrap("/bin/bash")
@@ -255,11 +256,6 @@ internal static class EnvironmentPacker
         }
 
         //Replace parts in DB Dump
-        //var dbfile = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", Encoding.UTF8);
-        //dbfile = dbfile.Replace("{{INTERNALNAME}}", env.InternalName);
-        //dbfile = dbfile.Replace("{{USERNAME}}", user.Username);
-        //File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile, new UTF8Encoding(false));
-
         var internalBin = Encoding.UTF8.GetBytes(env.InternalName);
         var usernameBin = Encoding.UTF8.GetBytes(user.Username);
         var internalBinReplace = Encoding.UTF8.GetBytes("{{INTERNALNAME}}");
@@ -279,6 +275,8 @@ internal static class EnvironmentPacker
                 .WithArguments($"-c \"mysql -u {user.Username}_{env.InternalName} -p{env.DBPassword} {user.Username}_{env.InternalName} < db.sql\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
+
+        db.Logs.Add("Daemon", $"Template Deploy sucessful for {user.ID} - {user.Username} - Template: {template.ID} - {template.Name}");
     }
 
     public static void DeleteTemplate(Database db, long tmpID)
