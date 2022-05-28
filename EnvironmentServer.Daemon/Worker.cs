@@ -58,7 +58,9 @@ namespace EnvironmentServer.Daemon
                 try
                 {
                     Console.WriteLine("Run Task: " + task.Action);
+                    DB.Logs.Add("Deamon", $"Task gestartet: {JsonConvert.SerializeObject(task)}");
                     await act.ExecuteAsync(SP, task.Id_Variable, task.ExecutedById);
+                    DB.Logs.Add("Deamon", $"Task abgeschlossen: {JsonConvert.SerializeObject(task)}");
                 }
                 catch (Exception ex)
                 {
