@@ -94,7 +94,8 @@ namespace EnvironmentServer.DAL.Repositories
                 Settings = new List<EnvironmentSettingValue>(GetSettingValues(reader.GetInt64(0))),
                 Sorting = reader.GetInt32(7),
                 LatestUse = reader.GetDateTime(8),
-                Stored = reader.GetBoolean(9)
+                Stored = reader.GetBoolean(9),
+                DevelopmentMode = reader.GetBoolean(10)
             };
         }
 
@@ -314,6 +315,16 @@ namespace EnvironmentServer.DAL.Repositories
             {
                 id,
                 sorting = env.Sorting - 1
+            });
+        }
+
+        public void SetDevelopmentMode(long id, bool dev)
+        {
+            using var connection = DB.GetConnection();
+            connection.Execute("UPDATE `environments` SET `DevelopmentMode` = @dev WHERE `ID` = @id;", new
+            {
+                id,
+                dev
             });
         }
 

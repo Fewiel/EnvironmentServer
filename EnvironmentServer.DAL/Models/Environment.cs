@@ -23,5 +23,6 @@ namespace EnvironmentServer.DAL.Models
         public int Sorting { get; set; }
         public DateTime LatestUse { get; set; }
         public bool Stored { get; set; }
+        public bool DevelopmentMode { get; set; }
     }
 }

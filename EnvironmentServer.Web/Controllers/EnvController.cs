@@ -58,6 +58,21 @@ namespace EnvironmentServer.Web.Controllers
             return View("Update", createViewModel);
         }
 
+        public IActionResult Development(long id)
+        {
+            DB.Environments.SetTaskRunning(id, true);
+
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "environment_set_dev",
+                Id_Variable = id,
+                ExecutedById = GetSessionUser().ID
+            });
+
+            AddInfo("Updateting Development Mode");
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpGet]
         public IActionResult Update(long id)
         {

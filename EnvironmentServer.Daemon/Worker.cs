@@ -95,7 +95,8 @@ namespace EnvironmentServer.Daemon
                 new FastDeploy(),
                 new CreateTemplate(),
                 new DeleteTemplate(),
-                new HotfixPackedEnvironments()
+                new HotfixPackedEnvironments(),
+                new EnvironmentSetDevelopment()
             };
 
             foreach (var a in l)
