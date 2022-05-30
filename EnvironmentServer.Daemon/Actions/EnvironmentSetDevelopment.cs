@@ -36,7 +36,7 @@ public class EnvironmentSetDevelopment : ActionBase
 
         var conf = File.ReadAllText(path);
 
-        conf = Regex.Replace(conf, PatternSW6AppEnv, env.DevelopmentMode ? "prod" : "dev");
+        conf = Regex.Replace(conf, PatternSW6AppEnv, env.DevelopmentMode ? "$1prod$2" : "$1dev$2");
         File.WriteAllText(path, conf);
 
         await Cli.Wrap("/bin/bash")
