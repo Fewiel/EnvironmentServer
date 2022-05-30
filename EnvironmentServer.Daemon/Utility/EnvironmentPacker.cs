@@ -45,11 +45,11 @@ internal static class EnvironmentPacker
             .WithWorkingDirectory($"/home/{usr.Username}/files/")
             .ExecuteAsync();
 
-        //Delete Environment
-        Directory.Delete($"/home/{usr.Username}/files/{env.InternalName}", true);
-
         //Check for SW5 or SW6
         var sw6 = Directory.Exists($"/home/{usr.Username}/files/{env.InternalName}/public");
+
+        //Delete Environment
+        Directory.Delete($"/home/{usr.Username}/files/{env.InternalName}", true);
 
         //Create Redirection
         Directory.CreateDirectory($"/home/{usr.Username}/files/{env.InternalName}");
@@ -322,7 +322,7 @@ internal static class EnvironmentPacker
         byte[] dst;
         do
         {
-            dst = new byte[src.Length - search.Length + repl.Length];            
+            dst = new byte[src.Length - search.Length + repl.Length];
             System.Buffer.BlockCopy(src, 0, dst, 0, index);
             System.Buffer.BlockCopy(repl, 0, dst, index, repl.Length);
             System.Buffer.BlockCopy(src, index + search.Length, dst, index + repl.Length, src.Length - (index + search.Length));
