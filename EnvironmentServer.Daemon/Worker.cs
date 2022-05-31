@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.Daemon.Actions;
 using EnvironmentServer.DAL;
+using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
@@ -58,9 +59,9 @@ namespace EnvironmentServer.Daemon
                 try
                 {
                     Console.WriteLine("Run Task: " + task.Action);
-                    DB.Logs.Add("Deamon", $"Task gestartet: {JsonConvert.SerializeObject(task)}");
+                    DB.Logs.Add("Deamon", $"Task started: {JsonConvert.SerializeObject(task)}");
                     await act.ExecuteAsync(SP, task.Id_Variable, task.ExecutedById);
-                    DB.Logs.Add("Deamon", $"Task abgeschlossen: {JsonConvert.SerializeObject(task)}");
+                    DB.Logs.Add("Deamon", $"Task end: {JsonConvert.SerializeObject(task)}");
                 }
                 catch (Exception ex)
                 {
@@ -74,6 +75,10 @@ namespace EnvironmentServer.Daemon
                 //Set executed in DB
                 DB.CmdAction.SetExecuted(task.Id, task.Action, task.ExecutedById);
             }
+
+            DB.Logs.Add("Deamon", "ERROR: Deamon exited DoWork");
+            var em = SP.GetService<IExternalMessaging>();
+            await em.SendMessageAsync($"Deamon exited DoWork", "U02954V4Q6B");
         }
 
         private void FillActions()
