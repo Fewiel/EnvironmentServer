@@ -24,7 +24,7 @@ internal class PackEnvironments : ScheduledActionBase
         {
             try
             {
-                if (env.LatestUse.AddDays(7) < DateTime.Now && !env.Stored)
+                if (env.LatestUse.AddDays(31) < DateTime.Now && !env.Stored)
                 {
 
                     db.Logs.Add("Daemon", $"Packing Environment: {env.InternalName} User: {db.Users.GetByID(env.UserID).Username}");
