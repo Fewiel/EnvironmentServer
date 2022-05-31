@@ -50,11 +50,8 @@ namespace EnvironmentServer.Daemon
 
             var w = new Worker(sp);
             var cw = new CronWorker(sp);
-            string cmd = "";
-            while (cmd != "1")
+            while (true)
             {
-                Console.WriteLine("Enter 1 to stop deamon");
-                cmd = Console.ReadLine();
                 Thread.Sleep(5000);
 
                 if (w.ActiveWorkerTask.IsFaulted)
@@ -63,9 +60,6 @@ namespace EnvironmentServer.Daemon
                     w = new Worker(sp);
                 }
             }
-
-            w.StopWorker();
-            cw.StopWorker();
         }
     }
 }
