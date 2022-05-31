@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,30 +24,34 @@ namespace EnvironmentServer.Daemon.ScheduleActions
 
         public override async Task ExecuteAsync(Database db)
         {
-            var startTime = DateTime.UtcNow;
-            var startCpuUsage = Process.GetProcesses().Sum(a => a.TotalProcessorTime.TotalMilliseconds);
-            await Task.Delay(500);
+            try
+            {
+                var startTime = DateTime.UtcNow;
+                var startCpuUsage = Process.GetProcesses().Sum(a => a.TotalProcessorTime.TotalMilliseconds);
+                await Task.Delay(500);
 
-            var endTime = DateTime.UtcNow;
-            var endCpuUsage = Process.GetProcesses().Sum(a => a.TotalProcessorTime.TotalMilliseconds);
-            var cpuUsedMs = endCpuUsage - startCpuUsage;
-            var totalMsPassed = (endTime - startTime).TotalMilliseconds;
-            var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
-            cpuUsageTotal *= 100;
+                var endTime = DateTime.UtcNow;
+                var endCpuUsage = Process.GetProcesses().Sum(a => a.TotalProcessorTime.TotalMilliseconds);
+                var cpuUsedMs = endCpuUsage - startCpuUsage;
+                var totalMsPassed = (endTime - startTime).TotalMilliseconds;
+                var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
+                cpuUsageTotal *= 100;
 
-            db.Performance.Set("cpu", cpuUsageTotal.ToString("N" + DigitsInResult));
+                db.Performance.Set("cpu", cpuUsageTotal.ToString("N" + DigitsInResult));
 
-            var totalMemory = GetTotalMemoryInKb();
-            var usedMemory = GetUsedMemoryForAllProcessesInKb();
+                var totalMemory = GetTotalMemoryInKb();
+                var usedMemory = GetUsedMemoryForAllProcessesInKb();
 
-            db.Performance.Set("memory", ((usedMemory * 100) / totalMemory).ToString("N" + DigitsInResult));
-            var diskspace = new DriveInfo("/").AvailableFreeSpace;
-            diskspace = diskspace / 1024 / 1024 / 1024;
-            db.Performance.Set("diskspace", diskspace.ToString("N0"));
+                db.Performance.Set("memory", ((usedMemory * 100) / totalMemory).ToString("N" + DigitsInResult));
+                var diskspace = new DriveInfo("/").AvailableFreeSpace;
+                diskspace = diskspace / 1024 / 1024 / 1024;
+                db.Performance.Set("diskspace", diskspace.ToString("N0"));
 
-            var disksize = new DriveInfo("/").TotalSize;
-            disksize = disksize / 1024 / 1024 / 1024;
-            db.Performance.Set("disksize", disksize.ToString("N0"));
+                var disksize = new DriveInfo("/").TotalSize;
+                disksize = disksize / 1024 / 1024 / 1024;
+                db.Performance.Set("disksize", disksize.ToString("N0"));
+            }
+            catch (Win32Exception) { }
         }
 
         private static double GetUsedMemoryForAllProcessesInKb()
