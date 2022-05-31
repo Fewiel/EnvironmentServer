@@ -15,7 +15,7 @@ public class Program
 
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        File.AppendAllText($"error_log_{DateTime.Now:dd_MM_yyyy}.log", e.ExceptionObject.ToString());
+        File.AppendAllText($"error_log_web_{DateTime.Now:dd_MM_yyyy}.log", e.ExceptionObject.ToString());
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>

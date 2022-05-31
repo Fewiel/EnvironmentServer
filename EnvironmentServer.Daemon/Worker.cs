@@ -16,8 +16,9 @@ namespace EnvironmentServer.Daemon
         private readonly Database DB;
         private readonly ServiceProvider SP;
         private readonly CancellationTokenSource cancellationToken;
-        private readonly Task ActiveWorkerTask;
         private readonly Dictionary<string, ActionBase> Actions = new();
+
+        public Task ActiveWorkerTask { get; }
 
         public Worker(ServiceProvider sp)
         {
@@ -78,7 +79,7 @@ namespace EnvironmentServer.Daemon
 
             DB.Logs.Add("Deamon", "ERROR: Deamon exited DoWork");
             var em = SP.GetService<IExternalMessaging>();
-            await em.SendMessageAsync($"Deamon exited DoWork", "U02954V4Q6B");
+            await em.SendMessageAsync("Deamon exited DoWork", "U02954V4Q6B");
         }
 
         private void FillActions()

@@ -18,6 +18,9 @@ namespace EnvironmentServer.Web.Controllers
         [Route("[controller]/{id}")]
         public IActionResult StartRecover(long id)
         {
+            if (DB.CmdAction.Exists("restore_environment", id))
+                return RedirectToAction(nameof(WaitForRecover), new { id });
+
             DB.Environments.Use(id);
             DB.CmdAction.CreateTask(new CmdAction
             {

@@ -1,4 +1,5 @@
-﻿using EnvironmentServer.DAL.Models;
+﻿using Dapper;
+using EnvironmentServer.DAL.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,17 @@ namespace EnvironmentServer.DAL.Repositories
                 reader.Close();
                 return cmdaction;
             }
+        }
+
+        public bool Exists(string task, long varID)
+        {
+            using var connection = DB.GetConnection();
+            return connection.ExecuteScalar<bool>("select Count(1) from `cmd_actions` where `Action` = @task " +
+                "and `Id_Variable` = @varID and `Executed` = NULL Limit 1;", new
+                {
+                    task,
+                    varID
+                });
         }
 
         public void SetExecuted(long id, string name, long uid)
