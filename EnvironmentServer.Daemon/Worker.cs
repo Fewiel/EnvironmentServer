@@ -63,7 +63,9 @@ namespace EnvironmentServer.Daemon
                     Console.WriteLine("Run Task: " + task.Action);
                     DB.Logs.Add("Deamon", $"Task started: {JsonConvert.SerializeObject(task)}");
                     File.WriteAllText("/root/logs/latest_TaskStart.log", DateTime.Now.ToString());
+
                     await act.ExecuteAsync(SP, task.Id_Variable, task.ExecutedById);
+
                     File.WriteAllText("/root/logs/latest_TaskEnd.log", DateTime.Now.ToString());
                     DB.Logs.Add("Deamon", $"Task end: {JsonConvert.SerializeObject(task)}");
                 }

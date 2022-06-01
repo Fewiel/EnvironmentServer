@@ -54,7 +54,7 @@ namespace EnvironmentServer.Daemon
             {
                 Thread.Sleep(5000);
                 Console.WriteLine("Check Worker...");
-                File.WriteAllText("/root/logs/latest_WorkerStatus.log", DateTime.Now.ToString() + JsonConvert.SerializeObject(w.ActiveWorkerTask));
+                File.WriteAllText("/root/logs/latest_WorkerStatus.log", DateTime.Now.ToString());
                 if (w.ActiveWorkerTask.IsFaulted)
                 {
                     Console.WriteLine("Worker is faulted");
@@ -63,6 +63,7 @@ namespace EnvironmentServer.Daemon
                     w = new Worker(sp);
                 }
             }
+            Console.WriteLine("WHILE EXITED!");
         }
     }
 }
