@@ -225,7 +225,7 @@ internal static class EnvironmentPacker
 
         //Unzip template
         await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"unzip /root/templates/{template.ID}-{template.Name}/{template.Name}.zip\"")
+            .WithArguments($"-c \"unzip -q /root/templates/{template.ID}-{template.Name}/{template.Name}.zip\"")
             .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
             .ExecuteAsync();
 
