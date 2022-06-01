@@ -19,8 +19,6 @@ public class FastDeploy : ActionBase
         var usr = db.Users.GetByID(env.UserID);
         var tmpID = System.IO.File.ReadAllText($"/home/{usr.Username}/files/{env.InternalName}/template.txt");
 
-        System.IO.File.Delete($"/home/{usr.Username}/files/{env.InternalName}/template.txt");
-
         await EnvironmentPacker.DeployTemplateAsync(db, env, long.Parse(tmpID));
 
         if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
