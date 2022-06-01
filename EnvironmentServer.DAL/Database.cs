@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Dapper;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Repositories;
+using EnvironmentServer.DAL.Utility;
 using EnvironmentServer.Mail;
 using MySql.Data.MySqlClient;
 
@@ -88,9 +89,8 @@ namespace EnvironmentServer.DAL
 
         public MySqlConnection GetConnection()
         {
-            var c = new MySqlConnection(ConnString);
-            c.Open();
-            return c;
+            using var c = new MySQLConnectionWrapper(ConnString);
+            return c.Connection;
         }
     }
 }
