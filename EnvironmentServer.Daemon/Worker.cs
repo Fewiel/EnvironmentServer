@@ -41,6 +41,7 @@ namespace EnvironmentServer.Daemon
             while (!cancellationToken.IsCancellationRequested)
             {
                 //Get task
+                File.WriteAllText("/root/logs/latest_GetFirstNonExecuted.log", DateTime.Now.ToString());
                 var task = DB.CmdAction.GetFirstNonExecuted();
                 if (string.IsNullOrEmpty(task.Action))
                 {
@@ -61,7 +62,9 @@ namespace EnvironmentServer.Daemon
                 {
                     Console.WriteLine("Run Task: " + task.Action);
                     DB.Logs.Add("Deamon", $"Task started: {JsonConvert.SerializeObject(task)}");
+                    File.WriteAllText("/root/logs/latest_TaskStart.log", DateTime.Now.ToString());
                     await act.ExecuteAsync(SP, task.Id_Variable, task.ExecutedById);
+                    File.WriteAllText("/root/logs/latest_TaskEnd.log", DateTime.Now.ToString());
                     DB.Logs.Add("Deamon", $"Task end: {JsonConvert.SerializeObject(task)}");
                 }
                 catch (Exception ex)
@@ -70,6 +73,7 @@ namespace EnvironmentServer.Daemon
                     throw;
 #endif
                     Console.WriteLine(ex.ToString());
+                    File.WriteAllText("/root/logs/latest_TaskException.log", DateTime.Now.ToString());
                     DB.Logs.Add("Daemon", "ERROR in Worker: " + ex.ToString());
                 }
 

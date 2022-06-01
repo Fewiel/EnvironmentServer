@@ -43,8 +43,8 @@ namespace EnvironmentServer.DAL.Repositories
         public bool Exists(string task, long varID)
         {
             using var connection = DB.GetConnection();
-            return connection.ExecuteScalar<bool>("select Count(1) from `cmd_actions` where `Action` = @task " +
-                "and `Id_Variable` = @varID and `Executed` = NULL Limit 1;", new
+            return connection.ExecuteScalar<bool>("select Count(1) from `cmd_actions` " +
+                "where `Action` = @task and `Id_Variable` = @varID and `Executed` <= NOW() - INTERVAL 1 DAY Limit 1;", new
                 {
                     task,
                     varID
