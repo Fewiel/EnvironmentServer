@@ -63,7 +63,6 @@ namespace EnvironmentServer.Daemon
                     w = new Worker(sp);
                 }
             }
-            Console.WriteLine("WHILE EXITED!");
         }
     }
 }
