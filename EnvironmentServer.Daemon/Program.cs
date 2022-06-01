@@ -53,9 +53,11 @@ namespace EnvironmentServer.Daemon
             while (true)
             {
                 Thread.Sleep(5000);
+                Console.WriteLine("Check Worker...");
                 File.WriteAllText("/root/logs/latest_WorkerStatus.log", DateTime.Now.ToString() + JsonConvert.SerializeObject(w.ActiveWorkerTask));
                 if (w.ActiveWorkerTask.IsFaulted)
                 {
+                    Console.WriteLine("Worker is faulted");
                     db.Logs.Add("Deamon", "ERROR: Worker IsFaulted: " + w.ActiveWorkerTask.Exception.ToString());
                     File.WriteAllText("/root/logs/latest_WorkerIsFaulted.log", DateTime.Now.ToString() + w.ActiveWorkerTask.Exception.ToString());
                     w = new Worker(sp);
