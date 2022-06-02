@@ -72,15 +72,17 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult EmptyWebspaceSettings(EnvSetupViewModel esv) => View(esv);
 
+        [HttpPost]
         public IActionResult EmptySW5Route(EnvSetupViewModel esv)
         {
-            esv.WebRoutePath = 5;
+            esv.MajorShopwareVersion = 5;
             return RedirectToAction(nameof(PhpVersion), esv);
         }
 
+        [HttpPost]
         public IActionResult EmptySW6Route(EnvSetupViewModel esv)
         {
-            esv.WebRoutePath = 6;
+            esv.MajorShopwareVersion = 6;
             return RedirectToAction(nameof(PhpVersion), esv);
         }
 
@@ -131,8 +133,6 @@ namespace EnvironmentServer.Web.Controllers
                 Address = esv.InternalName.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion
             };
-
-            esv.MajorShopwareVersion = esv.WebRoutePath;
 
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(),
                 esv.MajorShopwareVersion == 6).ConfigureAwait(false);
