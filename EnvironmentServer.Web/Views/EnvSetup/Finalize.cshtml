@@ -7,6 +7,7 @@
     <form method="post" asp-action="Create" style="width: 800px;">
         <input type="hidden" asp-for="InternalName" />
         <input type="hidden" asp-for="DisplayName" />
+        <input type="hidden" asp-for="CustomSetupType" />
         <input type="hidden" asp-for="WgetURL" />
         <input type="hidden" asp-for="GitURL" />
         <input type="hidden" asp-for="MajorShopwareVersion" />
@@ -15,6 +16,7 @@
         <input type="hidden" asp-for="ExhibitionFile" />
         <input type="hidden" asp-for="PhpVersion" />
         <input type="hidden" asp-for="TemplateID" />
+        <input type="hidden" asp-for="WebRoutePath" />
 
         <dl class="row">
             <dt class="col-sm-6">Environment Name</dt>
@@ -51,7 +53,7 @@
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 
-    @if (Model.TemplateID == 0)
+    @if (Model.TemplateID == 0 && Model.CustomSetupType != "empty")
     {
         <form method="post" asp-action="CreateWithAutoinstaller" style="width: 800px;">
             <input type="hidden" asp-for="InternalName" />
@@ -64,6 +66,7 @@
             <input type="hidden" asp-for="ExhibitionFile" />
             <input type="hidden" asp-for="PhpVersion" />
             <input type="hidden" asp-for="TemplateID" />
+            <input type="hidden" asp-for="WebRoutePath" />
 
             <h4>or</h4>
             <br />

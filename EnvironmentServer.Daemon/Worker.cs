@@ -46,7 +46,7 @@ namespace EnvironmentServer.Daemon
                 var task = new CmdAction();
                 try
                 {
-                    task = DB.CmdAction.GetFirstNonExecuted();                    
+                    task = DB.CmdAction.GetFirstNonExecuted();
                 }
                 catch (Exception ex)
                 {

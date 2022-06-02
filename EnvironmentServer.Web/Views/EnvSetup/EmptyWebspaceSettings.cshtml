@@ -1,0 +1,16 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+
+@{
+    ViewData["Title"] = "Empty Webspace Settings - Environment Setup";
+}
+
+<div class="d-flex align-items-center justify-content-center fullHeight">
+    <form method="post" style="width: 400px;">
+        <input type="hidden" asp-for="InternalName" />
+        <input type="hidden" asp-for="DisplayName" />
+        <input type="hidden" asp-for="CustomSetupType" />
+        <button type="submit" formaction="EmptySW5Route">Shopware 5</button>
+        <button type="submit" formaction="EmptySW6Route">Shopware 6</button>
+    </form>
+</div>

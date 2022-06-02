@@ -24,6 +24,7 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
         public string CustomSetupType { get; set; }
         public string ExhibitionFile { get; set; }
         public long TemplateID { get; set; }
+        public int WebRoutePath { get; set; }
 
         //Display Data
         public IEnumerable<PhpVersion> PhpVersions { get; set; }

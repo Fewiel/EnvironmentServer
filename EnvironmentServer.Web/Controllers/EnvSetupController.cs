@@ -42,7 +42,7 @@ namespace EnvironmentServer.Web.Controllers
 
             foreach (var i in tmp_env_list)
             {
-                if (i.InternalName.ToLower() == esv.InternalName.ToLower())
+                if (string.Equals(i.InternalName, esv.InternalName, System.StringComparison.OrdinalIgnoreCase))
                 {
                     AddError("Environment Name already in use");
                     return RedirectToAction("BaseData", esv);
@@ -56,7 +56,7 @@ namespace EnvironmentServer.Web.Controllers
         public IActionResult MinorVersion([FromForm] EnvSetupViewModel esv)
         {
             if (esv.CustomSetupType == "empty")
-                return RedirectToAction(nameof(PhpVersion), esv);
+                return RedirectToAction(nameof(EmptyWebspaceSettings), esv);
             if (esv.CustomSetupType == "git")
                 return RedirectToAction(nameof(GitSource), esv);
             if (esv.CustomSetupType == "wget")
@@ -68,6 +68,20 @@ namespace EnvironmentServer.Web.Controllers
 
             esv.ShopwareVersions = DB.ShopwareVersionInfos.GetForMajor(esv.MajorShopwareVersion);
             return View(esv);
+        }
+
+        public IActionResult EmptyWebspaceSettings(EnvSetupViewModel esv) => View(esv);
+
+        public IActionResult EmptySW5Route(EnvSetupViewModel esv)
+        {
+            esv.WebRoutePath = 5;
+            return RedirectToAction(nameof(PhpVersion), esv);
+        }
+
+        public IActionResult EmptySW6Route(EnvSetupViewModel esv)
+        {
+            esv.WebRoutePath = 6;
+            return RedirectToAction(nameof(PhpVersion), esv);
         }
 
         public IActionResult WGetSource(EnvSetupViewModel esv) => View(esv);
@@ -118,8 +132,7 @@ namespace EnvironmentServer.Web.Controllers
                 Version = esv.PhpVersion
             };
 
-            if (esv.MajorShopwareVersion == 0)
-                esv.ShopwareVersion = "Custom";
+            esv.MajorShopwareVersion = esv.WebRoutePath;
 
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(),
                 esv.MajorShopwareVersion == 6).ConfigureAwait(false);
@@ -205,13 +218,13 @@ namespace EnvironmentServer.Web.Controllers
                     ExecutedById = GetSessionUser().ID
                 });
                 DB.Environments.SetTaskRunning(lastID, true);
-            }            
+            }
 
             if (esv.TemplateID != 0)
             {
-                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/template.txt", 
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/template.txt",
                     esv.TemplateID.ToString());
-                
+
                 DB.CmdAction.CreateTask(new CmdAction
                 {
                     Action = "fast_deploy",
