@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Utility;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,9 +17,9 @@ public class PerformanceRepository
 
     public Dictionary<string, string> Get()
     {
-        using var connection = DB.GetConnection();
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
         var result = new Dictionary<string, string>();
-        foreach(var kv in connection.Query<PerformanceMetric>("select * from `performance`"))
+        foreach(var kv in c.Connection.Query<PerformanceMetric>("select * from `performance`"))
             result.Add(kv.Name, kv.Value);
 
         return result;
@@ -26,8 +27,8 @@ public class PerformanceRepository
 
     public void Set(string name, string value)
     {
-        using var connection = DB.GetConnection();
-        connection.Execute("update `performance` set `value` = @value where `name` = @name", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("update `performance` set `value` = @value where `name` = @name", new
         {
             name,
             value
@@ -36,25 +37,25 @@ public class PerformanceRepository
 
     public int GetUsers()
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingle<int>("SELECT COUNT(*) FROM `users`;");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingle<int>("SELECT COUNT(*) FROM `users`;");
     }
 
     public int GetEnvironments()
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingle<int>("SELECT COUNT(*) FROM `environments`;");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingle<int>("SELECT COUNT(*) FROM `environments`;");
     }
 
     public int GetStoredEnvironments()
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingle<int>("SELECT COUNT(*) FROM `environments` where `Stored` = 1;");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingle<int>("SELECT COUNT(*) FROM `environments` where `Stored` = 1;");
     }
 
     public int GetQueue()
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingle<int>("SELECT COUNT(*) FROM `cmd_actions` where `Executed` is NULL;");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingle<int>("SELECT COUNT(*) FROM `cmd_actions` where `Executed` is NULL;");
     }
 }

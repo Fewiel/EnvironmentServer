@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Utility;
 using System.Collections.Generic;
 
 namespace EnvironmentServer.DAL.Repositories;
@@ -15,8 +16,8 @@ public class DepartmentRepository
 
     public Department Get(long id)
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingleOrDefault<Department>("select * from departments where ID = @id;", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingleOrDefault<Department>("select * from departments where ID = @id;", new
         {
             id = id
         });
@@ -24,14 +25,14 @@ public class DepartmentRepository
 
     public IEnumerable<Department> GetAll()
     {
-        using var connection = DB.GetConnection();
-        return connection.Query<Department>("select * from departments;");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.Query<Department>("select * from departments;");
     }
 
     public void Insert(Department dp)
     {
-        using var connection = DB.GetConnection();
-        connection.Execute("insert into `departments` (ID, Name, Description) values (NULL, @name, @description);", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("insert into `departments` (ID, Name, Description) values (NULL, @name, @description);", new
         {
             name = dp.Name,
             description = dp.Description
@@ -40,8 +41,8 @@ public class DepartmentRepository
 
     public void Update(Department dp)
     {
-        using var connection = DB.GetConnection();
-        connection.Execute("UPDATE `departments` SET " +
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("UPDATE `departments` SET " +
             "`Name` = @name, " +
             "`Description` = @description", new
         {

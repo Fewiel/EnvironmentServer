@@ -16,7 +16,7 @@ namespace EnvironmentServer.DAL
 {
     public class Database
     {
-        private readonly string ConnString;
+        public string ConnString { get; }
 
         public SettingsRepository Settings { get; }
         public UsersRepository Users { get; }
@@ -85,12 +85,6 @@ namespace EnvironmentServer.DAL
 
             var attrib = (DescriptionAttribute)Attribute.GetCustomAttribute(member, typeof(DescriptionAttribute), false);
             return (attrib?.Description ?? member.Name).ToLower();
-        }
-
-        public MySqlConnection GetConnection()
-        {
-            using var c = new MySQLConnectionWrapper(ConnString);
-            return c.Connection;
         }
     }
 }

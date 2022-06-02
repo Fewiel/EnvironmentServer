@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using Dapper;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,22 +21,22 @@ public class EnvironmentESRepository
 
     public IEnumerable<EnvironmentES> Get()
     {
-        using var connection = DB.GetConnection();
-        return connection.Query<EnvironmentES>("Select * from `environments_es`");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.Query<EnvironmentES>("Select * from `environments_es`");
     }
 
     public EnvironmentES GetByID(long id)
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where ID = @id", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where ID = @id", new
         {
             id = id
         });
     }
     public EnvironmentES GetByDockerID(string dockerID)
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where DockerID = @id", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where DockerID = @id", new
         {
             id = dockerID
         });
@@ -43,8 +44,8 @@ public class EnvironmentESRepository
 
     public EnvironmentES GetByEnvironmentID(long id)
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where EnvironmentID = @id", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingleOrDefault<EnvironmentES>("Select * from `environments_es` where EnvironmentID = @id", new
         {
             id = id
         });
@@ -63,8 +64,8 @@ public class EnvironmentESRepository
             .ExecuteAsync();
 
 
-        using var connection = DB.GetConnection();
-        connection.Execute("INSERT INTO `environments_es` (`ID`, `EnvironmentID`, `ESVersion`, `Port`, `DockerID`, `Active`) " +
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("INSERT INTO `environments_es` (`ID`, `EnvironmentID`, `ESVersion`, `Port`, `DockerID`, `Active`) " +
             "VALUES (NULL, @envID, @esVersion, @esPort, @dockerID, '1');", new
             {
                 envID = id,
@@ -82,8 +83,8 @@ public class EnvironmentESRepository
             .WithArguments($"-c \"docker start {dockerID}\"")
             .ExecuteAsync();
 
-            using var connection = DB.GetConnection();
-            connection.Execute("UPDATE `environments_es` SET `Active` = '1' WHERE `environments_es`.`DockerID` = @dID;", new
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            c.Connection.Execute("UPDATE `environments_es` SET `Active` = '1' WHERE `environments_es`.`DockerID` = @dID;", new
             {
                 dID = dockerID
             });
@@ -107,8 +108,8 @@ public class EnvironmentESRepository
             DB.Logs.Add("ESCleanup", "StopContainer() - Nothing to Stop");
         }
 
-        using var connection = DB.GetConnection();
-        connection.Execute("UPDATE `environments_es` SET `Active` = '0' WHERE `environments_es`.`DockerID` = @dID;", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("UPDATE `environments_es` SET `Active` = '0' WHERE `environments_es`.`DockerID` = @dID;", new
         {
             dID = dockerID
         });
@@ -127,24 +128,24 @@ public class EnvironmentESRepository
             DB.Logs.Add("ESCleanup", "StopAll() - Nothing to Stop");
         }
 
-        using var connection = DB.GetConnection();
-        connection.Execute("UPDATE `environments_es` SET `Active` = '0';");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("UPDATE `environments_es` SET `Active` = '0';");
     }
 
     public async Task Remove(string dockerID)
     {
-        using var connection = DB.GetConnection();
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
         var es = GetByDockerID(dockerID);
         await Cli.Wrap("/bin/bash")
             .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
             .ExecuteAsync();
-        connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
+        c.Connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
     }
 
     public async Task Cleanup()
     {
-        using var connection = DB.GetConnection();
-        var es_list = connection.Query<EnvironmentES>("Select * from `environments_es` where LastUse < DATE(DATE_SUB(NOW(), INTERVAL 30 DAY));");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        var es_list = c.Connection.Query<EnvironmentES>("Select * from `environments_es` where LastUse < DATE(DATE_SUB(NOW(), INTERVAL 30 DAY));");
 
         try
         {
@@ -153,7 +154,7 @@ public class EnvironmentESRepository
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"docker rm -f {es.DockerID}\"")
                     .ExecuteAsync();
-                connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
+                c.Connection.Execute($"DELETE FROM `environments_es` where id = {es.ID}");
             }
         }
         catch (Exception ex)

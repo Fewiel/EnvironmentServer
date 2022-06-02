@@ -1,4 +1,5 @@
 ﻿using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Utility;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -19,34 +20,30 @@ namespace EnvironmentServer.DAL.Repositories
 
         public IEnumerable<EnvironmentSettingValue> GetForEnvironment(long environmentID)
         {
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("select * from environments_settings_value where environments_ID_fk = @id;");
-                Command.Parameters.AddWithValue("@id", environmentID);
-                Command.Connection = connection;
-                MySqlDataReader reader = Command.ExecuteReader();
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            var Command = new MySqlCommand("select * from environments_settings_value where environments_ID_fk = @id;");
+            Command.Parameters.AddWithValue("@id", environmentID);
+            Command.Connection = c.Connection;
+            MySqlDataReader reader = Command.ExecuteReader();
 
-                while (reader.Read())
-                    yield return FromReader(reader);
+            while (reader.Read())
+                yield return FromReader(reader);
 
-                reader.Close();
-            }
+            reader.Close();
         }
 
         public IEnumerable<EnvironmentSettingValue> GetForEnvironmentSetting(long environmentSettingID)
         {
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("select * from environments_settings_value where environments_settings_ID_fk = @id;");
-                Command.Parameters.AddWithValue("@id", environmentSettingID);
-                Command.Connection = connection;
-                MySqlDataReader reader = Command.ExecuteReader();
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            var Command = new MySqlCommand("select * from environments_settings_value where environments_settings_ID_fk = @id;");
+            Command.Parameters.AddWithValue("@id", environmentSettingID);
+            Command.Connection = c.Connection;
+            MySqlDataReader reader = Command.ExecuteReader();
 
-                while (reader.Read())
-                    yield return FromReader(reader);
+            while (reader.Read())
+                yield return FromReader(reader);
 
-                reader.Close();
-            }
+            reader.Close();
         }
 
         private EnvironmentSettingValue FromReader(MySqlDataReader reader)
@@ -62,46 +59,40 @@ namespace EnvironmentServer.DAL.Repositories
         public void Insert(EnvironmentSettingValue environment)
         {
             DB.Logs.Add("DAL", "Insert EnvironmentSettingValue");
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("INSERT INTO `environments_settings_values` (`environments_ID_fk`, "
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            var Command = new MySqlCommand("INSERT INTO `environments_settings_values` (`environments_ID_fk`, "
                      + "`environments_settings_ID_fk`, `Value`) VALUES (@environmentID, @environmentSettingID, @value);");
-                Command.Parameters.AddWithValue("@environmentID", environment.EnvironmentID);
-                Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
-                Command.Parameters.AddWithValue("@value", environment.Value);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            Command.Parameters.AddWithValue("@environmentID", environment.EnvironmentID);
+            Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
+            Command.Parameters.AddWithValue("@value", environment.Value);
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
         }
 
         public void Update(EnvironmentSettingValue environment)
         {
             DB.Logs.Add("DAL", "Update EnvironmentSettingValue " + environment.EnvironmentSettingID);
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("UPDATE `environments_settings_values` SET `environments_ID_fk`= @environmentID,"
-                     + "`environments_settings_ID_fk`= @environmentSettingID,`Value`=@value WHERE `environments_ID_fk` = @environmentID "
-                      + "AND `environments_settings_ID_fk` = @environmentSettingID;");
-                Command.Parameters.AddWithValue("@environmentID", environment.EnvironmentID);
-                Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
-                Command.Parameters.AddWithValue("@value", environment.Value);
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            var Command = new MySqlCommand("UPDATE `environments_settings_values` SET `environments_ID_fk`= @environmentID,"
+                 + "`environments_settings_ID_fk`= @environmentSettingID,`Value`=@value WHERE `environments_ID_fk` = @environmentID "
+                  + "AND `environments_settings_ID_fk` = @environmentSettingID;");
+            Command.Parameters.AddWithValue("@environmentID", environment.EnvironmentID);
+            Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
+            Command.Parameters.AddWithValue("@value", environment.Value);
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
         }
 
         public void Delete(EnvironmentSettingValue environment)
         {
             DB.Logs.Add("DAL", "Delete EnvironmentSettingValue " + environment.EnvironmentSettingID);
-            using (var connection = DB.GetConnection())
-            {
-                var Command = new MySqlCommand("DELETE FROM `environments_settings_values` WHERE `environments_ID_fk` = @environmentID "
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            var Command = new MySqlCommand("DELETE FROM `environments_settings_values` WHERE `environments_ID_fk` = @environmentID "
                       + "AND `environments_settings_ID_fk` = @environmentSettingID;");
                 Command.Parameters.AddWithValue("@environmentID", environment.EnvironmentID);
                 Command.Parameters.AddWithValue("@environmentSettingID", environment.EnvironmentSettingID);
-                Command.Connection = connection;
+                Command.Connection = c.Connection;
                 Command.ExecuteNonQuery();
-            }
         }
     }
 }

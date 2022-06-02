@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Utility;
 using Microsoft.VisualBasic.FileIO;
 using System.Collections.Generic;
 
@@ -16,8 +17,8 @@ public class TemplateRepository
 
     public long Create(Template template)
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingle<int>("Insert into `templates` (`ID`, `Name`, `Description`, " +
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingle<int>("Insert into `templates` (`ID`, `Name`, `Description`, " +
             "`UserID`, `FastDeploy`, `ShopwareVersion`, `Created`) values " +
             "(NULL, @name, @desc, @userid, @fd, @sv, CURRENT_TIMESTAMP); SELECT LAST_INSERT_ID();", new
             {
@@ -31,14 +32,14 @@ public class TemplateRepository
 
     public IEnumerable<Template> GetAll()
     {
-        using var connection = DB.GetConnection();
-        return connection.Query<Template>("select * from `templates`;");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.Query<Template>("select * from `templates`;");
     }
 
     public Template Get(long id)
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingle<Template>("select * from `templates` where ID = @id;", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingle<Template>("select * from `templates` where ID = @id;", new
         {
             id
         });
@@ -46,8 +47,8 @@ public class TemplateRepository
 
     public Template GetForFastDeploy(string v)
     {
-        using var connection = DB.GetConnection();
-        return connection.QuerySingle<Template>("SELECT * FROM `templates` where ShopwareVersion = @v and FastDeploy = 1;", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingle<Template>("SELECT * FROM `templates` where ShopwareVersion = @v and FastDeploy = 1;", new
         {
             v
         });
@@ -55,8 +56,8 @@ public class TemplateRepository
 
     public void StartDelete(long id)
     {
-        using var connection = DB.GetConnection();
-        connection.Execute("Update `templates` set `Name` = 'DELETE IN PROGRESS' where ID = @id", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("Update `templates` set `Name` = 'DELETE IN PROGRESS' where ID = @id", new
         {
             id
         });
@@ -64,8 +65,8 @@ public class TemplateRepository
 
     public void Delete(long id)
     {
-        using var connection = DB.GetConnection();
-        connection.Execute("Delete from `templates` where ID = @id", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("Delete from `templates` where ID = @id", new
         {
             id
         });

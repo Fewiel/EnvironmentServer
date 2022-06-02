@@ -1,5 +1,6 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Utility;
 using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
@@ -56,20 +57,18 @@ namespace EnvironmentServer.Daemon.Actions
 
             db.Logs.Add("Daemon", "SnapshotRestoreLatest - Recreate/dump database: " + env.InternalName);
             //Recreate Database            
-            using (var connection = db.GetConnection())
-            {
-                var Command = new MySqlCommand("drop database " + dbString + ";");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
+            using var c = new MySQLConnectionWrapper(db.ConnString);
+            var Command = new MySqlCommand("drop database " + dbString + ";");
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
 
-                Command = new MySqlCommand("create database " + dbString + ";");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
+            Command = new MySqlCommand("create database " + dbString + ";");
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
 
-                Command = new MySqlCommand("grant all on " + dbString + ".* to '" + user.Username + "'@'localhost';");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            Command = new MySqlCommand("grant all on " + dbString + ".* to '" + user.Username + "'@'localhost';");
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
 
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"mysql -u {config.Username} -p{config.Password} " + dbString + " < db.sql\"")
