@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.Daemon.Actions;
 using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -42,7 +43,16 @@ namespace EnvironmentServer.Daemon
             {
                 //Get task
                 File.WriteAllText("/root/logs/latest_GetFirstNonExecuted.log", DateTime.Now.ToString());
-                var task = DB.CmdAction.GetFirstNonExecuted();
+                var task = new CmdAction();
+                try
+                {
+                    task = DB.CmdAction.GetFirstNonExecuted();                    
+                }
+                catch (Exception ex)
+                {
+                    //Dirty fix to gain some time
+                }
+
                 if (string.IsNullOrEmpty(task.Action))
                 {
                     Thread.Sleep(500);
