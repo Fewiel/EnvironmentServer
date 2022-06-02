@@ -125,6 +125,11 @@ namespace EnvironmentServer.Web.Controllers
                 esv.MajorShopwareVersion = 6;
             }
 
+            if (esv.CustomSetupType == "empty")
+            {
+                esv.ShopwareVersion = "N/A";
+            }
+
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
