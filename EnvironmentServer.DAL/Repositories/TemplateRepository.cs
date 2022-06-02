@@ -36,6 +36,12 @@ public class TemplateRepository
         return c.Connection.Query<Template>("select * from `templates`;");
     }
 
+    public IEnumerable<Template> GetAllSorted()
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.Query<Template>("select * from `templates` ORDER BY `templates`.`ID` DESC;");
+    }
+
     public Template Get(long id)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

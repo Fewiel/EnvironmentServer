@@ -104,7 +104,7 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Template(EnvSetupViewModel esv)
         {
-            esv.Templates = DB.Templates.GetAll();
+            esv.Templates = DB.Templates.GetAllSorted();
             return View(esv);
         }
 
