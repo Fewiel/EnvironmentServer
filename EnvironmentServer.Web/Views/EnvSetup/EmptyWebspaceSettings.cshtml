@@ -4,17 +4,35 @@
 @{
     ViewData["Title"] = "Empty Webspace Settings - Environment Setup";
 }
-<div class="d-flex align-items-center justify-content-center fullHeight">
-    <h3>Select Shopware Major Version</h3>
-    <p>This will affect your Webserver configuration (Root directory)</p>
-</div>
-<div class="d-flex align-items-center justify-content-center fullHeight">
 
-    <form method="post" style="width: 400px;">
-        <input type="hidden" asp-for="InternalName" />
-        <input type="hidden" asp-for="DisplayName" />
-        <input type="hidden" asp-for="CustomSetupType" />
-        <button type="submit" class="btn btn-primary" formaction="EmptySW5Route">Shopware 5</button>
-        <button type="submit" class="btn btn-primary" formaction="EmptySW6Route">Shopware 6</button>
-    </form>
+
+<h3>Select Shopware Major Version</h3>
+<p>This will affect your Webserver configuration (Root directory)</p>
+
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-3">
+        <form method="post" asp-action="EmptySW5Route">
+            <input type="hidden" asp-for="InternalName" />
+            <input type="hidden" asp-for="DisplayName" />
+            <input type="hidden" asp-for="CustomSetupType" />
+            <a asp-controller="EnvSetup" asp-action="EmptySW5Route" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                    <img src="~/img/sw5-signet.svg" class="card-img-top" style="padding: 20px; width: 300px; height: 300px;" />
+                </div>
+            </a>
+        </form>
+    </div>
+    <div class="col-3">
+        <form method="post" asp-action="EmptySW6Route">
+            <input type="hidden" asp-for="InternalName" />
+            <input type="hidden" asp-for="DisplayName" />
+            <input type="hidden" asp-for="CustomSetupType" />
+            <a asp-controller="EnvSetup" asp-action="EmptySW6Route" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                    <img src="~/img/sw6-signet.svg" class="card-img-top" style="padding: 20px; width: 300px; height: 300px;" />
+                </div>
+            </a>
+        </form>
+    </div>
 </div>
