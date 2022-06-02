@@ -25,7 +25,7 @@ namespace EnvironmentServer.Web.Controllers
         [AdminOnly]
         public IActionResult Index()
         {
-            return View(DB.Templates.GetAll());
+            return View(DB.Templates.GetAllSorted());
         }
 
 
