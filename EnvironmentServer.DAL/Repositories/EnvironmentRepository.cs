@@ -376,7 +376,7 @@ namespace EnvironmentServer.DAL.Repositories
             name = reg.Replace(name, string.Empty);
 
             return name.ToLower().Replace(" ", "_").Replace(".", "_").Replace("-", "_")
-                .Replace("ß", "ss").Replace("ä", "ae").Replace("ö", "oe").Replace("ü", "ue").Replace("", "");
+                .Replace("ß", "ss").Replace("ä", "ae").Replace("ö", "oe").Replace("ü", "ue").Replace(",", "_");
         }
     }
 }
