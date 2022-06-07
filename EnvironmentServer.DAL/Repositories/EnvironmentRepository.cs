@@ -372,11 +372,10 @@ namespace EnvironmentServer.DAL.Repositories
             if (char.IsDigit(name[0]))
                 name = name.Replace(name[0].ToString(), "e");
 
-            Regex reg = new("[*'\",_&#^@]");
-            name = reg.Replace(name, string.Empty);
-
-            return name.ToLower().Replace(" ", "_").Replace(".", "_").Replace("-", "_")
+            name = name.ToLower().Replace(" ", "_").Replace(".", "_").Replace("-", "_")
                 .Replace("ß", "ss").Replace("ä", "ae").Replace("ö", "oe").Replace("ü", "ue").Replace(",", "_");
+
+            return Regex.Replace(name, "[^0-9a-zA-Z]+", "");
         }
     }
 }
