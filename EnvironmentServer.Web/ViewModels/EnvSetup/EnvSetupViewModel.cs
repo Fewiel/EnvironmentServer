@@ -9,7 +9,6 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
     {
         //DB Data
         [MinLength(4), MaxLength(15), DataType(DataType.Text)]
-        [RegularExpression(@"^[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30}\$)$", ErrorMessage = "Environment domain not allowed")]
         public string InternalName { get; set; }
         [MinLength(1), MaxLength(50), DataType(DataType.Text)]
         public string DisplayName { get; set; }

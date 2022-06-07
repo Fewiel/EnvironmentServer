@@ -367,6 +367,16 @@ namespace EnvironmentServer.DAL.Repositories
             Directory.Delete($"/home/{user.Username}/files/logs/{environment.InternalName}", true);
         }
 
-        public static string FixEnvironmentName(string name) => name.ToLower().Replace(" ", "_").Replace(".", "_").Replace("-", "_");
+        public static string FixEnvironmentName(string name)
+        {
+            if (char.IsDigit(name[0]))
+                name = name.Replace(name[0].ToString(), "e");
+
+            Regex reg = new("[*'\",_&#^@]");
+            name = reg.Replace(name, string.Empty);
+
+            return name.ToLower().Replace(" ", "_").Replace(".", "_").Replace("-", "_")
+                .Replace("ß", "ss").Replace("ä", "ae").Replace("ö", "oe").Replace("ü", "ue").Replace("", "");
+        }
     }
 }

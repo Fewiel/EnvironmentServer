@@ -14,7 +14,7 @@
         </div>
         <div class="mb-3">
             <label asp-for="InternalName" class="form-label">Environment Domain</label>
-            <input asp-for="InternalName" value=@Model.InternalName class="form-control" style='text-transform:lowercase' />-YourUsername.shopdev.de
+            <input asp-for="InternalName" value=@Model.InternalName class="form-control" />
             <span asp-validation-for="InternalName"></span>
             <span style="margin-top: 10px;">No spaces, a-z, 0-9</span>
             <span style="margin-top: 10px;">Example: my1test</span>
