@@ -23,6 +23,16 @@ public class RoleLimitRepository
         });
     }
 
+    public RoleLimit GetForRoleAndLimit(long roleID, long limitID)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingleOrDefault<RoleLimit>("select * from `role_limits` where `RoleID` = @roleID and `LimitID` = @limitID", new
+        {
+            roleID,
+            limitID
+        });
+    }
+
     public void Add(RoleLimit rl)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

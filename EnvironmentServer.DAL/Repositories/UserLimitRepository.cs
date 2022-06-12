@@ -23,6 +23,16 @@ public class UserLimitRepository
         });
     }
 
+    public UserLimit GetForUserAndLimit(long id, long lid)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingleOrDefault<UserLimit>("select * from `users_limits` where `UserID` = @id and `LimitID` = @lid", new
+        {
+            id,
+            lid
+        });
+    }
+
     public void Add(UserLimit ul)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

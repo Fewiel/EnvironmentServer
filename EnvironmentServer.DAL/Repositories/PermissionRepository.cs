@@ -7,7 +7,8 @@ namespace EnvironmentServer.DAL.Repositories;
 
 public class PermissionRepository
 {
-    private Database DB;
+    private readonly Database DB;
+    private readonly Dictionary<string, Permission> PermissionCache = new();
 
     public PermissionRepository(Database db)
     {
@@ -22,11 +23,18 @@ public class PermissionRepository
 
     public Permission Get(string internalName)
     {
+        if (PermissionCache.TryGetValue(internalName, out var value))
+            return value;
+
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        return c.Connection.QuerySingleOrDefault<Permission>("select * from `permissions` where `InternalName` = @internalName", new
+        var permission = c.Connection.QuerySingleOrDefault<Permission>("select * from `permissions` where `InternalName` = @internalName", new
         {
             internalName
         });
+
+        PermissionCache.Add(internalName, permission);
+
+        return permission;
     }
 
     public void Add(Permission p)
@@ -37,11 +45,6 @@ public class PermissionRepository
             name = p.Name,
             internalName = p.InternalName
         });
-    }
-
-    public bool CheckPermission(long roleID, string internalName)
-    {
-        return DB.RolePermission.GetForRoleAndPermission(roleID, DB.Permission.Get(internalName).ID) != null;
     }
 
     public void Update(Permission p)
@@ -62,5 +65,28 @@ public class PermissionRepository
         {
             id
         });
+    }
+
+    public bool HasPermission(User usr, string internalName)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        var pid = Get(internalName).ID;
+
+        var hasUserPermission = c.Connection.ExecuteScalar<bool>("select Count(1) from `users_permissions` where `UserID` = @uid and `PermissionID` = @pid limit 1", new
+        {
+            uid = usr.ID,
+            pid
+        });
+
+        if (hasUserPermission)
+            return true;
+
+        var hasPermission = c.Connection.ExecuteScalar<bool>("select Count(1) from `role_permissions` where `RoleID` = @rid and `PermissionID` = @pid limit 1", new
+        {
+            uid = usr.RoleID,
+            pid
+        });
+
+        return hasPermission;
     }
 }
