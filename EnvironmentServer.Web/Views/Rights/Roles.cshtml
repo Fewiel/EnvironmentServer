@@ -1,0 +1,37 @@
+﻿@model IEnumerable<EnvironmentServer.DAL.Models.Role>
+
+@{
+    ViewData["Title"] = "Reights - Roles";
+}
+
+<a asp-action="AddRole"><i style="font-size: 30px;" class="bi bi-person-plus"></i></a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>
+                    <span>@role.ID</span>
+                </td>
+                <td>
+                    <span>@role.Name</span>
+                </td>
+                <td>
+                    <span>@role.Description</span>
+                </td>
+                <td>
+                    <a asp-action="Update" style="margin-left: 10px;" asp-route-id="@role.ID"><i class="bi bi-pencil"></i></a>
+                    <a asp-action="Delete" style="margin-left: 10px;" onclick="return confirm('Are you sure? This will delete the Role! This step cannot be undone!')" asp-route-id="@role.ID"><i style="color:#FF0000" class="bi bi-trash"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

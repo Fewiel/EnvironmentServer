@@ -1,0 +1,32 @@
+﻿@model EnvironmentServer.Web.ViewModels.Rights.RoleViewModel
+
+@{
+    ViewData["Title"] = "Reights - Roles";
+}
+
+<form method="post" asp-action="AddRole" style="width: 400px;">
+
+    <label asp-for="Role.Name" class="form-label">Role Name</label>
+    <input asp-for="Role.Name" class="form-control" />
+    <span asp-validation-for="Role.Name"></span>
+
+    <label asp-for="Role.Description" class="form-label">Role Description</label>
+    <input asp-for="Role.Description" class="form-control" />
+    <span asp-validation-for="Role.Description"></span>
+
+    @foreach (var perm in Model.Permissions)
+    {
+        <div class="form-check form-switch">
+            <input id=@perm.Permission.InternalName class="form-check-input" type="checkbox" asp-for=@perm.Enabled>
+            <label class="form-check-label" for=@perm.Permission.InternalName>@perm.Permission.Name</label>
+        </div>
+    }
+
+    @foreach (var lim in Model.Limits)
+    {
+        <div class="input-group flex-nowrap">
+            <span class="input-group-text" id="addon-wrapping">@lim.Limit.Name</span>
+            <input type="text" class="form-control" asp-for=@lim.Value>
+        </div>
+    }
+</form>
