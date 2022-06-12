@@ -39,6 +39,11 @@ public class PermissionRepository
         });
     }
 
+    public bool CheckPermission(long roleID, string internalName)
+    {
+        return DB.RolePermission.GetForRoleAndPermission(roleID, DB.Permission.Get(internalName).ID) != null;
+    }
+
     public void Update(Permission p)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Repositories;
-using EnvironmentServer.DAL.Utility;
 using EnvironmentServer.Mail;
-using MySql.Data.MySqlClient;
 
 namespace EnvironmentServer.DAL
 {
@@ -42,6 +38,8 @@ namespace EnvironmentServer.DAL
         public PermissionRepository Permission { get; }
         public RoleLimitRepository RoleLimit { get; }
         public RolePermissionRepository RolePermission { get; }
+        public UserLimitRepository UserLimit { get; }
+        public UserPermissionRepository UserPermission { get; }
 
         public Database(string connString)
         {
@@ -75,6 +73,8 @@ namespace EnvironmentServer.DAL
             Permission = new PermissionRepository(this);
             RoleLimit = new RoleLimitRepository(this);
             RolePermission = new RolePermissionRepository(this);
+            UserLimit = new UserLimitRepository(this);
+            UserPermission = new UserPermissionRepository(this);
 
             if (Users.GetByUsername("admin") == null)
             {

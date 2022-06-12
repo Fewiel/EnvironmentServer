@@ -23,6 +23,16 @@ public class RolePermissionRepository
         });
     }
 
+    public RolePermission GetForRoleAndPermission(long rid, long pid)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.QuerySingleOrDefault<RolePermission>("select * from `role_permissions` where `RoleID` = @rid and `PermissionID` = @pid", new
+        {
+            rid,
+            pid
+        });
+    }
+
     public void Add(RolePermission rp)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
