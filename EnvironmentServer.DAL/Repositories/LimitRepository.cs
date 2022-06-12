@@ -40,6 +40,17 @@ public class LimitRepository
         });
     }
 
+    public void Udpdate(Limit l)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("update `limits` set `Name` = @name, `InternalName` = @internalName where `ID` = @id", new
+        {
+            id = l.ID,
+            name = l.Name,
+            internalName = l.InternalName
+        });
+    }
+
     public void Delete(string internalName)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
