@@ -37,6 +37,11 @@ namespace EnvironmentServer.DAL
         public PerformanceRepository Performance { get; }
         public TemplateRepository Templates { get; }
         public CmdActionDetailsRepository CmdActionDetail { get; }
+        public RoleRepository Role { get; }
+        public LimitRepository Limit { get; }
+        public PermissionRepository Permission { get; }
+        public RoleLimitRepository RoleLimit { get; }
+        public RolePermissionRepository RolePermission { get; }
 
         public Database(string connString)
         {
@@ -65,6 +70,11 @@ namespace EnvironmentServer.DAL
             Performance = new PerformanceRepository(this);
             Templates = new TemplateRepository(this);
             CmdActionDetail = new CmdActionDetailsRepository(this);
+            Role = new RoleRepository(this);
+            Limit = new LimitRepository(this);
+            Permission = new PermissionRepository(this);
+            RoleLimit = new RoleLimitRepository(this);
+            RolePermission = new RolePermissionRepository(this);
 
             if (Users.GetByUsername("admin") == null)
             {
