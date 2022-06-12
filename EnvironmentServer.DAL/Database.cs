@@ -66,16 +66,17 @@ namespace EnvironmentServer.DAL
             Templates = new TemplateRepository(this);
             CmdActionDetail = new CmdActionDetailsRepository(this);
 
-            if (Users.GetByUsername("Admin") == null)
+            if (Users.GetByUsername("admin") == null)
             {
                 Logs.Add("DAL", "Creating Admin user");
                 Task.Run(() => Users.InsertAsync(new User
                 {
                     Email = "root@root.tld",
-                    Username = "Admin",
-                    Password = PasswordHasher.Hash("Admin"),
-                    IsAdmin = true
-                }, "Admin"));
+                    Username = "admin",
+                    Password = PasswordHasher.Hash("admin"),
+                    IsAdmin = true,
+                    RoleID = 0
+                }, "admin"));
             }
         }
 
