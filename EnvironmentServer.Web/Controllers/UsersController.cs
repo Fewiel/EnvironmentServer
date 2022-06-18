@@ -6,10 +6,7 @@ using EnvironmentServer.Web.ViewModels.Login;
 using EnvironmentServer.Web.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
