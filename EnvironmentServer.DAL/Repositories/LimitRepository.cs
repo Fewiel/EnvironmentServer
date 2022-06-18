@@ -39,6 +39,17 @@ public class LimitRepository
         return limit;
     }
 
+    public Limit GetByID(long id)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        var limit = c.Connection.QueryFirstOrDefault("select * from `limits` where `ID` = @id;", new
+        {
+            id
+        });
+
+        return limit;
+    }
+
     public void Add(Limit l)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

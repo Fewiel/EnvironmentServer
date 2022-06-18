@@ -37,6 +37,18 @@ public class PermissionRepository
         return permission;
     }
 
+    public Permission GetByID(long id)
+    {
+
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        var permission = c.Connection.QuerySingleOrDefault<Permission>("select * from `permissions` where `ID` = @id", new
+        {
+            id
+        });
+
+        return permission;
+    }
+
     public void Add(Permission p)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

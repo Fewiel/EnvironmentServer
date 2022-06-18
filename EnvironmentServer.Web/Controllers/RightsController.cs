@@ -75,5 +75,36 @@ namespace EnvironmentServer.Web.Controllers
 
             return RedirectToAction("Roles");
         }
+
+        public IActionResult Update(long id)
+        {
+            var allPerm = DB.Permission.GetAll();
+            var allLimits = DB.Limit.GetAll();
+
+            var perm = DB.RolePermission.GetForRole(id);
+            var limits = DB.RoleLimit.GetForRole(id);
+
+            var webPerm = new List<WebPermission>();
+            var webLimits = new List<WebLimit>();
+
+            foreach (var p in allPerm)
+            {
+                webPerm.Add(new() { Permission = p, Enabled = perm.Any(pe => pe.PermissionID == p.ID) });
+            }
+
+            foreach (var l in allLimits)
+            {
+                webLimits.Add(new() { Limit = l, Value = limits.FirstOrDefault(li => li.LimitID == l.ID).Value });
+            }
+
+            var rvm = new RoleViewModel
+            {
+                Role = new(),
+                Permissions = webPerm,
+                Limits = webLimits
+            };
+
+            return View(rvm);
+        }
     }
 }
