@@ -1,4 +1,5 @@
 ﻿using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Models;
 using EnvironmentServer.Web.ViewModels.Rights;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,8 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class RightsController : Controller
     {
-        private Database DB;
+        private static Database DB;
+
         public RightsController(Database db)
         {
             DB = db;
@@ -32,10 +34,41 @@ namespace EnvironmentServer.Web.Controllers
 
             var rvm = new RoleViewModel
             {
-                Permissions = perm.Select
+                Permissions = perm.Select(p => WebPermission.FromPermission(p)),
+                Limits = limits.Select(limits => WebLimit.FromLimit(limits))
             };
 
-            return View()
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddRole(RoleViewModel rvm)
+        {
+            rvm.Role.ID = DB.Role.Add(new Role() { Name = rvm.Role.Name, Description = rvm.Role.Description });
+
+            foreach (var p in rvm.Permissions)
+            {
+                if (p.Enabled)
+                    DB.Permission.Add(p.ToPermission());
+            }
+
+            foreach (var l in rvm.Limits)
+            {
+                if (l.Value != -1)
+                {
+                    var limit = l.ToLimit();
+                    var rLimit = new RoleLimit()
+                    {
+                        LimitID = limit.ID,
+                        RoleID = rvm.Role.ID,
+                        Value = l.Value
+                    };
+
+                    DB.RoleLimit.Add(rLimit);
+                }
+            }
+
+            return View(rvm);
         }
     }
 }
