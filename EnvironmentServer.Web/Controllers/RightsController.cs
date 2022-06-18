@@ -101,7 +101,7 @@ namespace EnvironmentServer.Web.Controllers
 
             var rvm = new RoleViewModel
             {
-                Role = new(),
+                Role = DB.Role.GetByID(id),
                 Permissions = webPerm,
                 Limits = webLimits
             };
