@@ -50,20 +50,22 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] RegistrationViewModel rvm)
         {
+            rvm.Roles = DB.Role.GetAll().Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList();
+
             if (!ModelState.IsValid)
-                return View();
+                return View(rvm);
 
             if (DB.Users.GetByUsername(rvm.Username) != null)
             {
                 DB.Logs.Add("Web", "Registration failed for: " + rvm.Username + ". Username already taken.");
                 AddError("Username already taken.");
-                return View();
+                return View(rvm);
             }
 
             if (rvm.Password[0] == '#')
             {
                 AddError("No special char as first char allowed");
-                return View();
+                return View(rvm);
             }
 
             var usr = new User
@@ -77,7 +79,7 @@ namespace EnvironmentServer.Web.Controllers
 
             DB.Logs.Add("Web", "New Registration for: " + rvm.Username + " by " + GetSessionUser().Username);
             AddInfo("User created");
-            return View();
+            return View(rvm);
         }
 
         public IActionResult Update(long id)
