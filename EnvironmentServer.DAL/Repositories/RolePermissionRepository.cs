@@ -36,7 +36,7 @@ public class RolePermissionRepository
     public void Add(RolePermission rp)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        c.Connection.Execute("insert into `role_permissions` (`RoleID`, `PermissionsID`) values (@rid, @pid)", new
+        c.Connection.Execute("insert into `role_permissions` (`RoleID`, `PermissionID`) values (@rid, @pid)", new
         {
             rid = rp.RoleID,
             pid = rp.PermissionID
