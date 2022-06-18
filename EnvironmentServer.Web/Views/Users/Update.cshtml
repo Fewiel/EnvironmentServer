@@ -33,7 +33,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">User-Role</label>
-            <select asp-for="User.RoleID" asp-items=@Model.Roles class="form-control"></select>
+            <select asp-for="User.RoleID" asp-items=@Model.Roles class="form-select"></select>
         </div>
         <div class="mb-3">
             <label asp-for="User.UserInformation.AbsenceDate" class="form-label">Absence until (Only if longer than 60 days)</label>
