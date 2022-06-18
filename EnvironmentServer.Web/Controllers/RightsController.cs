@@ -43,7 +43,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddRole(RoleViewModel rvm)
+        public IActionResult AddRole([FromForm] RoleViewModel rvm)
         {
             rvm.Role.ID = DB.Role.Add(new Role() { Name = rvm.Role.Name, Description = rvm.Role.Description });
 
@@ -69,7 +69,7 @@ namespace EnvironmentServer.Web.Controllers
                 }
             }
 
-            return View(rvm);
+            return RedirectToAction("Roles");
         }
     }
 }
