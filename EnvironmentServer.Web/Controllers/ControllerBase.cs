@@ -58,7 +58,7 @@ namespace EnvironmentServer.Web.Controllers
                 if (attr is PermissionAttribute pa && !HasPermission(pa.PermissionName))
                 {
                     AddError("You are not permitted to view this page.");
-                    context.Result = new RedirectToRouteResult("default");
+                    context.Result = new RedirectToRouteResult("login", new { controller = "Login" });
                     return;
                 }
 
