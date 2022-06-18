@@ -36,7 +36,7 @@ public class RoleLimitRepository
     public void Add(RoleLimit rl)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        c.Connection.Execute("insert into `rule_limits` (`RoleID`, `LimitID`, `Value`) values (@rid, @lid, @value)", new
+        c.Connection.Execute("insert into `role_limits` (`RoleID`, `LimitID`, `Value`) values (@rid, @lid, @value)", new
         {
             rid = rl.RoleID,
             lid = rl.LimitID,
