@@ -51,6 +51,7 @@ namespace EnvironmentServer.Web.Controllers
         public async Task<IActionResult> Create([FromForm] RegistrationViewModel rvm)
         {
             rvm.Roles = DB.Role.GetAll().Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList();
+            rvm.Roles.Insert(0, new("Please select", "0"));
 
             if (!ModelState.IsValid)
                 return View(rvm);
@@ -92,6 +93,9 @@ namespace EnvironmentServer.Web.Controllers
                     .Select(d => new SelectListItem(d.Name, d.ID.ToString())),
                 Roles = DB.Role.GetAll().Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList()
             };
+
+            auvm.Roles.Insert(0, new("Please select", "0"));
+
             return View(auvm);
         }
 
