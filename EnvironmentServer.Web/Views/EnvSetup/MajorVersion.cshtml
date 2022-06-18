@@ -1,7 +1,19 @@
-﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+﻿@using EnvironmentServer.Web.Extensions
+@using EnvironmentServer.Web.ViewModels.EnvSetup
 @model EnvSetupViewModel
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject EnvironmentServer.DAL.Database DB
+
 @{
     ViewData["Title"] = "Major Version - Environment Setup";
+
+    var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
+    var hasTemplates = DB.Permission.HasPermission(usr, "environment_template");
+    var hasEmpty = DB.Permission.HasPermission(usr, "environment_empty");
+    var hasExpert = DB.Permission.HasPermission(usr, "environment_expert");
+
+
+    bool HasOther = hasTemplates || hasEmpty;
 }
 
 <h2>Predefined Versions</h2>
@@ -33,65 +45,77 @@
     </div>
 </div>
 
-<h2>Other</h2>
-<div class="row">
-    <div class="col-3"></div>
-    <div class="col-3">
-        <form method="post" asp-action="MinorVersion">
-            <input type="hidden" asp-for="InternalName" />
-            <input type="hidden" asp-for="DisplayName" />
-            <input type="hidden" asp-for="CustomSetupType" value="template" />
-            <a asp-controller="EnvSetup" asp-action="Template" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
-                <div class="card">
-                    <i class="bi bi-briefcase align-self-center" style="font-size: 200px"></i>
-                    <div class="card-body"><p class="card-text">Templates</p></div>
-                </div>
-            </a>
-        </form>
-    </div>
-    <div class="col-3">
-        <form method="post" asp-action="MinorVersion">
-            <input type="hidden" asp-for="InternalName" />
-            <input type="hidden" asp-for="DisplayName" />
-            <input type="hidden" asp-for="CustomSetupType" value="empty" />
-            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
-                <div class="card">
-                     <i class="bi bi-folder2-open align-self-center" style="font-size: 200px"></i>
-                    <div class="card-body"><p class="card-text">Empty Webspace</p></div>
-                </div>
-            </a>
-        </form>
-    </div>
-</div>
+@if (HasOther)
+{
+    <h2>Other</h2>
+    <div class="row">
+        <div class="col-3"></div>
+        @if (DB.Permission.HasPermission(usr, "environment_template"))
+        {
+            <div class="col-3">
+                <form method="post" asp-action="MinorVersion">
+                    <input type="hidden" asp-for="InternalName" />
+                    <input type="hidden" asp-for="DisplayName" />
+                    <input type="hidden" asp-for="CustomSetupType" value="template" />
+                    <a asp-controller="EnvSetup" asp-action="Template" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                        <div class="card">
+                            <i class="bi bi-briefcase align-self-center" style="font-size: 200px"></i>
+                            <div class="card-body"><p class="card-text">Templates</p></div>
+                        </div>
+                    </a>
+                </form>
+            </div>
+        }
 
-<h2>Expert Mode</h2>
-<div class="row">
-    <div class="col-3"></div>
-    <div class="col-3">
-        <form method="post" asp-action="MinorVersion">
-            <input type="hidden" asp-for="InternalName" />
-            <input type="hidden" asp-for="DisplayName" />
-            <input type="hidden" asp-for="CustomSetupType" value="wget" />
-            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
-                <div class="card">
-                    <i class="bi bi-cloud-download align-self-center" style="font-size: 200px"></i>
-                    <div class="card-body"><p class="card-text">Download & Extract</p></div>
-                </div>
-            </a>
-        </form>
+        @if (DB.Permission.HasPermission(usr, "environment_empty"))
+        {
+            <div class="col-3">
+                <form method="post" asp-action="MinorVersion">
+                    <input type="hidden" asp-for="InternalName" />
+                    <input type="hidden" asp-for="DisplayName" />
+                    <input type="hidden" asp-for="CustomSetupType" value="empty" />
+                    <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                        <div class="card">
+                            <i class="bi bi-folder2-open align-self-center" style="font-size: 200px"></i>
+                            <div class="card-body"><p class="card-text">Empty Webspace</p></div>
+                        </div>
+                    </a>
+                </form>
+            </div>
+        }
     </div>
-    <div class="col-3">
-        <form method="post" asp-action="MinorVersion">
-            <input type="hidden" asp-for="InternalName" />
-            <input type="hidden" asp-for="DisplayName" />
-            <input type="hidden" asp-for="CustomSetupType" value="git" />
-            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
-                <div class="card">
-                     <i class="bi bi-github align-self-center" style="font-size: 200px"></i>
-                    <div class="card-body"><p class="card-text">Clone Git Repository</p></div>
-                </div>
-            </a>
-        </form>
-    </div>
-</div>
+}
 
+@if (DB.Permission.HasPermission(usr, "environment_expert"))
+{
+    <h2>Expert Mode</h2>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-3">
+            <form method="post" asp-action="MinorVersion">
+                <input type="hidden" asp-for="InternalName" />
+                <input type="hidden" asp-for="DisplayName" />
+                <input type="hidden" asp-for="CustomSetupType" value="wget" />
+                <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                    <div class="card">
+                        <i class="bi bi-cloud-download align-self-center" style="font-size: 200px"></i>
+                        <div class="card-body"><p class="card-text">Download & Extract</p></div>
+                    </div>
+                </a>
+            </form>
+        </div>
+        <div class="col-3">
+            <form method="post" asp-action="MinorVersion">
+                <input type="hidden" asp-for="InternalName" />
+                <input type="hidden" asp-for="DisplayName" />
+                <input type="hidden" asp-for="CustomSetupType" value="git" />
+                <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                    <div class="card">
+                        <i class="bi bi-github align-self-center" style="font-size: 200px"></i>
+                        <div class="card-body"><p class="card-text">Clone Git Repository</p></div>
+                    </div>
+                </a>
+            </form>
+        </div>
+    </div>
+}

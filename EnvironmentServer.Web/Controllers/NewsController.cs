@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnvironmentServer.Web.Controllers
@@ -14,6 +15,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
+        [Permission("news_write")]
         public IActionResult Add([FromForm]string content)
         {
             var news = new News
@@ -27,6 +29,7 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        [Permission("news_write")]
         public IActionResult Delete(long id)
         {
             DB.News.Delete(id);

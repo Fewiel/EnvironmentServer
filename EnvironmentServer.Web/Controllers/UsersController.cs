@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
 {
-    [AdminOnly]
+    [Permission("users_manage")]
     public class UsersController : ControllerBase
     {
         public UsersController(Database db) : base(db) { }
@@ -35,7 +35,10 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            var rvm = new RegistrationViewModel();
+            rvm.Roles = DB.Role.GetAll().Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList();
+
+            return View(rvm);
         }
 
         public async Task<IActionResult> RegenerateAsync()
@@ -83,7 +86,8 @@ namespace EnvironmentServer.Web.Controllers
             {
                 User = DB.Users.GetByID(id),
                 DepartmentList = DB.Department.GetAll()
-                    .Select(d => new SelectListItem(d.Name, d.ID.ToString()))
+                    .Select(d => new SelectListItem(d.Name, d.ID.ToString())),
+                Roles = DB.Role.GetAll().Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList()
             };
             return View(auvm);
         }

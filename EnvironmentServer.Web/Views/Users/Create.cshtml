@@ -27,6 +27,10 @@
             <input type="datetime-local" asp-for="ExpirationDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
             <span asp-validation-for="ExpirationDate"></span>
         </div>
+        <div class="mb-3">
+            <label class="form-label">User-Role</label>
+            <select asp-for="RoleID" asp-items=@Model.Roles class="form-control"></select>
+        </div>
         <button type="submit" class="btn btn-primary">Create Useraccount</button>
     </form>
 </div>

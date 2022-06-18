@@ -9,7 +9,7 @@ using EnvironmentServer.Web.Attributes;
 
 namespace EnvironmentServer.Web.Controllers
 {
-    [AdminOnly]
+    [Permission("settings_edit")]
     public class SettingsController : ControllerBase
     {
         public SettingsController(Database database) : base(database) { }

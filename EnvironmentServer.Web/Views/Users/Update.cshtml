@@ -32,6 +32,10 @@
             <span asp-validation-for="User.UserInformation.DepartmentID" class="text-danger"></span>
         </div>
         <div class="mb-3">
+            <label class="form-label">User-Role</label>
+            <select asp-for="User.RoleID" asp-items=@Model.Roles class="form-control"></select>
+        </div>
+        <div class="mb-3">
             <label asp-for="User.UserInformation.AbsenceDate" class="form-label">Absence until (Only if longer than 60 days)</label>
             <input type="datetime-local" asp-for="User.UserInformation.AbsenceDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
             <span asp-validation-for="User.UserInformation.AbsenceDate"></span>

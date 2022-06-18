@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.Models;
 using EnvironmentServer.Web.ViewModels.Rights;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using System.Linq;
 
 namespace EnvironmentServer.Web.Controllers
 {
+    [Permission("permissions_manage")]
     public class RightsController : ControllerBase
     {
         public RightsController(Database db) : base(db) { }

@@ -3,12 +3,11 @@
 @using Microsoft.AspNetCore.Http
 @model EnvironmentServer.DAL.Models.Environment
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject EnvironmentServer.DAL.Database DB
 
 @{
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
-}
 
-@{
     var envVersion = Model.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
     var sw_version = envVersion == null ? "N/A" : envVersion.Value;
 
@@ -55,7 +54,12 @@
                                 <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy DB-Password</a></li>
                                 <li><a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a></li>
                                 <li><a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a></li>
-                                <li><a class="dropdown-item" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>Create Template</a></li>
+
+                                @if(DB.Permission.HasPermission(usr, "templates_create"))
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>Create Template</a></li>
+                                }                                
+
                                 @if (sw_version[0] == '6')
                                 {
                                     <li><a class="dropdown-item" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID>@(Model.DevelopmentMode ? "Disable" : "Enable") Dev Mode</a></li>

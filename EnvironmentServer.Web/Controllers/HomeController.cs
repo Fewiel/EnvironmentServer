@@ -31,7 +31,7 @@ namespace EnvironmentServer.Web.Controllers
                 Htaccess = DB.Settings.Get("pma_htacces_login").Value
             };
 
-            if (DB.Users.GetByID(GetSessionUser().ID).IsAdmin)
+            if (DB.Permission.HasPermission(GetSessionUser(), "admin_statistics_show"))
             {
                 dash.PerformanceData = DB.Performance.Get();
                 dash.Queue = DB.Performance.GetQueue();
