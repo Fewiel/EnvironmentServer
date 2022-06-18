@@ -41,7 +41,7 @@ public class RoleRepository
     public long Add(Role r)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        return c.Connection.QuerySingle<int>("inset into `roles` (Name, Description) values (@name, @desc); SELECT LAST_INSERT_ID();", new
+        return c.Connection.QuerySingle<int>("insert into `roles` (Name, Description) values (@name, @desc); SELECT LAST_INSERT_ID();", new
         {
             name = r.Name,
             desc = r.Description
