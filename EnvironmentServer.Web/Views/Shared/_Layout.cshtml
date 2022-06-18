@@ -6,10 +6,10 @@
 
 @{
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
-    var settingsEdit = DB.Permission.HasPermission(usr, "settings_edit");
-    var usersManage = DB.Permission.HasPermission(usr, "users_manage");
-    var templateManage = DB.Permission.HasPermission(usr, "template_manage");
-    var permissionsManage = DB.Permission.HasPermission(usr, "permissions_manage");
+    var settingsEdit = usr != null && DB.Permission.HasPermission(usr, "settings_edit");
+    var usersManage = usr != null && DB.Permission.HasPermission(usr, "users_manage");
+    var templateManage = usr != null && DB.Permission.HasPermission(usr, "template_manage");
+    var permissionsManage = usr != null && DB.Permission.HasPermission(usr, "permissions_manage");
 
     bool HasAdminPermission() => settingsEdit || usersManage || templateManage || permissionsManage;
 }
