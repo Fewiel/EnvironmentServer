@@ -139,6 +139,7 @@ namespace EnvironmentServer.Web.Controllers
                 }
             }
 
+            AddInfo("Role updated");
             return RedirectToAction("Roles");
         }
     }
