@@ -73,7 +73,8 @@ namespace EnvironmentServer.Web.Controllers
                 Username = rvm.Username,
                 Email = rvm.Email,
                 Password = PasswordHasher.Hash(rvm.Password),
-                ExpirationDate = rvm.ExpirationDate
+                ExpirationDate = rvm.ExpirationDate,
+                RoleID = rvm.RoleID
             };
             await DB.Users.InsertAsync(usr, rvm.Password).ConfigureAwait(false);
 
@@ -110,9 +111,12 @@ namespace EnvironmentServer.Web.Controllers
             usr.Email = auvm.User.Email;
             usr.Active = auvm.User.Active;
             usr.ExpirationDate = auvm.User.ExpirationDate;
+            usr.RoleID = auvm.User.RoleID;
+
             await DB.Users.UpdateByAdminAsync(usr, false);
             auvm.User.UserInformation.PrepareForDB();
             DB.UserInformation.Update(auvm.User.UserInformation);
+
             AddInfo("User updated");
             DB.Logs.Add("Web", "Update for: " + auvm.User.Username + " by " + GetSessionUser().Username);
             return RedirectToAction("Index");
