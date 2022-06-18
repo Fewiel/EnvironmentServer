@@ -84,6 +84,8 @@ namespace EnvironmentServer.Web.Controllers
             var perm = DB.RolePermission.GetForRole(id);
             var limits = DB.RoleLimit.GetForRole(id);
 
+            Console.WriteLine(JsonConvert.SerializeObject(limits));
+
             var webPerm = new List<WebPermission>();
             var webLimits = new List<WebLimit>();
 
