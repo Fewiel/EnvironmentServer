@@ -19,7 +19,7 @@
     {
         <br />
         <div class="form-check form-switch">
-            <input type="hidden" asp-for=@Model.Permissions[i].Permission />
+            <input type="hidden" asp-for=@Model.Permissions[i].Permission value=@Model.Permissions[i].Permission/>
             <input id=@Model.Permissions[i].Permission.InternalName class="form-check-input" type="checkbox" asp-for=@Model.Permissions[i].Enabled>
             <label class="form-check-label">@Model.Permissions[i].Permission.Name</label>
         </div>
@@ -30,7 +30,7 @@
         <br />
         <div class="input-group flex-nowrap">
             <span class="input-group-text" id="addon-wrapping">@Model.Limits[i].Limit.Name</span>
-            <input type="hidden" asp-for=@Model.Limits[i].Limit />
+            <input type="hidden" asp-for=@Model.Limits[i].Limit value=@Model.Limits[i].Limit />
             <input type="text" class="form-control" asp-for=@Model.Limits[i].Value>
         </div>
     }
