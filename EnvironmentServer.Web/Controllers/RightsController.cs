@@ -3,6 +3,8 @@ using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Models;
 using EnvironmentServer.Web.ViewModels.Rights;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -45,12 +47,14 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public IActionResult AddRole([FromForm] RoleViewModel rvm)
         {
-            rvm.Role.ID = DB.Role.Add(new Role() { Name = rvm.Role.Name, Description = rvm.Role.Description });
+            Console.WriteLine(JsonConvert.SerializeObject(rvm));
+
+            rvm.Role.ID = DB.Role.Add(new() { Name = rvm.Role.Name, Description = rvm.Role.Description });
 
             foreach (var p in rvm.Permissions)
             {
                 if (p.Enabled)
-                    DB.Permission.Add(p.ToPermission());
+                    DB.RolePermission.Add(new() { PermissionID = p.ToPermission().ID, RoleID = rvm.Role.ID });
             }
 
             foreach (var l in rvm.Limits)
