@@ -79,10 +79,11 @@ public class PermissionRepository
         });
     }
 
-    public bool HasPermission(User usr, string internalName)
+    public bool HasPermission(User u, string internalName)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
         var pid = Get(internalName).ID;
+        var usr = DB.Users.GetByID(u.ID);
 
         var hasUserPermission = c.Connection.ExecuteScalar<bool>("select Count(1) from `users_permissions` where `UserID` = @uid and `PermissionID` = @pid limit 1", new
         {
@@ -98,7 +99,7 @@ public class PermissionRepository
 
         var hasPermission = c.Connection.ExecuteScalar<bool>("select Count(1) from `role_permissions` where `RoleID` = @rid and `PermissionID` = @pid limit 1", new
         {
-            uid = usr.RoleID,
+            rid = usr.RoleID,
             pid
         });
 
