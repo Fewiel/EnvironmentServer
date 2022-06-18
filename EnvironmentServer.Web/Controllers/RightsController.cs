@@ -34,6 +34,7 @@ namespace EnvironmentServer.Web.Controllers
 
             var rvm = new RoleViewModel
             {
+                Role = new(),
                 Permissions = perm.Select(p => WebPermission.FromPermission(p)),
                 Limits = limits.Select(limits => WebLimit.FromLimit(limits))
             };
