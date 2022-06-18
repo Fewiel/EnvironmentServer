@@ -8,12 +8,7 @@ namespace EnvironmentServer.Web.Controllers
     [AllowNotLoggedIn]
     public class RecoverController : ControllerBase
     {
-        private Database DB;
-
-        public RecoverController(Database db)
-        {
-            DB = db;
-        }
+        public RecoverController(Database db) : base(db) { }
 
         [Route("[controller]/{id}")]
         public IActionResult StartRecover(long id)

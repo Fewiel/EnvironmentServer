@@ -15,12 +15,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class HomeController : ControllerBase
     {
-        private readonly Database DB;
-
-        public HomeController(Database database)
-        {
-            DB = database;
-        }
+        public HomeController(Database database) : base(database) { }
 
         public IActionResult Index()
         {

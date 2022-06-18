@@ -12,12 +12,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class RightsController : ControllerBase
     {
-        private static Database DB;
-
-        public RightsController(Database db)
-        {
-            DB = db;
-        }
+        public RightsController(Database db) : base(db) { }
 
         public IActionResult Index()
         {

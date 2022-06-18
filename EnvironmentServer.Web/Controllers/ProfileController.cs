@@ -13,11 +13,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class ProfileController : ControllerBase
     {
-        private Database DB;
-        public ProfileController(Database db)
-        {
-            DB = db;
-        }
+        public ProfileController(Database db) : base(db) { }
 
         public IActionResult Index()
         {

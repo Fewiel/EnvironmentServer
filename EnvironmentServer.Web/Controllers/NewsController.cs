@@ -6,12 +6,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class NewsController : ControllerBase
     {
-        private Database DB;
-
-        public NewsController(Database db)
-        {
-            DB = db;
-        }
+        public NewsController(Database db) : base(db) { }
 
         public IActionResult Index()
         {

@@ -12,12 +12,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class SnapshotController : ControllerBase
     {
-        private Database DB;
-
-        public SnapshotController(Database database)
-        {
-            DB = database;
-        }
+        public SnapshotController(Database database) : base(database) { }
 
         public IActionResult Index(long id)
         {

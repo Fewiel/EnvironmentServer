@@ -14,12 +14,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class EnvController : ControllerBase
     {
-        private Database DB;
-
-        public EnvController(Database database)
-        {
-            DB = database;
-        }
+        public EnvController(Database database) : base(database) { }
 
         public IActionResult Index()
         {

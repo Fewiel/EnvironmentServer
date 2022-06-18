@@ -17,12 +17,7 @@ namespace EnvironmentServer.Web.Controllers
     [AdminOnly]
     public class UsersController : ControllerBase
     {
-        private Database DB;
-
-        public UsersController(Database db)
-        {
-            DB = db;
-        }
+        public UsersController(Database db) : base(db) { }
 
         public IActionResult Index()
         {

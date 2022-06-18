@@ -1,6 +1,7 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.ViewModels.EnvSetup;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -9,13 +10,10 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
 {
+    [Permission("environment_create")]
     public class EnvSetupController : ControllerBase
     {
-        private readonly Database DB;
-        public EnvSetupController(Database db)
-        {
-            DB = db;
-        }
+        public EnvSetupController(Database db) : base(db) { }
 
         public IActionResult BaseData(EnvSetupViewModel esv) => View(esv ?? new());
 

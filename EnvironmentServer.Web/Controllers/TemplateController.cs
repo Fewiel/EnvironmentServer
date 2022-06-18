@@ -15,12 +15,7 @@ namespace EnvironmentServer.Web.Controllers
 
     public class TemplateController : ControllerBase
     {
-        private readonly Database DB;
-
-        public TemplateController(Database db)
-        {
-            DB = db;
-        }
+        public TemplateController(Database db) : base(db) { }
 
         [AdminOnly]
         public IActionResult Index()

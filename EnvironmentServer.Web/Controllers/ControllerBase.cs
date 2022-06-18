@@ -1,4 +1,5 @@
-﻿using EnvironmentServer.DAL.Models;
+﻿using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Repositories;
 using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.Extensions;
@@ -15,6 +16,13 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class ControllerBase : Controller
     {
+        protected readonly Database DB;
+
+        public ControllerBase(Database db)
+        {
+            DB = db;
+        }
+
         private void AddMessageInternal(Message msg)
         {
             var msgs = TempData.Get<List<Message>>("messages") ?? new List<Message>();
@@ -47,6 +55,13 @@ namespace EnvironmentServer.Web.Controllers
                     return;
                 }
 
+                if (attr is PermissionAttribute pa && !HasPermission(pa.PermissionName))
+                {
+                    AddError("You are not permitted to view this page.");
+                    context.Result = new RedirectToRouteResult("index", new { controller = "Home" });
+                    return;
+                }
+
                 if (attr is AllowNotLoggedInAttribute)
                     allowNotLoggedIn = true;
             }
@@ -68,6 +83,15 @@ namespace EnvironmentServer.Web.Controllers
             if (usr == null)
                 return false;
             return usr.IsAdmin;
+        }
+
+        private bool HasPermission(string permissionName)
+        {
+            var usr = HttpContext.Session.GetObject<User>("user");
+            if (usr == null)
+                return false;
+
+            return DB.Permission.HasPermission(usr, permissionName);
         }
 
         public User GetSessionUser() => HttpContext.Session.GetObject<User>("user");
