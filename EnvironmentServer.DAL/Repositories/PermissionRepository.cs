@@ -93,6 +93,9 @@ public class PermissionRepository
         if (hasUserPermission)
             return true;
 
+        if (usr.RoleID != 0)
+            return false;
+
         var hasPermission = c.Connection.ExecuteScalar<bool>("select Count(1) from `role_permissions` where `RoleID` = @rid and `PermissionID` = @pid limit 1", new
         {
             uid = usr.RoleID,
