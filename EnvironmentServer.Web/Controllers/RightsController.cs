@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace EnvironmentServer.Web.Controllers
 {
-    public class RightsController : Controller
+    public class RightsController : ControllerBase
     {
         private static Database DB;
 
