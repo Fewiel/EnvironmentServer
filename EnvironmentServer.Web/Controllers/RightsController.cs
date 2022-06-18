@@ -39,7 +39,7 @@ namespace EnvironmentServer.Web.Controllers
                 Limits = limits.Select(limits => WebLimit.FromLimit(limits))
             };
 
-            return View();
+            return View(rvm);
         }
 
         [HttpPost]
