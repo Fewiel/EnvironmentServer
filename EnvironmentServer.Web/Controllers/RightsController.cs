@@ -96,7 +96,7 @@ namespace EnvironmentServer.Web.Controllers
 
             foreach (var l in allLimits)
             {
-                webLimits.Add(new() { Limit = l, Value = limits.FirstOrDefault(li => li.LimitID == l.ID).Value });
+                webLimits.Add(new() { Limit = l, Value = limits.FirstOrDefault(li => li.LimitID == l.ID)?.Value ?? -1 });
             }
 
             var rvm = new RoleViewModel
