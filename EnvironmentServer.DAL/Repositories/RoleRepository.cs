@@ -59,6 +59,24 @@ public class RoleRepository
         });
     }
 
+    public void ClearPermissions(long id)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("delete from `role_permissions` where `RoleID` = @id", new
+        {
+            id
+        });
+    }
+
+    public void ClearLimits(long id)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("delete from `role_limits` where `RoleID` = @id", new
+        {
+            id
+        });
+    }
+
     public void Delete(long id)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

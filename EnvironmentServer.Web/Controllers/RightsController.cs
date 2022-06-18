@@ -108,5 +108,38 @@ namespace EnvironmentServer.Web.Controllers
 
             return View(rvm);
         }
+
+        [HttpPost]
+        public IActionResult Update([FromForm] RoleViewModel rvm)
+        {
+            DB.Role.ClearLimits(rvm.Role.ID);
+            DB.Role.ClearPermissions(rvm.Role.ID);
+
+            DB.Role.Update(rvm.Role);
+
+            foreach (var p in rvm.Permissions)
+            {
+                if (p.Enabled)
+                    DB.RolePermission.Add(new() { PermissionID = p.ToPermission().ID, RoleID = rvm.Role.ID });
+            }
+
+            foreach (var l in rvm.Limits)
+            {
+                if (l.Value != -1)
+                {
+                    var limit = l.ToLimit();
+                    var rLimit = new RoleLimit()
+                    {
+                        LimitID = limit.ID,
+                        RoleID = rvm.Role.ID,
+                        Value = l.Value
+                    };
+
+                    DB.RoleLimit.Add(rLimit);
+                }
+            }
+
+            return RedirectToAction("Roles");
+        }
     }
 }
