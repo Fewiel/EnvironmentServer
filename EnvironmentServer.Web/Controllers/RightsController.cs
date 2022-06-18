@@ -113,7 +113,7 @@ namespace EnvironmentServer.Web.Controllers
         public IActionResult Update([FromForm] RoleViewModel rvm)
         {
             DB.Role.ClearLimits(rvm.Role.ID);
-            DB.Role.ClearPermissions(rvm.Role.ID);            
+            DB.Role.ClearPermissions(rvm.Role.ID);
 
             foreach (var p in rvm.Permissions)
             {

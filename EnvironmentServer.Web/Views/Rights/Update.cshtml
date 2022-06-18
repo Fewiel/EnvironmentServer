@@ -5,6 +5,7 @@
 }
 
 <form method="post" asp-action="Update" style="width: 400px;">
+    <input type="hidden" asp-for=@Model.Role.ID value=@Model.Role.ID/>
 
     <label asp-for="Role.Name" class="form-label">Role Name</label>
     <input asp-for="Role.Name" class="form-control" />
