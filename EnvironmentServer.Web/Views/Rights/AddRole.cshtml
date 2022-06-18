@@ -14,21 +14,26 @@
     <input asp-for="Role.Description" class="form-control" />
     <span asp-validation-for="Role.Description"></span>
 
-    @foreach (var perm in Model.Permissions)
+
+    @for (int i = 0; i < Model.Permissions.Count; i++)
     {
+        <br />
         <div class="form-check form-switch">
-            <input id=@perm.Permission.InternalName class="form-check-input" type="checkbox" asp-for=@perm.Enabled>
-            <label class="form-check-label" for=@perm.Permission.InternalName>@perm.Permission.Name</label>
+            <input id=@Model.Permissions[i].Permission.InternalName class="form-check-input" type="checkbox" asp-for=@Model.Permissions[i].Enabled>
+            <label class="form-check-label" asp-for=@Model.Permissions[i].Permission.Name></label>
         </div>
     }
 
-    @foreach (var lim in Model.Limits)
+    @for (int i = 0; i < Model.Limits.Count; i++)
     {
+        <br />
         <div class="input-group flex-nowrap">
-            <span class="input-group-text" id="addon-wrapping">@lim.Limit.Name</span>
-            <input type="text" class="form-control" asp-for=@lim.Value>
+            <span class="input-group-text" id="addon-wrapping">@Model.Limits[i].Limit.Name</span>
+            <input type="text" class="form-control" asp-for=@Model.Limits[i].Value>
         </div>
     }
 
+
+    <br />
     <button type="submit" class="btn btn-primary">Add Role</button>
 </form>

@@ -7,6 +7,6 @@ namespace EnvironmentServer.Web.ViewModels.Rights;
 public class RoleViewModel
 {
     public Role Role { get; set; }
-    public IEnumerable<WebLimit> Limits { get; set; }
-    public IEnumerable<WebPermission> Permissions { get; set; }
+    public List<WebLimit> Limits { get; set; }
+    public List<WebPermission> Permissions { get; set; }
 }
