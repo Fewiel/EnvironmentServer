@@ -15,7 +15,20 @@ namespace EnvironmentServer.Web.Controllers
     {
         public EnvSetupController(Database db) : base(db) { }
 
-        public IActionResult BaseData(EnvSetupViewModel esv) => View(esv ?? new());
+        public IActionResult BaseData(EnvSetupViewModel esv)
+        {
+            var environments = DB.Environments.GetForUser(GetSessionUser().ID);
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
+            var limit = DB.Limit.GetLimit(usr, "environment_max");
+
+            if (limit <= environments.Count())
+            {
+                AddError($"You have to many Environments! You can have {limit} Environments!");
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(esv ?? new());
+        }
 
         [HttpPost]
         public IActionResult MajorVersion([FromForm] EnvSetupViewModel esv)
