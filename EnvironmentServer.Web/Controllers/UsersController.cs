@@ -2,10 +2,12 @@
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.Extensions;
+using EnvironmentServer.Web.Models;
 using EnvironmentServer.Web.ViewModels.Login;
 using EnvironmentServer.Web.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -146,6 +148,67 @@ namespace EnvironmentServer.Web.Controllers
                 Id_Variable = 0
             });
             return RedirectToAction("Index");
+        }
+
+        public IActionResult Permissions(long id)
+        {
+            var allPerm = DB.Permission.GetAll();
+            var allLimits = DB.Limit.GetAll();
+
+            var perm = DB.UserPermission.GetForUser(id);
+            var limits = DB.UserLimit.GetForUser(id);
+
+            var webPerm = new List<WebPermission>();
+            var webLimits = new List<WebLimit>();
+
+            foreach (var p in allPerm)
+            {
+                webPerm.Add(new() { Permission = p, Enabled = perm.Any(pe => pe.PermissionID == p.ID) });
+            }
+
+            foreach (var l in allLimits)
+            {
+                webLimits.Add(new() { Limit = l, Value = limits.FirstOrDefault(li => li.LimitID == l.ID)?.Value ?? -1 });
+            }
+
+            var pvm = new PermissionViewModel
+            {
+                UserID = id,
+                Permissions = webPerm,
+                Limits = webLimits
+            };
+
+            return View(pvm);
+        }
+
+        [HttpPost]
+        public IActionResult Permissions([FromForm] PermissionViewModel pvm)
+        {
+            DB.Role.ClearUserPermissions(pvm.UserID);
+            DB.Role.ClearUserLimits(pvm.UserID);
+
+            foreach (var p in pvm.Permissions)
+            {
+                if (p.Enabled)
+                    DB.UserPermission.Add(new() { PermissionID = p.ToPermission().ID, UserID = pvm.UserID });
+            }
+
+            foreach (var l in pvm.Limits)
+            {
+                if (l.Value != -1)
+                {
+                    var limit = l.ToLimit();
+                    var rLimit = new UserLimit()
+                    {
+                        LimitID = limit.ID,
+                        UserID = pvm.UserID,
+                        Value = l.Value
+                    };
+
+                    DB.UserLimit.Add(rLimit);
+                }
+            }
+            return View(pvm);
         }
     }
 }
