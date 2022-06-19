@@ -165,5 +165,26 @@ namespace EnvironmentServer.Web.Controllers
                 return Redirect("https://" + env.Address);
             return Redirect("https://" + env.Address + (version[0] == '5' ? "/backend" : "/admin"));
         }
+
+        public IActionResult ChangePerma(long id)
+        {
+            var permEnvironments = DB.Environments.GetPermanentForUser(GetSessionUser().ID);
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
+            var env = DB.Environments.Get(id);
+
+            if (permEnvironments != null)
+            {
+                var limit = DB.Limit.GetLimit(usr, "environments_max_perm");
+                if (limit <= permEnvironments.Count() && !env.Permanent)
+                {
+                    AddError($"You have reached the maximun number of permanent Environments! You can have {limit} permanent Environments!");
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            DB.Environments.ChangePermanent(id);
+            AddInfo("Environment is set to permanent");
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

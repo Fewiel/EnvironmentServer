@@ -88,6 +88,11 @@ public class LimitRepository
         if (userLimit != null)
             return userLimit.Value;
 
-        return DB.RoleLimit.GetForRoleAndLimit(usr.RoleID, limit.ID).Value;
+        var roleLimit = DB.RoleLimit.GetForRoleAndLimit(usr.RoleID, limit.ID);
+
+        if (roleLimit != null)
+            return roleLimit.Value;
+
+        return 0;
     }
 }

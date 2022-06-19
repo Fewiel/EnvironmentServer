@@ -61,6 +61,21 @@ namespace EnvironmentServer.DAL.Repositories
 
             reader.Close();
         }
+
+        public IEnumerable<Environment> GetPermanentForUser(long userID)
+        {
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            var Command = new MySqlCommand("select * from environments where users_ID_fk = @id and Permanent = 1 ORDER BY Sorting DESC;");
+            Command.Parameters.AddWithValue("@id", userID);
+            Command.Connection = c.Connection;
+            MySqlDataReader reader = Command.ExecuteReader();
+
+            while (reader.Read())
+                yield return FromReader(reader);
+
+            reader.Close();
+        }
+
         public IEnumerable<Environment> GetAll()
         {
             using var c = new MySQLConnectionWrapper(DB.ConnString);
@@ -96,7 +111,8 @@ namespace EnvironmentServer.DAL.Repositories
                 Sorting = reader.GetInt32(7),
                 LatestUse = reader.GetDateTime(8),
                 Stored = reader.GetBoolean(9),
-                DevelopmentMode = reader.GetBoolean(10)
+                DevelopmentMode = reader.GetBoolean(10),
+                Permanent = reader.GetBoolean(11)
             };
         }
 
@@ -283,6 +299,18 @@ namespace EnvironmentServer.DAL.Repositories
             {
                 id,
                 isStored
+            });
+        }
+
+        public void ChangePermanent(long id)
+        {
+            var env = Get(id);
+
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            c.Connection.Execute("update environments set `Permanent` = @perma where `ID` = @id;", new
+            {
+                id,
+                perma = !env.Permanent
             });
         }
 
