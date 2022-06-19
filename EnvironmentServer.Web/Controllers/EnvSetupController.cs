@@ -21,7 +21,7 @@ namespace EnvironmentServer.Web.Controllers
             var usr = DB.Users.GetByID(GetSessionUser().ID);
             var limit = DB.Limit.GetLimit(usr, "environment_max");
 
-            if (limit <= environments.Count())
+            if (limit <= environments.Count() && limit > 0)
             {
                 AddError($"You have to many Environments! You can have {limit} Environments!");
                 return RedirectToAction("Index", "Home");
