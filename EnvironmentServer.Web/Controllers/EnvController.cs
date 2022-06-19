@@ -177,7 +177,7 @@ namespace EnvironmentServer.Web.Controllers
                 var limit = DB.Limit.GetLimit(usr, "environments_max_perm");
                 if (limit <= permEnvironments.Count() && !env.Permanent)
                 {
-                    AddError($"You have reached the maximun number of permanent Environments! You can have {limit} permanent Environments!");
+                    AddError($"You have reached the maximun number of permanent Environments! You can only have {limit} permanent Environment(s)!");
                     return RedirectToAction("Index", "Home");
                 }
             }

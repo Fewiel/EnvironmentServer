@@ -23,7 +23,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if (limit <= environments.Count() && limit > 0)
             {
-                AddError($"You have to many Environments! You can have {limit} Environments!");
+                AddError($"You have to many Environments! You can only have {limit} Environment(s)!");
                 return RedirectToAction("Index", "Home");
             }
 
