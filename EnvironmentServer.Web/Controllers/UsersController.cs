@@ -208,7 +208,8 @@ namespace EnvironmentServer.Web.Controllers
                     DB.UserLimit.Add(rLimit);
                 }
             }
-            return View(pvm);
+            AddInfo("User permissions set");
+            return RedirectToAction("Index");
         }
     }
 }
