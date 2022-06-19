@@ -29,7 +29,7 @@ public class LimitRepository
             return value;
 
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        var limit = c.Connection.QueryFirstOrDefault("select * from `limits` where `InternalName` = @internalName;", new
+        var limit = c.Connection.QueryFirstOrDefault<Limit>("select * from `limits` where `InternalName` = @internalName;", new
         {
             internalName
         });
@@ -42,7 +42,7 @@ public class LimitRepository
     public Limit GetByID(long id)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        var limit = c.Connection.QueryFirstOrDefault("select * from `limits` where `ID` = @id;", new
+        var limit = c.Connection.QueryFirstOrDefault<Limit>("select * from `limits` where `ID` = @id;", new
         {
             id
         });
