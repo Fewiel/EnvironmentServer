@@ -229,11 +229,6 @@ internal static class EnvironmentPacker
             .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
             .ExecuteAsync();
 
-        //Set Privileges to user
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
-            .ExecuteAsync();
-
         //Replace parts in config
         var sw6 = Directory.Exists($"/home/{user.Username}/files/{env.InternalName}/public");
 
@@ -269,6 +264,11 @@ internal static class EnvironmentPacker
         File.WriteAllBytes($"/home/{user.Username}/files/{env.InternalName}/db.sql", dbfile);
 
         File.Delete($"/home/{user.Username}/files/{env.InternalName}/db-tmp.sql");
+
+        //Set Privileges to user
+        await Cli.Wrap("/bin/bash")
+            .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
+            .ExecuteAsync();
 
         //Import DB
         await Cli.Wrap("/bin/bash")
