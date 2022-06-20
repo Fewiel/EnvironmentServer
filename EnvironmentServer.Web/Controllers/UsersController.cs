@@ -152,6 +152,9 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Permissions(long id)
         {
+            var editUser = DB.Users.GetByID(GetSessionUser().ID);
+            var editUserPermissions = DB.Permission.GetAllForUser(editUser);
+
             var allPerm = DB.Permission.GetAll();
             var allLimits = DB.Limit.GetAll();
 
@@ -163,7 +166,8 @@ namespace EnvironmentServer.Web.Controllers
 
             foreach (var p in allPerm)
             {
-                webPerm.Add(new() { Permission = p, Enabled = perm.Any(pe => pe.PermissionID == p.ID) });
+                if (editUserPermissions.Contains(p))
+                    webPerm.Add(new() { Permission = p, Enabled = perm.Any(pe => pe.PermissionID == p.ID) });
             }
 
             foreach (var l in allLimits)
@@ -184,11 +188,17 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public IActionResult Permissions([FromForm] PermissionViewModel pvm)
         {
+            var editUser = DB.Users.GetByID(GetSessionUser().ID);
+            var editUserPermissions = DB.Permission.GetAllForUser(editUser);
+
             DB.Role.ClearUserPermissions(pvm.UserID);
             DB.Role.ClearUserLimits(pvm.UserID);
 
             foreach (var p in pvm.Permissions)
             {
+                if (!editUserPermissions.Contains(p.ToPermission()))
+                    continue;
+
                 if (p.Enabled)
                     DB.UserPermission.Add(new() { PermissionID = p.ToPermission().ID, UserID = pvm.UserID });
             }

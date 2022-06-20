@@ -39,7 +39,6 @@ public class PermissionRepository
 
     public Permission GetByID(long id)
     {
-
         using var c = new MySQLConnectionWrapper(DB.ConnString);
         var permission = c.Connection.QuerySingleOrDefault<Permission>("select * from `permissions` where `ID` = @id", new
         {
@@ -104,5 +103,19 @@ public class PermissionRepository
         });
 
         return hasPermission;
+    }
+
+    public IEnumerable<Permission> GetAllForUser(User u)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        var usr = DB.Users.GetByID(u.ID);
+
+        return c.Connection.Query<Permission>("SELECT `ID`, `Name`, `InternalName` FROM ((Select up.PermissionID From `users_permissions` " +
+            "as up where up.UserID = @uid) UNION (Select rp.PermissionID From `role_permissions` as rp where rp.RoleID = @rid)) " +
+            "as a left JOIN `permissions` on a.PermissionID = permissions.ID;", new
+        {
+            uid = usr.ID,
+            rid = usr.RoleID
+        });
     }
 }
