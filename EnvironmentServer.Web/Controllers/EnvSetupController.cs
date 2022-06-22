@@ -1,6 +1,7 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.ViewModels.EnvSetup;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -9,15 +10,25 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
 {
+    [Permission("environment_create")]
     public class EnvSetupController : ControllerBase
     {
-        private readonly Database DB;
-        public EnvSetupController(Database db)
-        {
-            DB = db;
-        }
+        public EnvSetupController(Database db) : base(db) { }
 
-        public IActionResult BaseData(EnvSetupViewModel esv) => View(esv ?? new());
+        public IActionResult BaseData(EnvSetupViewModel esv)
+        {
+            var environments = DB.Environments.GetForUser(GetSessionUser().ID);
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
+            var limit = DB.Limit.GetLimit(usr, "environment_max");
+
+            if (limit <= environments.Count() && limit > 0)
+            {
+                AddError($"You have to many Environments! You can only have {limit} Environment(s)!");
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(esv ?? new());
+        }
 
         [HttpPost]
         public IActionResult MajorVersion([FromForm] EnvSetupViewModel esv)

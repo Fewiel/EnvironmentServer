@@ -1,8 +1,14 @@
-﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+﻿@using EnvironmentServer.Web.Extensions
+@using EnvironmentServer.Web.ViewModels.EnvSetup
 @model EnvSetupViewModel
+@inject EnvironmentServer.DAL.Database DB
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
 @{
     ViewData["Title"] = "Finalize - Environment Setup";
+    var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
 }
+
 <div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
     <form method="post" asp-action="Create" style="width: 800px;">
         <input type="hidden" asp-for="InternalName" />
@@ -52,7 +58,7 @@
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 
-    @if (Model.TemplateID == 0 && Model.CustomSetupType != "empty")
+    @if (Model.TemplateID == 0 && Model.CustomSetupType != "empty" && DB.Permission.HasPermission(usr, "autoinstaller_use"))
     {
         <form method="post" asp-action="CreateWithAutoinstaller" style="width: 800px;">
             <input type="hidden" asp-for="InternalName" />

@@ -1,13 +1,15 @@
 ﻿@using EnvironmentServer.Web.Extensions
 @using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject EnvironmentServer.DAL.Database DB
+
 @model IEnumerable<EnvironmentServer.DAL.Models.News>
 @{
     ViewData["Title"] = "News";
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
 }
 
-@if (usr?.IsAdmin == true)
+@if (DB.Permission.HasPermission(usr, "news_write"))
 {
     <script src="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/tiny-markdown-editor@0.1.4/dist/tiny-mde.min.css" />

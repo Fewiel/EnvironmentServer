@@ -15,12 +15,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class HomeController : ControllerBase
     {
-        private readonly Database DB;
-
-        public HomeController(Database database)
-        {
-            DB = database;
-        }
+        public HomeController(Database database) : base(database) { }
 
         public IActionResult Index()
         {
@@ -36,7 +31,7 @@ namespace EnvironmentServer.Web.Controllers
                 Htaccess = DB.Settings.Get("pma_htacces_login").Value
             };
 
-            if (DB.Users.GetByID(GetSessionUser().ID).IsAdmin)
+            if (DB.Permission.HasPermission(GetSessionUser(), "admin_statistics_show"))
             {
                 dash.PerformanceData = DB.Performance.Get();
                 dash.Queue = DB.Performance.GetQueue();

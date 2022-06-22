@@ -9,15 +9,10 @@ using EnvironmentServer.Web.Attributes;
 
 namespace EnvironmentServer.Web.Controllers
 {
-    [AdminOnly]
+    [Permission("settings_edit")]
     public class SettingsController : ControllerBase
     {
-        private Database DB;
-
-        public SettingsController(Database database)
-        {
-            DB = database;
-        }
+        public SettingsController(Database database) : base(database) { }
 
         public IActionResult Index()
         {

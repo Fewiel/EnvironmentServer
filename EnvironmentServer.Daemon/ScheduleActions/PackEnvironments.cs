@@ -22,9 +22,17 @@ internal class PackEnvironments : ScheduledActionBase
 
         foreach (var env in environments)
         {
+            if (env.Permanent)
+                continue;
+
+            var usr = db.Users.GetByID(env.UserID);
+            var storeTime = db.Limit.GetLimit(usr, "enviroment_storetime");
+            if (storeTime == 0)
+                continue;
+
             try
             {
-                if (env.LatestUse.AddDays(31) < DateTime.Now && !env.Stored)
+                if (env.LatestUse.AddDays(storeTime) < DateTime.Now && !env.Stored)
                 {
 
                     db.Logs.Add("Daemon", $"Packing Environment: {env.InternalName} User: {db.Users.GetByID(env.UserID).Username}");

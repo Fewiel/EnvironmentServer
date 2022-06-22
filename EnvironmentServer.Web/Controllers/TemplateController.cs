@@ -12,23 +12,17 @@ namespace EnvironmentServer.Web.Controllers
     //var tmpDetails = new TemplateDetails { EnvironmentID = lastID, TemplateID = esv.TemplateID };
 
     //var detailsID = DB.CmdActionDetail.Create(JsonConvert.SerializeObject(tmpDetails));
-
     public class TemplateController : ControllerBase
     {
-        private readonly Database DB;
+        public TemplateController(Database db) : base(db) { }
 
-        public TemplateController(Database db)
-        {
-            DB = db;
-        }
-
-        [AdminOnly]
+        [Permission("template_manage")]
         public IActionResult Index()
         {
             return View(DB.Templates.GetAllSorted());
         }
 
-
+        [Permission("template_manage")]
         public IActionResult Delete(long id)
         {
             DB.Templates.StartDelete(id);
@@ -43,12 +37,14 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        [Permission("templates_create")]
         public IActionResult Create(long id)
         {
             return View(new CreateTemplateViewModel { EnvironmentID = id});
         }
 
         [HttpPost]
+        [Permission("templates_create")]
         public IActionResult Create([FromForm] CreateTemplateViewModel ctvm)
         {
             var env = DB.Environments.Get(ctvm.EnvironmentID);

@@ -13,11 +13,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class ProfileController : ControllerBase
     {
-        private Database DB;
-        public ProfileController(Database db)
-        {
-            DB = db;
-        }
+        public ProfileController(Database db) : base(db) { }
 
         public IActionResult Index()
         {
@@ -33,6 +29,7 @@ namespace EnvironmentServer.Web.Controllers
             return View(pvm);
         }
 
+        [Permission("ssh_key_set")]
         public async Task<IActionResult> VerifySSHAsync(string token)
         {
             var usr = GetSessionUser();
@@ -50,6 +47,7 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Permission("ssh_key_set")]
         public IActionResult ChangeSSH([FromForm] ProfileViewModel pvm)
         {
             if (string.IsNullOrEmpty(pvm.SSHPublicKey) || !Regex.Match(pvm.SSHPublicKey, "ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3}( [^@]+@[^@]+)?").Success)

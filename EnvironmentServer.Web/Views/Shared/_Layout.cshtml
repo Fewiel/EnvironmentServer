@@ -3,9 +3,17 @@
 @inject VersionInfo VersionInfo
 @inject EnvironmentServer.DAL.Database DB
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
 @{
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
+    var settingsEdit = usr != null && DB.Permission.HasPermission(usr, "settings_edit");
+    var usersManage = usr != null && DB.Permission.HasPermission(usr, "users_manage");
+    var templateManage = usr != null && DB.Permission.HasPermission(usr, "template_manage");
+    var permissionsManage = usr != null && DB.Permission.HasPermission(usr, "permissions_manage");
+
+    bool HasAdminPermission() => settingsEdit || usersManage || templateManage || permissionsManage;
 }
+
 <!DOCTYPE html>
 <html lang="en" class="pageHeight">
 <head>
@@ -33,20 +41,36 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="News" asp-action="Index">News</a>
                         </li>
-                        @if (usr?.IsAdmin == true)
+                        @if (HasAdminPermission())
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Administration
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">User Management</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Template" asp-action="Index">Template Administration</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a></li>
+                                    @if (usersManage)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">User Management</a></li>
+                                    }
+
+                                    @if (templateManage)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Template" asp-action="Index">Template Administration</a></li>
+                                    }
+
+                                    @if (settingsEdit)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a></li>
+                                    }
+
+                                    @if (settingsEdit)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Rights" asp-action="Roles">Manage Roles</a></li>
+                                    }
                                 </ul>
                             </li>
                         }
-                        
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Knowledge
@@ -104,7 +128,7 @@
     <footer class="border-top footer text-muted">
         <div class="container" style="display: flex; justify-content: space-between;">
             <div>
-                &copy; 2022 - EnvironmentServer - <a href="https://github.com/Fewiel/EnvironmentServer">GitHub</a> 
+                &copy; 2022 - EnvironmentServer - <a href="https://github.com/Fewiel/EnvironmentServer">GitHub</a>
             </div>
             <div>
                 <span class="badge rounded-pill bg-light text-dark">Current Workload: @DB.Performance.GetQueue() Tasks</span>

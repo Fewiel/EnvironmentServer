@@ -101,14 +101,15 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             DB.Logs.Add("DAL", "Insert user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);
 
-            c.Connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`, `ExpirationDate`) "
-                     + "VALUES (NULL, @email, @username, @password, @isAdmin, @exp)", new
+            c.Connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`, `ExpirationDate`, `RoleID`) "
+                     + "VALUES (NULL, @email, @username, @password, @isAdmin, @exp, @rid)", new
                      {
                          email = user.Email,
                          username = user.Username,
                          password = user.Password,
                          isAdmin = user.IsAdmin,
-                         exp = user.ExpirationDate
+                         exp = user.ExpirationDate,
+                         rid = user.RoleID
                      });
 
             c.Connection.Execute($"create user {MySqlHelper.EscapeString(user.Username)}@'localhost' identified by @password;", new
@@ -253,13 +254,14 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `RoleID` = @rid WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
                     username = user.Username,
                     password = user.Password,
-                    isAdmin = user.IsAdmin
+                    isAdmin = user.IsAdmin,
+                    rid = user.RoleID
                 });
 
             c.Connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
@@ -299,9 +301,10 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     Email = usr.Email,
                     IsAdmin = usr.IsAdmin,
                     Password = PasswordHasher.Hash(shellPassword),
-                    Active = user.Active,
-                    LastUsed = user.LastUsed,
-                    ExpirationDate = user.ExpirationDate
+                    Active = usr.Active,
+                    LastUsed = usr.LastUsed,
+                    ExpirationDate = usr.ExpirationDate,
+                    RoleID = usr.RoleID
                 };
 
                 c.Connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
@@ -323,7 +326,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
@@ -332,7 +335,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     isAdmin = user.IsAdmin,
                     active = user.Active,
                     lastused =  user.LastUsed,
-                    exp = user.ExpirationDate
+                    exp = user.ExpirationDate,
+                    rid = user.RoleID
                 });
         }
 
@@ -360,7 +364,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
@@ -369,7 +373,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     isAdmin = user.IsAdmin,
                     active = user.Active,
                     lastused = user.LastUsed,
-                    exp = user.ExpirationDate
+                    exp = user.ExpirationDate,
+                    rid = user.RoleID
                 });
         }
 

@@ -1,17 +1,13 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnvironmentServer.Web.Controllers
 {
     public class NewsController : ControllerBase
     {
-        private Database DB;
-
-        public NewsController(Database db)
-        {
-            DB = db;
-        }
+        public NewsController(Database db) : base(db) { }
 
         public IActionResult Index()
         {
@@ -19,6 +15,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
+        [Permission("news_write")]
         public IActionResult Add([FromForm]string content)
         {
             var news = new News
@@ -32,6 +29,7 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        [Permission("news_write")]
         public IActionResult Delete(long id)
         {
             DB.News.Delete(id);

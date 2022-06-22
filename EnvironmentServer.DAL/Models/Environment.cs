@@ -24,5 +24,6 @@ namespace EnvironmentServer.DAL.Models
         public DateTime LatestUse { get; set; }
         public bool Stored { get; set; }
         public bool DevelopmentMode { get; set; }
+        public bool Permanent { get; set; }
     }
 }

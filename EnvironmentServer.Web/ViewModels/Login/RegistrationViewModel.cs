@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EnvironmentServer.DAL.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,5 +23,9 @@ namespace EnvironmentServer.Web.ViewModels.Login
         
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}")]
         public DateTime? ExpirationDate { get; set; }
+        
+        public long RoleID { get; set; }
+
+        public List<SelectListItem> Roles { get; set; }        
     }
 }
