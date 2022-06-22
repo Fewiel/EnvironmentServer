@@ -83,7 +83,8 @@ namespace EnvironmentServer.Daemon
                 "lock_inactive_accounts",
                 "es_cleanup",
                 "pack_environments",
-                "performance_cpu_mem"
+                "performance_cpu_mem",
+                "delete_inactive_environments"
             };
 
             foreach (var a in actionList)
