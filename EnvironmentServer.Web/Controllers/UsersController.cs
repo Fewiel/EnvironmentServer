@@ -34,8 +34,12 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Create()
         {
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
+            var usrPermissions = DB.Permission.GetAllForUser(usr);
+
             var rvm = new RegistrationViewModel();
-            rvm.Roles = DB.Role.GetAll().Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList();
+            rvm.Roles = DB.Role.GetAll().Where(r => HasAllPermissionsInRole(r, usrPermissions))
+                .Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList();
 
             return View(rvm);
         }
@@ -85,17 +89,32 @@ namespace EnvironmentServer.Web.Controllers
 
         public IActionResult Update(long id)
         {
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
+            var usrPermissions = DB.Permission.GetAllForUser(usr);
+            
             var auvm = new AdminUsersViewModel
             {
                 User = DB.Users.GetByID(id),
                 DepartmentList = DB.Department.GetAll()
                     .Select(d => new SelectListItem(d.Name, d.ID.ToString())),
-                Roles = DB.Role.GetAll().Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList()
+                Roles = DB.Role.GetAll().Where(r => HasAllPermissionsInRole(r, usrPermissions))
+                    .Select(r => new SelectListItem(r.Name, r.ID.ToString())).ToList()
             };
 
             auvm.Roles.Insert(0, new("Please select", "0"));
 
             return View(auvm);
+        }
+
+        private bool HasAllPermissionsInRole(Role r, IEnumerable<Permission> usrPermissions)
+        {
+            var rolePermission = DB.RolePermission.GetForRole(r.ID);
+            foreach (var rp in rolePermission)
+            {
+                if (!usrPermissions.Any(ap => ap.ID == rp.PermissionID))
+                    return false;
+            }
+            return true;
         }
 
         public IActionResult LoginAsUser(long id)
@@ -154,6 +173,7 @@ namespace EnvironmentServer.Web.Controllers
         {
             var editUser = DB.Users.GetByID(GetSessionUser().ID);
             var editUserPermissions = DB.Permission.GetAllForUser(editUser);
+            var editRolePermissions = DB.RolePermission.GetForRole(editUser.RoleID);
 
             var allPerm = DB.Permission.GetAll();
             var allLimits = DB.Limit.GetAll();
@@ -166,7 +186,7 @@ namespace EnvironmentServer.Web.Controllers
 
             foreach (var p in allPerm)
             {
-                if (editUserPermissions.Contains(p))
+                if (editUserPermissions.Contains(p) || editRolePermissions.Any(rp => rp.PermissionID == p.ID))
                     webPerm.Add(new() { Permission = p, Enabled = perm.Any(pe => pe.PermissionID == p.ID) });
             }
 
@@ -190,13 +210,14 @@ namespace EnvironmentServer.Web.Controllers
         {
             var editUser = DB.Users.GetByID(GetSessionUser().ID);
             var editUserPermissions = DB.Permission.GetAllForUser(editUser);
+            var editRolePermissions = DB.RolePermission.GetForRole(editUser.RoleID);
 
             DB.Role.ClearUserPermissions(pvm.UserID);
             DB.Role.ClearUserLimits(pvm.UserID);
 
             foreach (var p in pvm.Permissions)
             {
-                if (!editUserPermissions.Contains(p.ToPermission()))
+                if (!editRolePermissions.Any(rp => rp.PermissionID == p.Permission.ID) && !editUserPermissions.Contains(p.ToPermission()))
                     continue;
 
                 if (p.Enabled)
