@@ -147,7 +147,8 @@ namespace EnvironmentServer.Daemon
                 new LockInactiveAccounts(sp),
                 new ESCleanup(sp),
                 new PackEnvironments(sp),
-                new PerformanceCheckCPUMem(sp)
+                new PerformanceCheckCPUMem(sp),
+                new DeleteInactiveEnvironments(sp)
             };
 
             foreach (var a in l)
