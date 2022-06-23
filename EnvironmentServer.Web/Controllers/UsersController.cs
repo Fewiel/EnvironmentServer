@@ -59,6 +59,12 @@ namespace EnvironmentServer.Web.Controllers
             if (!ModelState.IsValid)
                 return View(rvm);
 
+            if (rvm.RoleID == 0)
+            {
+                AddError("Please select a role.");
+                return View(rvm);
+            }
+
             if (DB.Users.GetByUsername(rvm.Username) != null)
             {
                 DB.Logs.Add("Web", "Registration failed for: " + rvm.Username + ". Username already taken.");
