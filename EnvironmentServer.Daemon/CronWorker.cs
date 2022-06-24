@@ -84,7 +84,8 @@ namespace EnvironmentServer.Daemon
                 "es_cleanup",
                 "pack_environments",
                 "performance_cpu_mem",
-                "delete_inactive_environments"
+                "delete_inactive_environments",
+                "cleanup_php_tmp_dir"
             };
 
             foreach (var a in actionList)
@@ -148,7 +149,8 @@ namespace EnvironmentServer.Daemon
                 new ESCleanup(sp),
                 new PackEnvironments(sp),
                 new PerformanceCheckCPUMem(sp),
-                new DeleteInactiveEnvironments(sp)
+                new DeleteInactiveEnvironments(sp),
+                new CleanPhpTmpDir(sp)
             };
 
             foreach (var a in l)
