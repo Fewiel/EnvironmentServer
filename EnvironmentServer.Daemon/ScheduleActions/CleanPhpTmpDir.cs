@@ -22,6 +22,8 @@ namespace EnvironmentServer.Daemon.ScheduleActions
             {
                 Console.WriteLine("Delete tmp for " + usr.Username);
                 var path = $"/home/{usr.Username}/files/php/tmp";
+                if (!Directory.Exists(path))
+                    continue;
                 foreach (var f in Directory.GetFiles(path))
                 {
                     if (File.GetCreationTime(f).AddDays(1) <= DateTime.Now)
