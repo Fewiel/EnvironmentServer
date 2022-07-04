@@ -96,7 +96,8 @@ namespace EnvironmentServer.Web.Controllers
                 Username = usr.Username,
                 Email = usr.Email,
                 Password = PasswordHasher.Hash(pvm.PasswordNew),
-                IsAdmin = usr.IsAdmin
+                IsAdmin = usr.IsAdmin,
+                RoleID = usr.RoleID
             };
 
             await DB.Users.UpdateAsync(update_usr, pvm.PasswordNew);
