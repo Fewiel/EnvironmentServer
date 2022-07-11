@@ -138,6 +138,9 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Update([FromForm] AdminUsersViewModel auvm)
         {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Update");
+
             var usr = DB.Users.GetByID(auvm.User.ID);
             usr.IsAdmin = auvm.User.IsAdmin;
             usr.Email = auvm.User.Email;
