@@ -66,11 +66,13 @@ namespace EnvironmentServer.Web.Controllers
 
         public async Task<IActionResult> ChangePasswordAsync([FromForm] ProfileViewModel pvm)
         {
-
-            var usr = GetSessionUser();
+            if (pvm == null)
+                return RedirectToAction("Index", "Profile");
 
             if (!ModelState.IsValid)
                 return RedirectToAction("Index", "Profile");
+
+            var usr = GetSessionUser();
 
             if (!PasswordHasher.Verify(pvm.Password, usr.Password))
             {

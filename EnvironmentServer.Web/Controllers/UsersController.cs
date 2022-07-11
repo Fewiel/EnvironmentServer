@@ -97,10 +97,14 @@ namespace EnvironmentServer.Web.Controllers
         {
             var usr = DB.Users.GetByID(GetSessionUser().ID);
             var usrPermissions = DB.Permission.GetAllForUser(usr);
-            
+
+            var updateUser = DB.Users.GetByID(id);
+
             var auvm = new AdminUsersViewModel
             {
-                User = DB.Users.GetByID(id),
+                User = new() { Username = updateUser.Username, Email = updateUser.Email, ID = updateUser.ID, Active = updateUser.Active, 
+                    ExpirationDate = updateUser.ExpirationDate, IsAdmin = updateUser.IsAdmin, LastUsed = updateUser.LastUsed, 
+                    RoleID = updateUser.RoleID, SSHPublicKey = updateUser.SSHPublicKey, UserInformation = updateUser.UserInformation },
                 DepartmentList = DB.Department.GetAll()
                     .Select(d => new SelectListItem(d.Name, d.ID.ToString())),
                 Roles = DB.Role.GetAll().Where(r => HasAllPermissionsInRole(r, usrPermissions))

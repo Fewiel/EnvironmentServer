@@ -11,7 +11,7 @@ namespace EnvironmentServer.Web.ViewModels.Profile
     {
         public string SSHPublicKey { get; set; }
 
-        [MinLength(4), DataType(DataType.Password)]
+        [Required, MinLength(4), DataType(DataType.Password)]
         public string Password { get; set; }
 
         [MinLength(6), DataType(DataType.Password)]
