@@ -8,7 +8,7 @@ namespace EnvironmentServer.Web.ViewModels.Users
     {
         public long ID { get; set; }
 
-        [Required, DataType(DataType.EmailAddress)]
+        [Required, MinLength(6), DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         public string Username { get; set; }
         public bool IsAdmin { get; set; }
