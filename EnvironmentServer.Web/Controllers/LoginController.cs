@@ -46,7 +46,10 @@ namespace EnvironmentServer.Web.Controllers
             }
 
             if (!ModelState.IsValid)
+            {
+                AddError("Please enter a correct username and password!");
                 return RedirectToRoute("login");
+            }
 
             var usr = new User();
 
