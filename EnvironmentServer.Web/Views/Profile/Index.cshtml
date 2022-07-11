@@ -1,22 +1,31 @@
-﻿@model EnvironmentServer.Web.ViewModels.Profile.ProfileViewModel
+﻿@using EnvironmentServer.Web.Extensions
+@model EnvironmentServer.Web.ViewModels.Profile.ProfileViewModel
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject EnvironmentServer.DAL.Database DB
 
 @{
     ViewData["Title"] = "Profile";
+
+    var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
 }
 
 <div class="d-flex align-items-center justify-content-center fullHeight" style="flex-direction: column;">
     <h3>Name: @Model.UserInformation.Name <br />Department: @Model.UserDepartment.Name</h3>
     <div class="alert alert-info">SSH key is needed only for SSH connection.</div>
-    <form method="post" asp-action="ChangeSSH" style="width: 400px;">
-        <div class="mb-3">
-            <label asp-for="SSHPublicKey" class="form-label">SSH Public Key</label>
-            <input asp-for="SSHPublicKey" class="form-control" />
-            <span asp-validation-for="SSHPublicKey"></span>
-            <span>Use OpenSSH format (ssh-rsa AAAAB3NzaC1...)</span>
-        </div>
-        <button type="submit" class="btn btn-primary">Set/Change SSH Public Key</button>
-    </form>
-    <br />
+    @if (DB.Permission.HasPermission(usr, "ssh_key_set"))
+    {
+        <form method="post" asp-action="ChangeSSH" style="width: 400px;">
+            <div class="mb-3">
+                <label asp-for="SSHPublicKey" class="form-label">SSH Public Key</label>
+                <input asp-for="SSHPublicKey" class="form-control" />
+                <span asp-validation-for="SSHPublicKey"></span>
+                <span>Use OpenSSH format (ssh-rsa AAAAB3NzaC1...)</span>
+            </div>
+            <button type="submit" class="btn btn-primary">Set/Change SSH Public Key</button>
+        </form>
+        <br />
+    }
+
     <form method="post" asp-action="UpdateInformations" style="width: 400px;">
         <input type="hidden" asp-for="UserInformation.ID" />
         <input type="hidden" asp-for="UserInformation.AdminNote" />
@@ -30,7 +39,7 @@
             <label asp-for="UserInformation.SlackID" class="form-label">SlackID</label>
             <input asp-for="UserInformation.SlackID" class="form-control" />
             <span asp-validation-for="UserInformation.SlackID"></span>
-        </div>        
+        </div>
         <div class="mb-3">
             <label asp-for="UserInformation.AbsenceDate" class="form-label">Absence until (Only if longer than 60 days)</label>
             <input type="datetime-local" asp-for="UserInformation.AbsenceDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />

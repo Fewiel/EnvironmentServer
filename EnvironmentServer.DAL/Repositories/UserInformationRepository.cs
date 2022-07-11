@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Utility;
 
 namespace EnvironmentServer.DAL.Repositories;
 
@@ -17,8 +18,8 @@ public class UserInformationRepository
     /// </summary>
     public UserInformation Get(long uid)
     {
-        using var connection = DB.GetConnection();
-        var usrInfo = connection.QuerySingleOrDefault<UserInformation>("select * from users_information where UserID = @id;", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        var usrInfo = c.Connection.QuerySingleOrDefault<UserInformation>("select * from users_information where UserID = @id;", new
         {
             id = uid
         });
@@ -46,8 +47,8 @@ public class UserInformationRepository
 
     public void Insert(UserInformation ui)
     {
-        using var connection = DB.GetConnection();
-        connection.Execute("INSERT INTO `users_information` (`ID`, `UserID`, `Name`, `SlackID`, " +
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("INSERT INTO `users_information` (`ID`, `UserID`, `Name`, `SlackID`, " +
             "`DepartmentID`, `AbsenceDate`, `AbsenceReason`, `AdminNote`) " +
             "VALUES (NULL, @userID, @name, @slackID, @departmentID, NULL, '', '');", new
             {
@@ -60,8 +61,8 @@ public class UserInformationRepository
 
     public void Update(UserInformation ui)
     {
-        using var connection = DB.GetConnection();
-        connection.Execute("UPDATE `users_information` SET " +
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("UPDATE `users_information` SET " +
             "`Name` = @name, " +
             "`SlackID` = @slackID, " +
             "`DepartmentID` = @departmentID, " +

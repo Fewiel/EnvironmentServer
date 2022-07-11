@@ -1,0 +1,41 @@
+﻿@model EnvironmentServer.Web.ViewModels.Rights.RoleViewModel
+
+@{
+    ViewData["Title"] = "Reights - Roles";
+}
+
+<form method="post" asp-action="AddRole" style="width: 400px;">
+
+    <label asp-for="Role.Name" class="form-label">Role Name</label>
+    <input asp-for="Role.Name" class="form-control" />
+    <span asp-validation-for="Role.Name"></span>
+
+    <label asp-for="Role.Description" class="form-label">Role Description</label>
+    <input asp-for="Role.Description" class="form-control" />
+    <span asp-validation-for="Role.Description"></span>
+
+
+    @for (int i = 0; i < Model.Permissions.Count; i++)
+    {
+        <br />
+        <div class="form-check form-switch">
+            <input type="hidden" asp-for=@Model.Permissions[i].Permission.ID value=@Model.Permissions[i].Permission.ID/>
+            <input id=@Model.Permissions[i].Permission.InternalName class="form-check-input" type="checkbox" asp-for=@Model.Permissions[i].Enabled>
+            <label class="form-check-label">@Model.Permissions[i].Permission.Name</label>
+        </div>
+    }
+
+    @for (int i = 0; i < Model.Limits.Count; i++)
+    {
+        <br />
+        <div class="input-group flex-nowrap">
+            <span class="input-group-text" id="addon-wrapping">@Model.Limits[i].Limit.Name</span>
+            <input type="hidden" asp-for=@Model.Limits[i].Limit.ID value=@Model.Limits[i].Limit.ID />
+            <input type="text" class="form-control" asp-for=@Model.Limits[i].Value>
+        </div>
+    }
+
+
+    <br />
+    <button type="submit" class="btn btn-primary">Add Role</button>
+</form>

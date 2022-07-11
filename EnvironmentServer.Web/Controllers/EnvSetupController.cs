@@ -1,22 +1,34 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.ViewModels.EnvSetup;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
 {
+    [Permission("environment_create")]
     public class EnvSetupController : ControllerBase
     {
-        private readonly Database DB;
-        public EnvSetupController(Database db)
-        {
-            DB = db;
-        }
+        public EnvSetupController(Database db) : base(db) { }
 
-        public IActionResult BaseData(EnvSetupViewModel esv) => View(esv ?? new());
+        public IActionResult BaseData(EnvSetupViewModel esv)
+        {
+            var environments = DB.Environments.GetForUser(GetSessionUser().ID);
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
+            var limit = DB.Limit.GetLimit(usr, "environment_max");
+
+            if (limit <= environments.Count() && limit > 0)
+            {
+                AddError($"You have to many Environments! You can only have {limit} Environment(s)!");
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(esv ?? new());
+        }
 
         [HttpPost]
         public IActionResult MajorVersion([FromForm] EnvSetupViewModel esv)
@@ -41,7 +53,7 @@ namespace EnvironmentServer.Web.Controllers
 
             foreach (var i in tmp_env_list)
             {
-                if (i.InternalName.ToLower() == esv.InternalName.ToLower())
+                if (string.Equals(i.InternalName, esv.InternalName, System.StringComparison.OrdinalIgnoreCase))
                 {
                     AddError("Environment Name already in use");
                     return RedirectToAction("BaseData", esv);
@@ -55,16 +67,34 @@ namespace EnvironmentServer.Web.Controllers
         public IActionResult MinorVersion([FromForm] EnvSetupViewModel esv)
         {
             if (esv.CustomSetupType == "empty")
-                return RedirectToAction(nameof(PhpVersion), esv);
+                return RedirectToAction(nameof(EmptyWebspaceSettings), esv);
             if (esv.CustomSetupType == "git")
                 return RedirectToAction(nameof(GitSource), esv);
             if (esv.CustomSetupType == "wget")
                 return RedirectToAction(nameof(WGetSource), esv);
             if (esv.CustomSetupType == "exhibition")
                 return RedirectToAction(nameof(Exhibition), esv);
+            if (esv.CustomSetupType == "template")
+                return RedirectToAction(nameof(Template), esv);
 
             esv.ShopwareVersions = DB.ShopwareVersionInfos.GetForMajor(esv.MajorShopwareVersion);
             return View(esv);
+        }
+
+        public IActionResult EmptyWebspaceSettings(EnvSetupViewModel esv) => View(esv);
+
+        [HttpPost]
+        public IActionResult EmptySW5Route(EnvSetupViewModel esv)
+        {
+            esv.MajorShopwareVersion = 5;
+            return RedirectToAction(nameof(PhpVersion), esv);
+        }
+
+        [HttpPost]
+        public IActionResult EmptySW6Route(EnvSetupViewModel esv)
+        {
+            esv.MajorShopwareVersion = 6;
+            return RedirectToAction(nameof(PhpVersion), esv);
         }
 
         public IActionResult WGetSource(EnvSetupViewModel esv) => View(esv);
@@ -83,6 +113,12 @@ namespace EnvironmentServer.Web.Controllers
             return View(esv);
         }
 
+        public IActionResult Template(EnvSetupViewModel esv)
+        {
+            esv.Templates = DB.Templates.GetAllSorted();
+            return View(esv);
+        }
+
         [HttpPost]
         public IActionResult Finalize([FromForm] EnvSetupViewModel esv)
         {
@@ -92,10 +128,17 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromForm] EnvSetupViewModel esv)
         {
+            DB.Logs.Add("Debug", "EnvSetupViewModel: " + JsonConvert.SerializeObject(esv));
+
             if (!string.IsNullOrEmpty(esv.ExhibitionFile))
             {
                 esv.ShopwareVersion = "6";
                 esv.MajorShopwareVersion = 6;
+            }
+
+            if (esv.CustomSetupType == "empty")
+            {
+                esv.ShopwareVersion = "N/A";
             }
 
             var environment = new Environment()
@@ -106,9 +149,6 @@ namespace EnvironmentServer.Web.Controllers
                 Address = esv.InternalName.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion
             };
-
-            if (esv.MajorShopwareVersion == 0)
-                esv.ShopwareVersion = "Custom";
 
             var lastID = await DB.Environments.InsertAsync(environment, GetSessionUser(),
                 esv.MajorShopwareVersion == 6).ConfigureAwait(false);
@@ -196,6 +236,20 @@ namespace EnvironmentServer.Web.Controllers
                 DB.Environments.SetTaskRunning(lastID, true);
             }
 
+            if (esv.TemplateID != 0)
+            {
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/template.txt",
+                    esv.TemplateID.ToString());
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "fast_deploy",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+                DB.Environments.SetTaskRunning(lastID, true);
+            }
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -205,6 +259,7 @@ namespace EnvironmentServer.Web.Controllers
             var environment = new Environment()
             {
                 UserID = GetSessionUser().ID,
+                DisplayName = esv.DisplayName,
                 InternalName = esv.InternalName,
                 Address = esv.InternalName.ToLower() + "-" + GetSessionUser().Username + "." + DB.Settings.Get("domain").Value,
                 Version = esv.PhpVersion

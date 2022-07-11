@@ -67,7 +67,7 @@ internal class FeedRefresh : ScheduledActionBase
 
             if (tmp_list.Count == 0)
             {
-                db.Logs.Add("Web", "Error FeedRefresh, restore Backup. List == 0");
+                db.Logs.Add("Deamon", "Error FeedRefresh, restore Backup. List == 0");
 
                 if (major == 5)
                 {
@@ -90,12 +90,12 @@ internal class FeedRefresh : ScheduledActionBase
                 {
                     db.ShopwareVersionInfos.Create(v);
                 }
-                db.Logs.Add("Web", "FeedRefresh Sucessful");
+                db.Logs.Add("Deamon", "FeedRefresh Sucessful");
             }
         }
         catch (Exception ex)
         {
-            db.Logs.Add("Web", "Error FeedRefresh, restore Backup. " + ex.Message);
+            db.Logs.Add("Deamon", "Error FeedRefresh, restore Backup. " + ex.Message);
 
             if (major == 5)
             {

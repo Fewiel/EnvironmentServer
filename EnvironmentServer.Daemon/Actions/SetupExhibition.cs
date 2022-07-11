@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using Dapper;
 using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Utility;
 using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using MySqlX.XDevAPI.Common;
@@ -54,12 +55,12 @@ public class SetupExhibition : ActionBase
         shopwareconfig = shopwareconfig + Environment.NewLine + $"DATABASE_URL=mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}";
         File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/.env", shopwareconfig);
 
-        using var conn = db.GetConnection();
-        conn.Execute($"UPDATE `{user.Username}_{env.InternalName}`.`sales_channel_domain` SET `url` = @url WHERE `url` not like '%/de' and `url` like '%http%';", new
+        using var c = new MySQLConnectionWrapper(db.ConnString);
+        c.Connection.Execute($"UPDATE `{user.Username}_{env.InternalName}`.`sales_channel_domain` SET `url` = @url WHERE `url` not like '%/de' and `url` like '%http%';", new
         {
             url = "https://" + env.Address
         });
-        conn.Execute($"UPDATE `{user.Username}_{env.InternalName}`.`sales_channel_domain` SET `url` = @url WHERE `url` like '%/de' and `url` like '%http%';", new
+        c.Connection.Execute($"UPDATE `{user.Username}_{env.InternalName}`.`sales_channel_domain` SET `url` = @url WHERE `url` like '%/de' and `url` like '%http%';", new
         {
             url = "https://" + env.Address + "/de"
         });

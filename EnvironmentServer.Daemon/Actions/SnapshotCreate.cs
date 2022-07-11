@@ -1,5 +1,6 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Utility;
 using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
@@ -45,6 +46,10 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
                 .ExecuteAsync();
 
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R root:root /home/{user.Username}/files/{env.InternalName}\"")
+                .ExecuteAsync();
+
             db.Logs.Add("Daemon", "SnapshotCreate - Git init: " + env.InternalName);
             //check for git init
             await Cli.Wrap("/bin/bash")
@@ -75,13 +80,15 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithStandardOutputPipe(PipeTarget.ToStringBuilder(hash))
                 .ExecuteAsync();
 
-            using (var connection = db.GetConnection())
-            {
-                //SELECT * FROM environments_snapshots WHERE environments_Id_fk = 1 ORDER BY Created DESC LIMIT 1;
-                var Command = new MySqlCommand($"UPDATE environments_snapshots SET Hash = '{hash}' WHERE id = {snap.Id};");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            using var c = new MySQLConnectionWrapper(db.ConnString);
+            //SELECT * FROM environments_snapshots WHERE environments_Id_fk = 1 ORDER BY Created DESC LIMIT 1;
+            var Command = new MySqlCommand($"UPDATE environments_snapshots SET Hash = '{hash}' WHERE id = {snap.Id};");
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
+
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/files/{env.InternalName}\"")
+                .ExecuteAsync();
 
             db.Logs.Add("Daemon", "SnapshotCreate - Enable Site: " + env.InternalName);
             //restart site

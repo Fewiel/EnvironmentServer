@@ -1,0 +1,46 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+@{
+    ViewData["Title"] = "Templates - Environment Setup";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Shopware Version</th>
+            <th>CreatorID</th>
+            <th>Select</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var v in @Model.Templates)
+        {
+            <tr>
+                <td>
+                    <span>@v.Name</span>
+                </td>
+                <td>
+                    <span>@v.Description</span>
+                </td>
+                <td>
+                    <span>@v.ShopwareVersion</span>
+                </td>
+                <td>
+                    <span>@v.UserID</span>
+                </td>
+                <td>
+                    <form method="post" asp-action="PhpVersion">
+                        <input type="hidden" asp-for="InternalName" />
+                        <input type="hidden" asp-for="DisplayName" />
+                        <input type="hidden" asp-for="MajorShopwareVersion" value=@v.ShopwareVersion[0] />
+                        <input type="hidden" asp-for="ShopwareVersion" value=@v.ShopwareVersion />
+                        <input type="hidden" asp-for="TemplateID" value=@v.ID />
+                        <button type="submit" class="btn btn-primary">Select</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

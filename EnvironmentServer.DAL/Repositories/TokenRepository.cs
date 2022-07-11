@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Utility;
 using System;
-using System.Collections;
 
 namespace EnvironmentServer.DAL.Repositories;
 
@@ -17,8 +17,8 @@ public class TokenRepository
     public Guid Generate(long userID)
     {
         var newGuid = Guid.NewGuid();
-        using var connection = DB.GetConnection();
-        connection.Execute("INSERT INTO `token` (`ID`, `Guid`, `UserID`, `Used`, `Created`) " +
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute("INSERT INTO `token` (`ID`, `Guid`, `UserID`, `Used`, `Created`) " +
             "VALUES (NULL, @guid, @userid, '0', CURRENT_TIMESTAMP);", new
             {
                 guid = newGuid,
@@ -29,8 +29,8 @@ public class TokenRepository
 
     public bool Use(Guid guid, long userid)
     {
-        using var connection = DB.GetConnection();
-        var token = connection.QuerySingleOrDefault<Token>("Select * from `token` where Guid = @guid and UserID = @userid and Used = 0;", new
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        var token = c.Connection.QuerySingleOrDefault<Token>("Select * from `token` where Guid = @guid and UserID = @userid and Used = 0;", new
         {
             guid = guid,
             userid = userid
@@ -39,7 +39,7 @@ public class TokenRepository
         if (token == null)
             return false;
 
-        connection.Execute("UPDATE `token` SET `Used` = '1' WHERE `token`.`ID` = @id;", new
+        c.Connection.Execute("UPDATE `token` SET `Used` = '1' WHERE `token`.`ID` = @id;", new
         {
             id = token.ID
         });
@@ -49,8 +49,8 @@ public class TokenRepository
 
     public void DeleteOldTokens()
     {
-        using var connection = DB.GetConnection();
-        connection.Execute($"UPDATE `token` SET `Used` = '1' where Created < DATE(DATE_SUB(NOW(), INTERVAL 4 HOUR));");
-        connection.Execute($"DELETE FROM `token` where Created < DATE(DATE_SUB(NOW(), INTERVAL 48 HOUR));");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        c.Connection.Execute($"UPDATE `token` SET `Used` = '1' where Created < DATE(DATE_SUB(NOW(), INTERVAL 4 HOUR));");
+        c.Connection.Execute($"DELETE FROM `token` where Created < DATE(DATE_SUB(NOW(), INTERVAL 48 HOUR));");
     }
 }

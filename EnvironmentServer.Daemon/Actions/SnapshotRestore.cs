@@ -1,5 +1,6 @@
 ﻿using CliWrap;
 using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Utility;
 using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
@@ -38,8 +39,13 @@ namespace EnvironmentServer.Daemon.Actions
                 .WithArguments("-c \"service apache2 reload\"")
                 .ExecuteAsync();
 
+            await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"chown -R root:root /home/{user.Username}/files/{env.InternalName}\"")
+                .ExecuteAsync();
+
             db.Logs.Add("Daemon", "SnapshotRestore - git reset --hard: " + env.InternalName);
-            //Git reset
+            //Git reset            
+
             await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"git reset --hard {snap.Hash}\"")
                 .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
@@ -53,20 +59,19 @@ namespace EnvironmentServer.Daemon.Actions
 
             db.Logs.Add("Daemon", "SnapshotRestore - Recreate/dump database: " + env.InternalName);
             //Recreate Database            
-            using (var connection = db.GetConnection())
-            {
-                var Command = new MySqlCommand("drop database " + dbString + ";");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
+            using var c = new MySQLConnectionWrapper(db.ConnString);
+            var Command = new MySqlCommand("drop database " + dbString + ";");
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
 
-                Command = new MySqlCommand("create database " + dbString + ";");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
+            Command = new MySqlCommand("create database " + dbString + ";");
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
 
-                Command = new MySqlCommand("grant all on " + dbString + ".* to '" + user.Username + "'@'localhost';");
-                Command.Connection = connection;
-                Command.ExecuteNonQuery();
-            }
+            Command = new MySqlCommand("grant all on " + dbString + ".* to '" + user.Username + "'@'localhost';");
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
+
 
             foreach (var i in db.Snapshot.GetForEnvironment(env.ID))
             {
@@ -82,7 +87,7 @@ namespace EnvironmentServer.Daemon.Actions
                 .ExecuteAsync();
 
             await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
+                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/files/{env.InternalName}\"")
                 .ExecuteAsync();
 
             db.Logs.Add("Daemon", "SnapshotRestore - Enable Site: " + env.InternalName);
@@ -106,7 +111,7 @@ namespace EnvironmentServer.Daemon.Actions
                     return;
             }
 
-            db.Mail.Send($"Snapshot restored for {env.InternalName}!", 
+            db.Mail.Send($"Snapshot restored for {env.InternalName}!",
                 string.Format(db.Settings.Get("mail_snapshot_restored").Value, user.Username, env.InternalName), user.Email);
         }
     }

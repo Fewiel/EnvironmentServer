@@ -18,8 +18,15 @@ namespace EnvironmentServer.Daemon
         private static readonly DBConfig Config
             = JsonConvert.DeserializeObject<DBConfig>(File.ReadAllText("DBConfig.json"));
 
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            File.AppendAllText($"error_log_daemon_{DateTime.Now:dd_MM_yyyy}.log", e.ExceptionObject.ToString());
+        }
+
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             var db = new Database($"server={Config.Host};database={Config.Database};" +
                 $"uid={Config.Username};pwd={Config.Password};");
             var hc = new HttpClient();
@@ -43,16 +50,19 @@ namespace EnvironmentServer.Daemon
 
             var w = new Worker(sp);
             var cw = new CronWorker(sp);
-            string cmd = "";
-            while (cmd != "1")
+            while (true)
             {
-                Console.WriteLine("Enter 1 to stop deamon");
-                cmd = Console.ReadLine();
                 Thread.Sleep(5000);
+                Console.WriteLine("Check Worker...");
+                File.WriteAllText("/root/logs/latest_WorkerStatus.log", DateTime.Now.ToString());
+                if (w.ActiveWorkerTask.IsFaulted)
+                {
+                    Console.WriteLine("Worker is faulted");
+                    db.Logs.Add("Deamon", "ERROR: Worker IsFaulted: " + w.ActiveWorkerTask.Exception.ToString());
+                    File.WriteAllText("/root/logs/latest_WorkerIsFaulted.log", DateTime.Now.ToString() + w.ActiveWorkerTask.Exception.ToString());
+                    w = new Worker(sp);
+                }
             }
-
-            w.StopWorker();
-            cw.StopWorker();
         }
     }
 }

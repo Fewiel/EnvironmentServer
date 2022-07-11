@@ -1,4 +1,5 @@
 ﻿using CliWrap;
+using EnvironmentServer.Daemon.Utility;
 using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,35 +18,13 @@ internal class RestoreEnvironment : ActionBase
         var db = sp.GetService<Database>();
         var em = sp.GetService<IExternalMessaging>();
         var env = db.Environments.Get(variableID);
-        var usr = db.Users.GetByID(env.UserID);
 
-        if (!env.Stored)
+        if (env == null || !env.Stored)
             return;
 
         db.Logs.Add("Daemon", $"Starting restore for Environment {env.InternalName}.");
 
-        if (!File.Exists($"/home/{usr.Username}/files/inactive/{env.InternalName}.zip"))
-        {
-            db.Logs.Add("Daemon", $"Restore Failed! File not found: /home/{usr.Username}/files/inactive/{env.InternalName}.zip");
-            await em.SendMessageAsync($"Restore of Environment Failed! File not found: /home/{usr.Username}/files/inactive/{env.InternalName}.zip",
-                db.UserInformation.Get(usr.ID).SlackID);
-            return;
-        }
-
-        Directory.Delete($"/home/{usr.Username}/files/{env.InternalName}", true);
-
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"unzip /home/{usr.Username}/files/inactive/{env.InternalName}.zip\"")
-            .WithWorkingDirectory($"/home/{usr.Username}/files")
-            .ExecuteAsync();
-
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.InternalName}\"")
-            .ExecuteAsync();
-
-        File.Delete($"/home/{usr.Username}/files/inactive/{env.InternalName}.zip");
-
-        db.Environments.SetStored(env.ID, false);
+        await EnvironmentPacker.UnpackEnvironmentAsync(sp, env);
 
         db.Logs.Add("Daemon", $"Environment {env.InternalName} restored.");
         await em.SendMessageAsync($"Restore of Environment {env.InternalName} done.",

@@ -1,5 +1,7 @@
 ﻿using EnvironmentServer.Daemon.Actions;
 using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
@@ -15,8 +17,9 @@ namespace EnvironmentServer.Daemon
         private readonly Database DB;
         private readonly ServiceProvider SP;
         private readonly CancellationTokenSource cancellationToken;
-        private readonly Task ActiveWorkerTask;
         private readonly Dictionary<string, ActionBase> Actions = new();
+
+        public Task ActiveWorkerTask { get; }
 
         public Worker(ServiceProvider sp)
         {
@@ -39,7 +42,17 @@ namespace EnvironmentServer.Daemon
             while (!cancellationToken.IsCancellationRequested)
             {
                 //Get task
-                var task = DB.CmdAction.GetFirstNonExecuted();
+                File.WriteAllText("/root/logs/latest_GetFirstNonExecuted.log", DateTime.Now.ToString());
+                var task = new CmdAction();
+                try
+                {
+                    task = DB.CmdAction.GetFirstNonExecuted();
+                }
+                catch (Exception ex)
+                {
+                    //Dirty fix to gain some time
+                }
+
                 if (string.IsNullOrEmpty(task.Action))
                 {
                     Thread.Sleep(500);
@@ -50,7 +63,7 @@ namespace EnvironmentServer.Daemon
                 if (!Actions.TryGetValue(task.Action, out var act))
                 {
                     DB.Logs.Add("Deamon", "Undefined action called: " + task.Action);
-                    DB.CmdAction.SetExecuted(task.Id);
+                    DB.CmdAction.SetExecuted(task.Id, task.Action, task.ExecutedById);
                     continue;
                 }
 
@@ -58,7 +71,13 @@ namespace EnvironmentServer.Daemon
                 try
                 {
                     Console.WriteLine("Run Task: " + task.Action);
+                    DB.Logs.Add("Deamon", $"Task started: {JsonConvert.SerializeObject(task)}");
+                    File.WriteAllText("/root/logs/latest_TaskStart.log", DateTime.Now.ToString());
+
                     await act.ExecuteAsync(SP, task.Id_Variable, task.ExecutedById);
+
+                    File.WriteAllText("/root/logs/latest_TaskEnd.log", DateTime.Now.ToString());
+                    DB.Logs.Add("Deamon", $"Task end: {JsonConvert.SerializeObject(task)}");
                 }
                 catch (Exception ex)
                 {
@@ -66,12 +85,17 @@ namespace EnvironmentServer.Daemon
                     throw;
 #endif
                     Console.WriteLine(ex.ToString());
+                    File.WriteAllText("/root/logs/latest_TaskException.log", DateTime.Now.ToString());
                     DB.Logs.Add("Daemon", "ERROR in Worker: " + ex.ToString());
                 }
 
                 //Set executed in DB
-                DB.CmdAction.SetExecuted(task.Id);
+                DB.CmdAction.SetExecuted(task.Id, task.Action, task.ExecutedById);
             }
+
+            DB.Logs.Add("Deamon", "ERROR: Deamon exited DoWork");
+            var em = SP.GetService<IExternalMessaging>();
+            await em.SendMessageAsync("Deamon exited DoWork", "U02954V4Q6B");
         }
 
         private void FillActions()
@@ -89,7 +113,12 @@ namespace EnvironmentServer.Daemon
                 new DownloadExtractAutoinstall(),
                 new SetupExhibition(),
                 new RestoreEnvironment(),
-                new RegeneratePhpConfig()
+                new RegeneratePhpConfig(),
+                new FastDeploy(),
+                new CreateTemplate(),
+                new DeleteTemplate(),
+                new HotfixPackedEnvironments(),
+                new EnvironmentSetDevelopment()
             };
 
             foreach (var a in l)

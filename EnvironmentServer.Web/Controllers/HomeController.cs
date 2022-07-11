@@ -15,12 +15,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class HomeController : ControllerBase
     {
-        private readonly Database DB;
-
-        public HomeController(Database database)
-        {
-            DB = database;
-        }
+        public HomeController(Database database) : base(database) { }
 
         public IActionResult Index()
         {
@@ -29,15 +24,33 @@ namespace EnvironmentServer.Web.Controllers
                 AddError("Please change your Passwort! Do not use darkstar as password!");
                 return RedirectToAction("Index", "Profile");
             }
+                        
+            var dash = new DashboardModel()
+            {
+                Environments = DB.Environments.GetForUser(GetSessionUser().ID),
+                Htaccess = DB.Settings.Get("pma_htacces_login").Value
+            };
 
-            var dash = new DashboardModel() { Environments = DB.Environments.GetForUser(GetSessionUser().ID),
-                Htaccess = DB.Settings.Get("pma_htacces_login").Value };
+            if (DB.Permission.HasPermission(GetSessionUser(), "admin_statistics_show"))
+            {
+                dash.PerformanceData = DB.Performance.Get();
+                dash.Queue = DB.Performance.GetQueue();
+                dash.UserCount = DB.Performance.GetUsers();
+                dash.EnvironmentCount = DB.Performance.GetEnvironments();
+                dash.StoredCount = DB.Performance.GetStoredEnvironments();
+            }
+
             DB.Users.UpdateLastUse(GetSessionUser());
 
             if (DB.Users.GetByUsername(GetSessionUser().Username) == null || !DB.Users.GetByUsername(GetSessionUser().Username).Active)
                 HttpContext.Session.Clear();
 
             return View(dash);
+        }
+
+        public IActionResult Pma()
+        {
+            return Redirect("https://" + DB.Settings.Get("pma_htacces_login").Value + "@" + DB.Settings.Get("pma_link").Value);
         }
 
         [AdminOnly]

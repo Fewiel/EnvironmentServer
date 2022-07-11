@@ -1,0 +1,38 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+
+@{
+    ViewData["Title"] = "Empty Webspace Settings - Environment Setup";
+}
+
+
+<h3>Select Shopware Major Version</h3>
+<p>This will affect your Webserver configuration (Root directory)</p>
+
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-3">
+        <form method="post" asp-action="EmptySW5Route">
+            <input type="hidden" asp-for="InternalName" />
+            <input type="hidden" asp-for="DisplayName" />
+            <input type="hidden" asp-for="CustomSetupType" />
+            <a asp-controller="EnvSetup" asp-action="EmptySW5Route" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                    <img src="~/img/sw5-signet.svg" class="card-img-top" style="padding: 20px; width: 300px; height: 300px;" />
+                </div>
+            </a>
+        </form>
+    </div>
+    <div class="col-3">
+        <form method="post" asp-action="EmptySW6Route">
+            <input type="hidden" asp-for="InternalName" />
+            <input type="hidden" asp-for="DisplayName" />
+            <input type="hidden" asp-for="CustomSetupType" />
+            <a asp-controller="EnvSetup" asp-action="EmptySW6Route" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
+                <div class="card">
+                    <img src="~/img/sw6-signet.svg" class="card-img-top" style="padding: 20px; width: 300px; height: 300px;" />
+                </div>
+            </a>
+        </form>
+    </div>
+</div>

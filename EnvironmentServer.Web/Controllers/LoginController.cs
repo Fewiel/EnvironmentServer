@@ -17,12 +17,7 @@ namespace EnvironmentServer.Web.Controllers
     [AllowNotLoggedIn]
     public class LoginController : ControllerBase
     {
-        private readonly Database DB;
-
-        public LoginController(Database database)
-        {
-            DB = database;
-        }
+        public LoginController(Database database) : base(database) { }
 
         [HttpGet, Route("/Login", Name = "login")]
         public IActionResult Login()

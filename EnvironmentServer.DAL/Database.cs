@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Repositories;
 using EnvironmentServer.Mail;
-using MySql.Data.MySqlClient;
 
 namespace EnvironmentServer.DAL
 {
     public class Database
     {
-        private readonly string ConnString;
+        public string ConnString { get; }
 
         public SettingsRepository Settings { get; }
         public UsersRepository Users { get; }
@@ -33,6 +30,16 @@ namespace EnvironmentServer.DAL
         public UserInformationRepository UserInformation { get; }
         public DepartmentRepository Department { get; }
         public ExhibitionVersionRepository ExhibitionVersion { get; }
+        public PerformanceRepository Performance { get; }
+        public TemplateRepository Templates { get; }
+        public CmdActionDetailsRepository CmdActionDetail { get; }
+        public RoleRepository Role { get; }
+        public LimitRepository Limit { get; }
+        public PermissionRepository Permission { get; }
+        public RoleLimitRepository RoleLimit { get; }
+        public RolePermissionRepository RolePermission { get; }
+        public UserLimitRepository UserLimit { get; }
+        public UserPermissionRepository UserPermission { get; }
 
         public Database(string connString)
         {
@@ -58,17 +65,28 @@ namespace EnvironmentServer.DAL
             UserInformation = new UserInformationRepository(this);
             Department = new DepartmentRepository(this);
             ExhibitionVersion = new ExhibitionVersionRepository(this);
+            Performance = new PerformanceRepository(this);
+            Templates = new TemplateRepository(this);
+            CmdActionDetail = new CmdActionDetailsRepository(this);
+            Role = new RoleRepository(this);
+            Limit = new LimitRepository(this);
+            Permission = new PermissionRepository(this);
+            RoleLimit = new RoleLimitRepository(this);
+            RolePermission = new RolePermissionRepository(this);
+            UserLimit = new UserLimitRepository(this);
+            UserPermission = new UserPermissionRepository(this);
 
-            if (Users.GetByUsername("Admin") == null)
+            if (Users.GetByUsername("admin") == null)
             {
                 Logs.Add("DAL", "Creating Admin user");
                 Task.Run(() => Users.InsertAsync(new User
                 {
                     Email = "root@root.tld",
-                    Username = "Admin",
-                    Password = PasswordHasher.Hash("Admin"),
-                    IsAdmin = true
-                }, "Admin"));
+                    Username = "admin",
+                    Password = PasswordHasher.Hash("admin"),
+                    IsAdmin = true,
+                    RoleID = 0
+                }, "admin"));
             }
         }
 
@@ -78,13 +96,6 @@ namespace EnvironmentServer.DAL
 
             var attrib = (DescriptionAttribute)Attribute.GetCustomAttribute(member, typeof(DescriptionAttribute), false);
             return (attrib?.Description ?? member.Name).ToLower();
-        }
-
-        public MySqlConnection GetConnection()
-        {
-            var c = new MySqlConnection(ConnString);
-            c.Open();
-            return c;
         }
     }
 }

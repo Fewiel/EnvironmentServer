@@ -12,12 +12,7 @@ namespace EnvironmentServer.Web.Controllers
 {
     public class SnapshotController : ControllerBase
     {
-        private Database DB;
-
-        public SnapshotController(Database database)
-        {
-            DB = database;
-        }
+        public SnapshotController(Database database) : base(database) { }
 
         public IActionResult Index(long id)
         {
@@ -47,7 +42,8 @@ namespace EnvironmentServer.Web.Controllers
                 Id_Variable = id,
                 ExecutedById = GetSessionUser().ID
             });
-            DB.Environments.SetTaskRunning(id, true);
+
+            DB.Environments.SetTaskRunning(DB.Snapshot.Get(id).EnvironmentId, true);
             AddInfo("Environment Snapshot will be restored, this can take a few seconds");
             return RedirectToAction("Index", "Home");
         }

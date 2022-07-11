@@ -8,16 +8,14 @@ namespace EnvironmentServer.Web.Controllers
     [AllowNotLoggedIn]
     public class RecoverController : ControllerBase
     {
-        private Database DB;
-
-        public RecoverController(Database db)
-        {
-            DB = db;
-        }
+        public RecoverController(Database db) : base(db) { }
 
         [Route("[controller]/{id}")]
         public IActionResult StartRecover(long id)
         {
+            if (DB.CmdAction.Exists("restore_environment", id))
+                return RedirectToAction(nameof(WaitForRecover), new { id });
+
             DB.Environments.Use(id);
             DB.CmdAction.CreateTask(new CmdAction
             {

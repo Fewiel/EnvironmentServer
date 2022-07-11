@@ -1,9 +1,14 @@
-﻿@model IEnumerable<EnvironmentServer.DAL.Models.User>
+﻿@using EnvironmentServer.Web.Extensions
+@model IEnumerable<EnvironmentServer.DAL.Models.User>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject EnvironmentServer.DAL.Database DB
+
 @{
     ViewData["Title"] = "Users";
+
+    var sessionUsr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
 }
 <a asp-action="Create"><i style="font-size: 30px;" class="bi bi-person-plus"></i></a>
-@*<span> - </span><a asp-action="Regenerate">Regenerate config files</a><span>*@
 <table class="table">
     <thead>
         <tr>
@@ -38,8 +43,9 @@
                 <td>
                     <span style="@(usr.Active ? "" : "color:#FF0000; font-weight:bold;")">@usr.Active</span>
                 </td>
-                <td>                    
+                <td>
                     <a asp-action="LoginAsUser" asp-route-id="@usr.ID"><i class="bi bi-door-open"></i></a>
+                    <a asp-action="Permissions" style="margin-left: 10px;" asp-route-id="@usr.ID"><i class="bi bi-key"></i></a>
                     <a asp-action="Update" style="margin-left: 10px;" asp-route-id="@usr.ID"><i class="bi bi-pencil"></i></a>
                     <a asp-action="Delete" style="margin-left: 10px;" onclick="return confirm('Are you sure? This will delete the User and all Userdata! This step cannot be undone!')" asp-route-id="@usr.ID"><i style="color:#FF0000" class="bi bi-trash"></i></a>
                 </td>

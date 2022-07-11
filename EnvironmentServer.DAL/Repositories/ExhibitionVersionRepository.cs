@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.DAL.Utility;
 using System.Collections.Generic;
 
 namespace EnvironmentServer.DAL.Repositories;
@@ -15,7 +16,7 @@ public class ExhibitionVersionRepository
 
     public IEnumerable<ExhibitionVersion> Get()
     {
-        using var connection = DB.GetConnection();
-        return connection.Query<ExhibitionVersion>("Select * from exhibition_versions");
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return c.Connection.Query<ExhibitionVersion>("Select * from exhibition_versions");
     }
 }

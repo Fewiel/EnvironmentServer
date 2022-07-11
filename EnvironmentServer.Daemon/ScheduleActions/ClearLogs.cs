@@ -16,6 +16,7 @@ internal class ClearLogs : ScheduledActionBase
     public override Task ExecuteAsync(Database db)
     {
         db.Logs.DeleteOld();
+        db.CmdAction.DeleteOldExecuted();
         return Task.CompletedTask;
     }
 }
