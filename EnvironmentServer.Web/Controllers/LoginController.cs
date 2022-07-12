@@ -34,8 +34,17 @@ namespace EnvironmentServer.Web.Controllers
         {
             Thread.Sleep(300);
 
-            if (!ModelState.IsValid)
+            if(lvm == null)
+            {
+                AddError("Please enter username and password!");
                 return RedirectToRoute("login");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                AddError("Please enter a correct username and password!");
+                return RedirectToRoute("login");
+            }
 
             var usr = new User();
 
