@@ -108,15 +108,22 @@ internal class DownloadExtractAutoinstall : ActionBase
                 .ExecuteAsync();
 
             db.Environments.SetTaskRunning(env.ID, false);
+
+            //Link Frontend/Backend
+            //Login            
+
+            var adminlink = env.Address + (envVersion.Value[0] == '6' ? "/admin" : "/backend");
+
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
-                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value, env.InternalName),
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value, 
+                    env.InternalName, env.Address, adminlink),
                     user.UserInformation.SlackID);
                 if (success)
                     return;
             }
             db.Mail.Send($"Installation finished for {env.InternalName}!", string.Format(
-                db.Settings.Get("mail_download_finished").Value, user.Username, env.InternalName), user.Email);
+                db.Settings.Get("mail_download_autoinstall_finished").Value, user.Username, env.InternalName, env.Address, adminlink), user.Email);
 
         }
         catch (Exception ex)

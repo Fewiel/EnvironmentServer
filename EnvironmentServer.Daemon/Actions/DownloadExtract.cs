@@ -83,13 +83,13 @@ namespace EnvironmentServer.Daemon.Actions
             var usr = db.Users.GetByID(env.UserID);
             if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
             {
-                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_download_finished").Value, env.InternalName),
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_download_finished").Value, env.InternalName, env.Address),
                     usr.UserInformation.SlackID);
                 if (success)
                     return;
             }
             db.Mail.Send($"Download and Extract finished for {env.InternalName}!",
-                string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.InternalName), user.Email);
+                string.Format(db.Settings.Get("mail_download_finished").Value, user.Username, env.InternalName, env.Address), user.Email);
         }
     }
 }
