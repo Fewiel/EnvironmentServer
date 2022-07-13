@@ -511,7 +511,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 Username = usr.Username,
                 Email = usr.Email,
                 Password = PasswordHasher.Hash(password),
-                IsAdmin = usr.IsAdmin
+                IsAdmin = usr.IsAdmin,
+                RoleID = usr.RoleID
             };
 
             await UpdateAsync(update_usr, password);
