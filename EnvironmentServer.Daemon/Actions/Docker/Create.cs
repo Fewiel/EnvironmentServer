@@ -6,6 +6,8 @@ using System;
 using Ductus.FluentDocker.Model.Containers;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using EnvironmentServer.DAL.Models;
 
 namespace EnvironmentServer.Daemon.Actions.Docker
 {
@@ -19,19 +21,24 @@ namespace EnvironmentServer.Daemon.Actions.Docker
             var _docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
             var db = sp.GetService<Database>();
 
+            var config = JsonConvert.DeserializeObject<DockerInstance>(db.CmdActionDetail.Get(variableID).JsonString);
+
             if (_docker == null)
             {
-                db.Logs.Add("docker.start", "Docker not found");
+                db.Logs.Add("docker.start", "Docker not found on Host");
                 return Task.CompletedTask;
             }
 
-            var id = _docker.Host.Run("docker.elastic.co/elasticsearch/elasticsearch:{esVersion}", new ContainerCreateParams
+            var id = _docker.Host.Run(config.Image, new ContainerCreateParams
             {
-                Name = "",
-                PortMappings = new string[] { "127.0.0.1:{port}:9200", "127.0.0.1:{port + 100}:9300" },
-                Environment = new string[] { "discovery.type=single-node" },
-                Interactive = true
+                Name = config.Name,
+                PortMappings = config.PortMappings,
+                Environment = config.DockerEnvironment,
+                Interactive = config.Interactive
             }, _docker.Certificates).Data;
+
+            config.ID = id;
+
         }
     }
 }
