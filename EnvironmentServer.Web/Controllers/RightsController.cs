@@ -140,7 +140,6 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Roles");
         }
 
-        [HttpPost]
         public IActionResult Delete(long id)
         {
             DB.Role.Delete(id);
