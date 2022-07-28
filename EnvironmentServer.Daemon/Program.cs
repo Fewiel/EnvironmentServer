@@ -54,11 +54,15 @@ namespace EnvironmentServer.Daemon
             {
                 Thread.Sleep(5000);
                 Console.WriteLine("Check Worker...");
+                if (!Directory.Exists("/root/logs"))
+                    Directory.CreateDirectory("/root/logs");
                 File.WriteAllText("/root/logs/latest_WorkerStatus.log", DateTime.Now.ToString());
                 if (w.ActiveWorkerTask.IsFaulted)
                 {
                     Console.WriteLine("Worker is faulted");
                     db.Logs.Add("Deamon", "ERROR: Worker IsFaulted: " + w.ActiveWorkerTask.Exception.ToString());
+                    if (!Directory.Exists("/root/logs"))
+                        Directory.CreateDirectory("/root/logs");
                     File.WriteAllText("/root/logs/latest_WorkerIsFaulted.log", DateTime.Now.ToString() + w.ActiveWorkerTask.Exception.ToString());
                     w = new Worker(sp);
                 }
