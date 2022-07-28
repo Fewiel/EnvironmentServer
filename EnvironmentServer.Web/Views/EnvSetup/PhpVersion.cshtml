@@ -11,7 +11,7 @@
             <div class="card-header container-fluid" @(@v.ToString() != "Php80" ? "" : "style=\"background-color:#335624;\"")>
                 <div class="row">
                     <div class="col-md-10">
-                        Version: @v @(@v.ToString() != "Php80" ? "" : "- Recommended for Shopware 6")@(@v.ToString() != "Php56" ? "" : "- Shopware 5 only!")
+                        Version: @v @(@v.ToString() != "Php80" ? "" : "- Recommended for Shopware 6")@(@v.ToString() != "Php74" ? "" : "- Recommended for Shopware 5.7+ & 6")@(@v.ToString() != "Php56" ? "" : "- Shopware 5.6 and later!")
                     </div>
                     <div class="col-md-2 float-right">
                         <form method="post" asp-action="Finalize">
