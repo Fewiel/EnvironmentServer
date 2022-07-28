@@ -139,5 +139,13 @@ namespace EnvironmentServer.Web.Controllers
             AddInfo("Role updated");
             return RedirectToAction("Roles");
         }
+
+        [HttpPost]
+        public IActionResult Delete(long id)
+        {
+            DB.Role.Delete(id);
+            AddInfo("Role updated");
+            return RedirectToAction("Roles");
+        }
     }
 }
