@@ -32,9 +32,9 @@ public abstract class RepositoryBase<T> where T : IDBIdentifier
         });
     }
 
-    public abstract void Insert(T t);
+    public abstract Task InsertAsync(T t);
 
-    public abstract void Update(T t);
+    public abstract Task UpdateAsync(T t);
 
     public void Delete(T t)
     {

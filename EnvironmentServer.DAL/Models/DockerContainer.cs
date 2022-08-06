@@ -1,8 +1,9 @@
-﻿using System;
+﻿using EnvironmentServer.DAL.Interfaces;
+using System;
 
 namespace EnvironmentServer.DAL.Models;
 
-public class DockerContainer
+public class DockerContainer : IDBIdentifier
 {
     public long ID { get; set; }
     public string DockerID { get; set; }

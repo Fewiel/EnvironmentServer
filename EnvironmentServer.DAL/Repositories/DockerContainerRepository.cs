@@ -6,23 +6,10 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL.Repositories;
 
-public class DockerContainerRepository
+public class DockerContainerRepository : RepositoryBase<DockerContainer>
 {
-    private Database DB;
+    public DockerContainerRepository(Database db) : base(db, "docker_containers") { }
 
-    public DockerContainerRepository(Database db)
-    {
-        DB = db;
-    }
-
-    //Get all
-    public async Task<IEnumerable<DockerContainer>> GetAsync()
-    {
-        using var c = new MySQLConnectionWrapper(DB.ConnString);
-        return await c.Connection.QueryAsync<DockerContainer>("select * from `docker_containers`;");
-    }
-
-    //Get all for user
     public async Task<IEnumerable<DockerContainer>> GetAllForUserAsync(long uid)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
@@ -32,17 +19,6 @@ public class DockerContainerRepository
         });
     }
 
-    //Get by ID
-    public async Task<IEnumerable<DockerContainer>> GetByIDAsync(long id)
-    {
-        using var c = new MySQLConnectionWrapper(DB.ConnString);
-        return await c.Connection.QueryAsync<DockerContainer>("select * from `docker_containers` where ID = @id;", new
-        {
-            id
-        });
-    }
-
-    //Get by File
     public async Task<IEnumerable<DockerContainer>> GetByFileIDAsync(long id)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
@@ -50,5 +26,29 @@ public class DockerContainerRepository
         {
             id
         });
+    }
+
+    public override async Task InsertAsync(DockerContainer t)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        await c.Connection.ExecuteAsync("inser into `docker_containers` (`UserID`, `Name`, `DockerComposeFileID`) values " +
+            "(@uid, @name, @dcfid)", new
+            {
+                uid = t.UserID,
+                name = t.Name,
+                dcfid = t.DockerComposeFileID
+            });
+    }
+
+    public override async Task UpdateAsync(DockerContainer t)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        await c.Connection.ExecuteAsync("update `docker_containers` set " +
+            "`DockerID` = @did, `Name` = @name, `Active` = @active where ID = @id;", new
+            {
+                did = t.DockerID,
+                name = t.Name,
+                active = t.Active
+            });
     }
 }
