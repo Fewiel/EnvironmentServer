@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Login";
 }
-
+<link href="~/css/login.css" rel="stylesheet" type="text/css" />
 <div class="dev-login">
     <div class="dev-login__container">
         <div class="dev-login__image">
@@ -48,64 +48,3 @@
         </div>
     }
 </div>
-
-<style>
-     
-.dev-login .dev-login__container {
-    background: #fff;
-    width: 1120px;
-    min-height: 590px;
-    display: grid;
-    grid-template-columns: auto 480px;
-    transition: all .3s ease-in-out;
-    transform: scale(1);
-    border: 2px solid;
-    border-color: #d94545;
-}
-
-.dev-login .dev-login__image {
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
-    background-color: #fff;
-    background-image: url(https://login-image.shopware.com/login/login.jpg),url(../img/dev-login-background.png);
-    background-position: 50%;
-    background-size: cover;
-    opacity: 1;
-    transition: opacity .3s ease-in-out,padding .2s ease-in-out;
-}
-
-.dev-login {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background-color: #222;
-            transition: background-color .3s ease-in-out;
-            overflow: auto;
-}
-
-.dev-login__content {
-    color: black;
-    padding: 40px;
-}
-
-.dev-login .dev-login__badge {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 64px;
-            height: 64px;
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            z-index: 420;
-            background: #189eff;
-            transition: top .2s ease-in-out,right .2s ease-in-out;
-}
-
-.dev-login .dev-login__badge svg {
-            fill: #fff;
-}
-
-</style>
