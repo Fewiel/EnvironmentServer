@@ -1,5 +1,5 @@
 .dev-login .dev-login__container {
-    background: #fff;
+    background: #222;
     width: 1120px;
     min-height: 590px;
     display: grid;
@@ -7,14 +7,13 @@
     transition: all .3s ease-in-out;
     transform: scale(1);
     border: 2px solid;
-    border-color: #200978;
+    border-color: #ffffff;
 }
 
 .dev-login .dev-login__image {
     display: flex;
     flex-direction: row;
     overflow: hidden;
-    background-color: #fff;
     background-image: url(/img/login-img.png);
     background-position: 50%;
     background-size: cover;
@@ -30,6 +29,7 @@
             background-color: #222;
             transition: background-color .3s ease-in-out;
             overflow: auto;
+            color: #ffffff;
 }
 
 .dev-login__content {
