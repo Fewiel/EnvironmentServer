@@ -86,6 +86,24 @@
             <div class="icon-button">
                 <a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a>
             </div>
+            <div class="icon-button">
+                @if(DB.Permission.HasPermission(usr, "templates_create"))
+                {
+                <a class="dropdown-item" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>Create Template</a>
+                }  
+            </div>
+            <div class="icon-button">
+                @if (sw_version[0] == '6')
+                {
+                <a class="dropdown-item" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID>@(Model.DevelopmentMode ? "Disable" : "Enable") Dev Mode</a>
+                }
+            </div>
+            <div class="icon-button">
+                <a class="dropdown-item" asp-controller="Env" asp-action="ChangePerma" asp-route-id=@Model.ID>Set/Unset Permanent</a>
+            </div>
+            <div class="icon-button">
+                <a class="dropdown-item" onclick="return confirm('Are you sure to delete your Environment?')" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>Delete</a>
+            </div>
         </div>
     </div>
 </div>
