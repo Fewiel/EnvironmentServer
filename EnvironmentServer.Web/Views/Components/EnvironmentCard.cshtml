@@ -100,28 +100,52 @@
                 </a>
              </div>
             <div class="icon-button">
-                <a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a>
+                <a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--Copy" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Create Snapshot</span>
+                </div>
+                </a>
              </div>
             <div class="icon-button">
-                <a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a>
+                <a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--CopyEdit" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Show Snapshot</span>
+                </div>
+                </a>
             </div>
             <div class="icon-button">
                 @if(DB.Permission.HasPermission(usr, "templates_create"))
                 {
-                <a class="dropdown-item" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>Create Template</a>
+                <a class="dropdown-item" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--AssessmentGroupTemplate" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Create Template</span>
+                </div>
+                </a>
                 }  
             </div>
             <div class="icon-button">
                 @if (sw_version[0] == '6')
                 {
-                <a class="dropdown-item" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID>@(Model.DevelopmentMode ? "Disable" : "Enable") Dev Mode</a>
+                <a class="dropdown-item" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID>@(Model.DevelopmentMode ? "Disable" : "Enable")> 
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--DeveloperTools" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Dev Mode</span>
+                </div>
+                </a>
                 }
             </div>
             <div class="icon-button">
-                <a class="dropdown-item" asp-controller="Env" asp-action="ChangePerma" asp-route-id=@Model.ID>Set/Unset Permanent</a>
+                <a class="dropdown-item" asp-controller="Env" asp-action="ChangePerma" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--TimelineProgress" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Set/Unset Permanent</span>
+                </div>
+                </a>
             </div>
             <div class="icon-button">
-                <a class="dropdown-item" onclick="return confirm('Are you sure to delete your Environment?')" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>Delete</a>
+                <a class="dropdown-item" onclick="return confirm('Are you sure to delete your Environment?')" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--Delete" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Delete</span>
+                </div>
+                </a>
             </div>
         </div>
     </div>
