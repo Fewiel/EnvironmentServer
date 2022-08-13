@@ -1,4 +1,4 @@
-﻿@using EnvironmentServer.DAL.Enums
+@using EnvironmentServer.DAL.Enums
 @using EnvironmentServer.Web.Extensions
 @using Microsoft.AspNetCore.Http
 @model EnvironmentServer.DAL.Models.Environment
@@ -38,36 +38,8 @@
                 </div>
                 <div style="grid-area: buttons; width: 100%;">
                     <div class="btn-group" role="group" style="width: 100%;" ;>
-
                         <a class="btn btn-primary me-auto" asp-controller="Env" asp-action="OpenFrontend" asp-route-id=@Model.ID target="_blank">Frontend</a>
-
                         <a class="btn btn-primary" asp-controller="Env" asp-action="OpenBackend" asp-route-id=@Model.ID target="_blank">Admin</a>
-
-                        <div class="btn-group" role="group">
-                            <button id="btnMore" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-hide" data-bs-toggle="dropdown">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">Edit</a></li>
-                                <li><a class="dropdown-item" asp-controller="Env" asp-action="Sorting">Sorting</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.InternalName)');return false;">Copy DB-User</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy DB-Password</a></li>
-                                <li><a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a></li>
-                                <li><a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a></li>
-
-                                @if(DB.Permission.HasPermission(usr, "templates_create"))
-                                {
-                                    <li><a class="dropdown-item" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>Create Template</a></li>
-                                }                                
-
-                                @if (sw_version[0] == '6')
-                                {
-                                    <li><a class="dropdown-item" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID>@(Model.DevelopmentMode ? "Disable" : "Enable") Dev Mode</a></li>
-                                }
-                                <li><a class="dropdown-item" asp-controller="Env" asp-action="ChangePerma" asp-route-id=@Model.ID>Set/Unset Permanent</a></li>
-                                <li><a class="dropdown-item" onclick="return confirm('Are you sure to delete your Environment?')" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>Delete</a></li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
                 <div style="grid-area: pills; margin-top: 10px;">
@@ -95,5 +67,37 @@
                 </div>
             </div>
         </div>
+        <div class="button-container">
+            <div class="icon-button">
+                <a class="dropdown-item" asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">Edit</a>
+            </div>
+            <div class="icon-button">
+                <a class="dropdown-item" asp-controller="Env" asp-action="Sorting">Sorting</a>
+             </div>
+            <div class="icon-button">
+                <a class="dropdown-item" href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.InternalName)');return false;">Copy DB-User</a>
+             </div>
+            <div class="icon-button">
+                <a class="dropdown-item" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy DB-Password</a>
+             </div>
+            <div class="icon-button">
+                <a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a>
+             </div>
+            <div class="icon-button">
+                <a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+.button-container {
+    max-width: 100%;
+    border-top: 2px dotted grey;
+    margin-top: 10px;
+}
+.icon-button {
+    width: 50%;
+    float: left;
+}
+</style>
