@@ -73,8 +73,8 @@
         <div class="button-container">
             <div class="icon-button">
                 <a class="dropdown-item" asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">
-                    <div class="tooltip"><i class="ms-Icon ms-Icon--Settings" aria-hidden="true"></i>
-                        <span class="tooltiptext">Edit</span>
+                    <div class="icontooltip"><i class="ms-Icon ms-Icon--Settings" aria-hidden="true"></i>
+                        <span class="icontooltiptext">Edit</span>
                     </div>
                 </a>
             </div>
@@ -125,13 +125,12 @@
     width: 50%;
     float: left;
 }
-.tooltip {
+.icontooltip {
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black;
 }
 
-.tooltip .tooltiptext {
+.icontooltip .icontooltiptext {
   visibility: hidden;
   width: 120px;
   background-color: black;
@@ -145,7 +144,7 @@
   right: 110%;
 }
 
-.tooltip .tooltiptext::after {
+.icontooltip .icontooltiptext::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -155,7 +154,7 @@
   border-style: solid;
   border-color: transparent transparent transparent black;
 }
-.tooltip:hover .tooltiptext {
+.icontooltip:hover .icontooltiptext {
   visibility: visible;
 }
 </style>
