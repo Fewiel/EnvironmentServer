@@ -14,7 +14,10 @@
     var task = Model.Settings.Find(s => s.EnvironmentSetting.Property == "task");
     var taskRunning = task == null ? false : bool.Parse(task.Value);
 }
-
+<link
+  rel="stylesheet"
+  href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"
+/>
 <div class="col-md-3 px-1">
     <div class="card mb-2 hovercard" style="min-height: 200px;">
         <div class="card-body" style="padding: 5px;">
