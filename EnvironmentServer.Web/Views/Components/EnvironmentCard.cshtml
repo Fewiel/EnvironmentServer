@@ -73,21 +73,23 @@
         <div class="button-container">
             <div class="icon-button">
                 <a class="dropdown-item" asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">
-                    <span class="icotooltip" data-tooltip="Edit"><i class="ms-Icon ms-Icon--Settings" aria-hidden="true"></i></span>
+                    <span class="icontooltip" data-tooltip="Edit"><i class="ms-Icon ms-Icon--Settings" aria-hidden="true"></i></span>
                 </a>
             </div>
             <div class="icon-button">
                 <a class="dropdown-item" asp-controller="Env" asp-action="Sorting">
-                    <span class="icotooltip" data-tooltip="Sorting"><i class="ms-Icon ms-Icon--Sort" aria-hidden="true"></i></span>
+                    <span class="icontooltip" data-tooltip="Sorting"><i class="ms-Icon ms-Icon--Sort" aria-hidden="true"></i></span>
                 </a>
              </div>
             <div class="icon-button">
                 <a class="dropdown-item" href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.InternalName)');return false;">
-                    <span class="icotooltip" data-tooltip="Copy DB-User"><i class="ms-Icon ms-Icon--Copy" aria-hidden="true"></i></span>
+                    <span class="icontooltip" data-tooltip="Copy DB-User"><i class="ms-Icon ms-Icon--TableGroup" aria-hidden="true"></i></span>
                 </a>
              </div>
             <div class="icon-button">
-                <a class="dropdown-item" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy DB-Password</a>
+                <a class="dropdown-item" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">
+                <span class="icontooltip" data-tooltip="Copy DB-Password"><i class="ms-Icon ms-Icon--TablePermission" aria-hidden="true"></i></span>
+                </a>
              </div>
             <div class="icon-button">
                 <a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a>
@@ -128,7 +130,7 @@
     float: left;
 
 }
-.icotooltip {
+.icontooltip {
   position:relative;
   background-color:rgba(0,0,0,.5);
   width:25px;
@@ -161,7 +163,7 @@
     font-size:.75rem;
     letter-spacing:1px;
     color:#eaeaea;
-    background-color:black;
+    background-color:rgba(0,0,0,.3);
     padding:.5rem;
     border-radius:5px;
     min-width:315px;
