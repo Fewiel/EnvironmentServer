@@ -73,7 +73,9 @@
         <div class="button-container">
             <div class="icon-button">
                 <a class="dropdown-item" asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">
-                    <span class="icontooltip" data-tooltip="Edit"><i class="ms-Icon ms-Icon--Settings" aria-hidden="true"></i></span>
+                    <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-html="true" title="<i class="ms-Icon ms-Icon--Settings" aria-hidden="true"></i>">
+                    Edit
+                    </button>
                 </a>
             </div>
             <div class="icon-button">
