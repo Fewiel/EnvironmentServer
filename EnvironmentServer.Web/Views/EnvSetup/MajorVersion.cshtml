@@ -15,23 +15,10 @@
 
     bool HasOther = hasTemplates || hasEmpty;
 }
-@if (DB.Permission.HasPermission(usr, "environment_expert"))
-{
+
 <h2>Predefined Versions</h2>
 <div class="row">
     <div class="col-3"></div>
-    <div class="col-3">
-        <form method="post" asp-action="MinorVersion">
-            <input type="hidden" asp-for="InternalName" />
-            <input type="hidden" asp-for="DisplayName" />
-            <input type="hidden" asp-for="MajorShopwareVersion" value="5" />
-            <a asp-controller="EnvSetup" asp-action="MinorVersion" class="text-decoration-none text-body" onclick="this.closest('form').submit();return false;">
-                <div class="card">
-                    <img src="~/img/sw5-signet.svg" class="card-img-top" style="padding: 20px; width: 300px; height: 300px;" />
-                </div>
-            </a>
-        </form>
-    </div>
     <div class="col-3">
         <form method="post" asp-action="MinorVersion">
             <input type="hidden" asp-for="InternalName" />
@@ -45,7 +32,7 @@
         </form>
     </div>
 </div>
-}
+
 @if (HasOther)
 {
     <h2>Other</h2>
