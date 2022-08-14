@@ -108,7 +108,7 @@
              </div>
             <div class="icon-button">
                 <a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>
-                <div class="icontooltip"><i class="ms-Icon ms-Icon--CopyEdit" aria-hidden="true"></i>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--ProductList" aria-hidden="true"></i>
                     <span class="icontooltiptext">Show Snapshot</span>
                 </div>
                 </a>
@@ -126,7 +126,7 @@
             <div class="icon-button">
                 @if (sw_version[0] == '6')
                 {
-                <a class="dropdown-item" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID>@(Model.DevelopmentMode ? "Disable" : "Enable") 
+                <a class="dropdown-item" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID@(Model.DevelopmentMode ? "Disable" : "Enable")>
                 <div class="icontooltip"><i class="ms-Icon ms-Icon--DeveloperTools" aria-hidden="true"></i>
                     <span class="icontooltiptext">Dev Mode</span>
                 </div>
