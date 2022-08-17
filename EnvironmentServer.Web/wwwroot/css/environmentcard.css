@@ -1,0 +1,43 @@
+.button-container {
+    max-width: 100%;
+    border-top: 2px dotted grey;
+    margin-top: 10px;
+}
+.icon-button {
+    width: 20%;
+    float: left;
+
+}
+.icon-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 7%;
+    color: #f8f9fa;
+}
+.icontooltip {
+  position: relative;
+  display: inline-block;
+  font-size: large;
+}
+
+.icontooltip .icontooltiptext {
+  visibility: hidden;
+  width: 10em;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.icontooltip:hover .icontooltiptext {
+  visibility: visible;
+}
