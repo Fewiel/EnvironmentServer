@@ -5,11 +5,17 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @inject EnvironmentServer.DAL.Database DB
 <link href="~/css/environmentcard.css" rel="stylesheet" type="text/css" />
+
+<link href="~/lib/FluentUI-icons/fonts/FluentSystemIcons-Filled.css" rel="stylesheet" type="text/css" />
+<link href="~/lib/FluentUI-icons/fonts/FluentSystemIcons-Regular.css" rel="stylesheet" type="text/css" />
+<link href="~/lib/FluentUI-icons/fonts/FluentSystemIcons-Resizable.css" rel="stylesheet" type="text/css" />
+
+<!--
 <link
   rel="stylesheet"
   href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"
 />
-
+-->
 @{
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
 
