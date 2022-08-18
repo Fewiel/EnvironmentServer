@@ -8,8 +8,7 @@
 }
 
 .footer-fix {
-    margin-bottom: 65px;
-    overflow-y: auto;
+    padding-bottom: 65px;
 }
 
 .fullHeight {
