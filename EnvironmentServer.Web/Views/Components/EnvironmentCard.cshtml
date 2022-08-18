@@ -1,10 +1,10 @@
-﻿@using EnvironmentServer.DAL.Enums
+@using EnvironmentServer.DAL.Enums
 @using EnvironmentServer.Web.Extensions
 @using Microsoft.AspNetCore.Http
 @model EnvironmentServer.DAL.Models.Environment
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @inject EnvironmentServer.DAL.Database DB
-
+<link href="~/css/environmentcard.css" rel="stylesheet" type="text/css" />
 @{
     var usr = HttpContextAccessor.HttpContext.Session.GetObject<EnvironmentServer.DAL.Models.User>("user");
 
@@ -15,7 +15,7 @@
     var taskRunning = task == null ? false : bool.Parse(task.Value);
 }
 
-<div class="col-md-3 px-1">
+<div class="col-md-4 px-1">
     <div class="card mb-2 hovercard" style="min-height: 200px;">
         <div class="card-body" style="padding: 5px;">
             <div style="display: grid; grid-template-areas: 'logo name' 'logo buttons' 'pills pills'; grid-template-rows: 62px 38px auto; grid-template-columns: 100px auto;">
@@ -38,36 +38,8 @@
                 </div>
                 <div style="grid-area: buttons; width: 100%;">
                     <div class="btn-group" role="group" style="width: 100%;" ;>
-
                         <a class="btn btn-primary me-auto" asp-controller="Env" asp-action="OpenFrontend" asp-route-id=@Model.ID target="_blank">Frontend</a>
-
                         <a class="btn btn-primary" asp-controller="Env" asp-action="OpenBackend" asp-route-id=@Model.ID target="_blank">Admin</a>
-
-                        <div class="btn-group" role="group">
-                            <button id="btnMore" type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-hide" data-bs-toggle="dropdown">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">Edit</a></li>
-                                <li><a class="dropdown-item" asp-controller="Env" asp-action="Sorting">Sorting</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.InternalName)');return false;">Copy DB-User</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">Copy DB-Password</a></li>
-                                <li><a class="dropdown-item" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>Create Snapshot</a></li>
-                                <li><a class="dropdown-item" asp-controller="Snapshot" asp-route-id=@Model.ID>Show Snapshots</a></li>
-
-                                @if(DB.Permission.HasPermission(usr, "templates_create"))
-                                {
-                                    <li><a class="dropdown-item" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>Create Template</a></li>
-                                }                                
-
-                                @if (sw_version[0] == '6')
-                                {
-                                    <li><a class="dropdown-item" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID>@(Model.DevelopmentMode ? "Disable" : "Enable") Dev Mode</a></li>
-                                }
-                                <li><a class="dropdown-item" asp-controller="Env" asp-action="ChangePerma" asp-route-id=@Model.ID>Set/Unset Permanent</a></li>
-                                <li><a class="dropdown-item" onclick="return confirm('Are you sure to delete your Environment?')" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>Delete</a></li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
                 <div style="grid-area: pills; margin-top: 10px;">
@@ -93,6 +65,84 @@
                         }
                     }
                 </div>
+            </div>
+        </div>
+        <div class="button-container">
+            <div class="icon-button">
+                <a class="icon-link" asp-controller="Env" asp-action="Update" asp-route-id="@Model.ID">
+                    <div class="icontooltip"><i class="ms-Icon ms-Icon--Settings" aria-hidden="true"></i>
+                        <span class="icontooltiptext">Edit</span>
+                    </div>
+                </a>
+            </div>
+            <div class="icon-button">
+                <a class="icon-link" asp-controller="Env" asp-action="Sorting">
+                    <div class="icontooltip"><i class="ms-Icon ms-Icon--Sort" aria-hidden="true"></i>
+                        <span class="icontooltiptext">Sorting</span>
+                    </div>
+                </a>
+             </div>
+            <div class="icon-button">
+                <a class="icon-link" href="#" onclick="CopyToClipboard('@(usr.Username + "_" + @Model.InternalName)');return false;">
+                    <div class="icontooltip"><i class="ms-Icon ms-Icon--FabricUserFolder" aria-hidden="true"></i>
+                        <span class="icontooltiptext">Copy DB-User</span>
+                    </div>
+                </a>
+             </div>
+            <div class="icon-button">
+                <a class="icon-link" href="#" onclick="CopyToClipboard('@Model.DBPassword');return false;">
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--AccessLogo" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Copy DB-Password</span>
+                </div>
+                </a>
+             </div>
+            <div class="icon-button">
+                <a class="icon-link" asp-controller="Snapshot" asp-action="Create" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--Copy" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Create Snapshot</span>
+                </div>
+                </a>
+             </div>
+            <div class="icon-button">
+                <a class="icon-link" asp-controller="Snapshot" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--ProductList" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Show Snapshot</span>
+                </div>
+                </a>
+            </div>
+            <div class="icon-button">
+                @if(DB.Permission.HasPermission(usr, "templates_create"))
+                {
+                <a class="icon-link" asp-controller="Template" asp-action="Create" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--Archive" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Create Template</span>
+                </div>
+                </a>
+                }  
+            </div>
+            <div class="icon-button">
+                @if (sw_version[0] == '6')
+                {
+                <a class="icon-link" asp-controller="Env" asp-action="Development" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--DeveloperTools" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Dev Mode</span>
+                </div>
+                </a>
+                }
+            </div>
+            <div class="icon-button">
+                <a class="icon-link" asp-controller="Env" asp-action="ChangePerma" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--TimelineProgress" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Set/Unset Permanent</span>
+                </div>
+                </a>
+            </div>
+            <div class="icon-button">
+                <a class="icon-link" onclick="return confirm('Are you sure to delete your Environment?')" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>
+                <div class="icontooltip"><i class="ms-Icon ms-Icon--Delete" aria-hidden="true"></i>
+                    <span class="icontooltiptext">Delete</span>
+                </div>
+                </a>
             </div>
         </div>
     </div>
