@@ -40,7 +40,10 @@ namespace EnvironmentServer.DAL
         public RolePermissionRepository RolePermission { get; }
         public UserLimitRepository UserLimit { get; }
         public UserPermissionRepository UserPermission { get; }
-
+        public DockerContainerRepository DockerContainer { get; }
+        public DockerComposeFileRepository DockerComposeFile { get; }
+        public DockerPortRepository DockerPort { get; }
+        
         public Database(string connString)
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -75,6 +78,9 @@ namespace EnvironmentServer.DAL
             RolePermission = new RolePermissionRepository(this);
             UserLimit = new UserLimitRepository(this);
             UserPermission = new UserPermissionRepository(this);
+            DockerPort = new DockerPortRepository(this);
+            DockerComposeFile = new DockerComposeFileRepository(this);
+            DockerContainer = new DockerContainerRepository(this);
 
             if (Users.GetByUsername("admin") == null)
             {

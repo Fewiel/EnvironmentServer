@@ -39,7 +39,7 @@ public abstract class RepositoryBase<T> where T : IDBIdentifier
     public void Delete(T t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        c.Connection.Execute($"DELETE FROM {TableName} WHERE `Id` = @id;", new
+        c.Connection.Execute($"DELETE FROM {TableName} WHERE ID = @id;", new
         {
             id = t.ID
         });
