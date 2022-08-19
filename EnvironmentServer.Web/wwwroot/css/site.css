@@ -8,8 +8,7 @@
 }
 
 .footer-fix {
-    margin-bottom: 65px;
-    overflow-y: auto;
+    padding-bottom: 65px;
 }
 
 .fullHeight {
@@ -36,6 +35,7 @@
 
 .no-scrollbars {
     scrollbar-width: none;
+    text-align: center;
 }
 
 .no-scrollbars::-webkit-scrollbar {
