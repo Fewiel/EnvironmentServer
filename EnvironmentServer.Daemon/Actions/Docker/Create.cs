@@ -7,17 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnvironmentServer.Daemon.Utility;
 using System.IO;
+using Ductus.FluentDocker;
 
 namespace EnvironmentServer.Daemon.Actions.Docker
 {
     internal class Create : ActionBase
     {
-        public override string ActionIdentifier => "docker.start";
-
-        public override Task ExecuteAsync(ServiceProvider db, long variableID, long userID)
-        {
-            throw new System.NotImplementedException();
-        }
+        public override string ActionIdentifier => "docker.create";
 
         public override async Task ExecuteAsync(ServiceProvider sp, long variableID, long userID)
         {
@@ -52,7 +48,7 @@ namespace EnvironmentServer.Daemon.Actions.Docker
             File.WriteAllText(filePath, dockerFile.Content);
 
             var svc = new Builder()
-                        .UseContainer()
+                        .UseContainer().WithName(container.ID.ToString())
                         .UseCompose()
                         .FromFile(filePath)
                         .RemoveOrphans()
@@ -60,7 +56,6 @@ namespace EnvironmentServer.Daemon.Actions.Docker
 
             container.Active = true;
             container.DockerID = svc.Name;
-            container.LatestUse = System.DateTimeOffset.Now;
 
             await db.DockerContainer.UpdateAsync(container);
         }

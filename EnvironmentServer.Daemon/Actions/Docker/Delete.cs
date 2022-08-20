@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.Daemon.Actions.Docker;
 
-internal class Stop : ActionBase
+public class Delete : ActionBase
 {
-    public override string ActionIdentifier => "docker.stop";
+    public override string ActionIdentifier => "docker.delete";
 
     public override async Task ExecuteAsync(ServiceProvider sp, long variableID, long userID)
     {
@@ -23,8 +23,9 @@ internal class Stop : ActionBase
             if (c.Name == container.Name)
             {
                 c.Stop();
-                container.Active = false;
-                await db.DockerContainer.UpdateAsync(container);
+                c.Dispose();
+                c.Remove(true);
+                db.DockerContainer.Delete(container);
                 return;
             }
         }

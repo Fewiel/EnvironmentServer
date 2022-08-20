@@ -28,6 +28,15 @@ public class DockerContainerRepository : RepositoryBase<DockerContainer>
         });
     }
 
+    public async Task<DockerContainer> GetByDockerIDAsync(string id)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return await c.Connection.QuerySingleAsync<DockerContainer>("select * from `docker_containers` where DockerID = @id;", new
+        {
+            id
+        });
+    }
+
     public override async Task InsertAsync(DockerContainer t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

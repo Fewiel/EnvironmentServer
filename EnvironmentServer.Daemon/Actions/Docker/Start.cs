@@ -1,12 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Ductus.FluentDocker.Services;
+using EnvironmentServer.DAL;
+using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace EnvironmentServer.Daemon.Actions.Docker
+namespace EnvironmentServer.Daemon.Actions.Docker;
+
+public class Start : ActionBase
 {
-    internal class Start
+    public override string ActionIdentifier => "docker.start";
+
+    public override async Task ExecuteAsync(ServiceProvider sp, long variableID, long userID)
     {
+        var hosts = new Hosts().Discover();
+        var _docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
+        var db = sp.GetService<Database>();
+
+        var container = await db.DockerContainer.GetByIDAsync(variableID);
+
+        foreach (var c in _docker.GetContainers())
+        {
+            if (c.Name == container.Name)
+            {
+                c.Start();
+                container.Active = true;
+                await db.DockerContainer.UpdateAsync(container);
+                return;
+            }
+        }
     }
 }
