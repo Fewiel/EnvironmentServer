@@ -1,0 +1,10 @@
+﻿@model EnvironmentServer.Web.ViewModels.Docker.DockerIndexViewModel
+
+@{
+    ViewData["Title"] = "Docker";
+}
+
+@foreach (var c in Model.Containers)
+{
+    <partial name="/Views/Components/EnvironmentCard.cshtml" model=c />
+}
