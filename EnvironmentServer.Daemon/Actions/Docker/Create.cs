@@ -55,9 +55,9 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                         .FromFile(filePath)
                         .RemoveOrphans()
                         .Build().Start();
-
+            
             container.Active = true;
-            container.DockerID = $"docker_container_{container.ID}_client_1";
+            container.DockerID = $"docker_container_{container.ID}_{_docker.Name}";
 
             await db.DockerContainer.UpdateAsync(container);
         }
