@@ -40,7 +40,7 @@ public class DockerContainerRepository : RepositoryBase<DockerContainer>
     public override async Task InsertAsync(DockerContainer t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        await c.Connection.ExecuteAsync("inser into `docker_containers` (`UserID`, `Name`, `DockerComposeFileID`) values " +
+        await c.Connection.ExecuteAsync("insert into `docker_containers` (`UserID`, `Name`, `DockerComposeFileID`) values " +
             "(@uid, @name, @dcfid)", new
             {
                 uid = t.UserID,
