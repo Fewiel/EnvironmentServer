@@ -6,7 +6,7 @@
 
 @foreach (var c in Model.Containers)
 {
-    <partial name="/Views/Components/DockerCard.cshtml" model=c />
+    <partial name="/Views/Components/DockerCard.cshtml" model=c.Container />
 }
 
 <div class="col-md-4 px-1">
