@@ -22,7 +22,7 @@ public class DockerComposeFileRepository : RepositoryBase<DockerComposeFile>
     public override async Task InsertAsync(DockerComposeFile t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        await c.Connection.ExecuteAsync("insert into `docker_compose_files` (`UserID`, `Name`, `Description`, `Content`) " +
+        await c.Connection.ExecuteAsync("insert into `docker_compose_files` (`UserID`, `Name`, `Description`, `FileContent`) " +
             "values (@uid, @name, @desc, @cont)", new
         {
             uid = t.UserID,
@@ -36,7 +36,7 @@ public class DockerComposeFileRepository : RepositoryBase<DockerComposeFile>
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
         await c.Connection.ExecuteAsync("update `docker_compose_files` set " +
-            "`UserID` = @uid, `Name` = @name, `Description` = @desc, `Content` = @cont where ID = @id;", new
+            "`UserID` = @uid, `Name` = @name, `Description` = @desc, `FileContent` = @cont where ID = @id;", new
             {
                 id = t.ID,
                 uid = t.UserID,
