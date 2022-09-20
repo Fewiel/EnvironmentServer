@@ -1,6 +1,7 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Models;
+using EnvironmentServer.Web.ViewModels.Docker;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,7 +24,9 @@ namespace EnvironmentServer.Web.Controllers
                 dData.Add(new() { Container = c, ContainerPorts = DB.DockerPort.GetForContainer(c.ID) });
             }
 
-            return View();
+            DockerIndexViewModel dview = new() { Containers = dData };
+
+            return View(dview);
         }
     }
 }
