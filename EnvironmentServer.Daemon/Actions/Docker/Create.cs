@@ -23,7 +23,7 @@ namespace EnvironmentServer.Daemon.Actions.Docker
 
             if (_docker == null)
             {
-                db.Logs.Add("docker.start", "Docker not found on Host");
+                db.Logs.Add("docker.create", "Docker not found on Host");
                 return;
             }
 

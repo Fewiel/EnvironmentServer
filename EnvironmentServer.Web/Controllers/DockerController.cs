@@ -45,7 +45,8 @@ namespace EnvironmentServer.Web.Controllers
         {
             var container = new DockerContainer { Name = ccvm.Container.Name, UserID = GetSessionUser().ID, DockerComposeFileID = ccvm.Container.DockerComposeFileID };
 
-            await DB.DockerContainer.InsertAsync(container);
+            var id = await DB.DockerContainer.InsertAsync(container);
+            DB.CmdAction.CreateTask(new CmdAction { Action = "docker.create", Id_Variable = id });
 
             return RedirectToAction("Index");
         }
