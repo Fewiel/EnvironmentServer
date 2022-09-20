@@ -32,7 +32,7 @@ namespace EnvironmentServer.Web.Controllers
         [HttpGet]
         public IActionResult CreateComposerFile()
         {
-            return View();
+            return View(new DockerComposeFile());
         }
 
         public async Task<IActionResult> CreateComposerFile([FromForm] DockerComposeFile cf)
