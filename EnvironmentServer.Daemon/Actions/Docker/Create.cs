@@ -57,7 +57,7 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                         .Build().Start();
             
             container.Active = true;
-            container.DockerID = $"docker_container_{container.ID}_{_docker.Name}";
+            container.DockerID = $"docker_container_{container.ID}_client_1";
 
             await db.DockerContainer.UpdateAsync(container);
         }
