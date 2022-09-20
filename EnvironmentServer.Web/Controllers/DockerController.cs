@@ -29,6 +29,7 @@ namespace EnvironmentServer.Web.Controllers
             return View(dview);
         }
 
+        [HttpGet]
         public async Task<IActionResult> CreateAsync()
         {
             CreateContainerViewModel ccvm = new()
@@ -39,6 +40,16 @@ namespace EnvironmentServer.Web.Controllers
 
             return View(ccvm);
         }
+
+        public async Task<IActionResult> CreateAsync([FromForm] CreateContainerViewModel ccvm)
+        {           
+            var container = new DockerContainer { Name = ccvm.Container.Name, UserID = GetSessionUser().ID, DockerComposeFileID = ccvm.Container.DockerComposeFileID };
+
+            await DB.DockerContainer.InsertAsync(container);
+
+            return RedirectToAction("Index");
+        }
+
 
         [HttpGet]
         public IActionResult CreateComposerFile()
