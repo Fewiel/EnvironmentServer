@@ -28,5 +28,21 @@ namespace EnvironmentServer.Web.Controllers
 
             return View(dview);
         }
+
+        public async Task<IActionResult> CreateFile([FromForm] DockerComposeFile cf)
+        {
+            var usr = GetSessionUser();
+            cf.UserID = usr.ID;
+
+            if (string.IsNullOrEmpty(cf.Name) || string.IsNullOrEmpty(cf.Description) || string.IsNullOrEmpty(cf.Content))
+            {
+                AddError("Please fill out all fields");
+                return View(cf);
+            }
+               
+            await DB.DockerComposeFile.InsertAsync(cf);
+            AddInfo("Composer File added");
+            return View(new DockerComposeFile());
+        }
     }
 }
