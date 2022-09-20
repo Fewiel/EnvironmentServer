@@ -42,7 +42,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         public async Task<IActionResult> CreateAsync([FromForm] CreateContainerViewModel ccvm)
-        {           
+        {
             var container = new DockerContainer { Name = ccvm.Container.Name, UserID = GetSessionUser().ID, DockerComposeFileID = ccvm.Container.DockerComposeFileID };
 
             await DB.DockerContainer.InsertAsync(container);
@@ -67,7 +67,7 @@ namespace EnvironmentServer.Web.Controllers
                 AddError("Please fill out all fields");
                 return View(cf);
             }
-               
+
             await DB.DockerComposeFile.InsertAsync(cf);
             AddInfo("Composer File added");
             return View(new DockerComposeFile());
@@ -81,9 +81,13 @@ namespace EnvironmentServer.Web.Controllers
                 return RedirectToAction("Index");
 
             if (!container.Active)
-                DB.CmdAction.CreateTask(new CmdAction() { Action = "docker.start", Id_Variable = id } );
-
-            DB.CmdAction.CreateTask(new CmdAction() { Action = "docker.stop", Id_Variable = id });
+            {
+                DB.CmdAction.CreateTask(new CmdAction() { Action = "docker.start", Id_Variable = id });
+            }
+            else
+            {
+                DB.CmdAction.CreateTask(new CmdAction() { Action = "docker.stop", Id_Variable = id });
+            }
 
             return RedirectToAction("Index");
         }
