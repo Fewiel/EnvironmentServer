@@ -29,6 +29,17 @@ namespace EnvironmentServer.Web.Controllers
             return View(dview);
         }
 
+        public async Task<IActionResult> CreateAsync()
+        {
+            CreateContainerViewModel ccvm = new()
+            {
+                Container = new(),
+                ComposeFiles = await DB.DockerComposeFile.GetAllAsync()
+            };
+
+            return View(ccvm);
+        }
+
         [HttpGet]
         public IActionResult CreateComposerFile()
         {

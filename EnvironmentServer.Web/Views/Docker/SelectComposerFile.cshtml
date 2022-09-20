@@ -1,0 +1,38 @@
+﻿@model EnvironmentServer.Web.ViewModels.Docker.CreateContainerViewModel
+
+@{
+    ViewData["Title"] = "Docker - Select composer file";
+}
+
+<div class="accordion" id="files">
+    @{
+        var i = 0;
+    }
+    @foreach (var f in @Model.ComposeFiles)
+    {
+        <div class="accordion-item">
+            <div class="row">
+                <div class="col-11">
+                    <h2 class="accordion-header" id="h-@i">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-@i">
+                            ▼ @f.Name
+                        </button>
+                    </h2>
+                </div>
+                <div class="col-1">
+                    <form method="post" asp-action="PhpVersion">
+                        <input type="hidden" asp-for="Container.Name" />
+                        <input type="hidden" asp-for="Container.DockerComposeFileID" value=@f.ID />
+                        <button class="btn btn-primary" type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">Select</button>
+                    </form>
+                </div>
+            </div>
+            <div class="accordion-collapse collapse" id="c-@i" data-bs-parent="#files">
+                <div class="accordion-body">
+                    <textarea disabled>@f.FileContent</textarea>
+                </div>
+            </div>
+        </div>
+        i++;
+    }
+</div>
