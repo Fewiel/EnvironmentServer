@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using EnvironmentServer.Daemon.Utility;
 using System.IO;
 using Ductus.FluentDocker;
+using Ductus.FluentDocker.Model.Containers;
 
 namespace EnvironmentServer.Daemon.Actions.Docker
 {
@@ -48,14 +49,14 @@ namespace EnvironmentServer.Daemon.Actions.Docker
             File.WriteAllText(filePath, dockerFile.Content);
 
             var svc = new Builder()
-                        .UseContainer().WithName(container.ID.ToString())
+                        .UseContainer().WithName($"docker_container_{container.ID}")
                         .UseCompose()
                         .FromFile(filePath)
                         .RemoveOrphans()
                         .Build().Start();
 
             container.Active = true;
-            container.DockerID = svc.Name;
+            container.DockerID = $"docker_container_{container.ID}";
 
             await db.DockerContainer.UpdateAsync(container);
         }
