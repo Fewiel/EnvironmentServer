@@ -29,7 +29,13 @@ namespace EnvironmentServer.Web.Controllers
             return View(dview);
         }
 
-        public async Task<IActionResult> CreateFile([FromForm] DockerComposeFile cf)
+        [HttpGet]
+        public IActionResult CreateComposerFile()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> CreateComposerFile([FromForm] DockerComposeFile cf)
         {
             var usr = GetSessionUser();
             cf.UserID = usr.ID;
