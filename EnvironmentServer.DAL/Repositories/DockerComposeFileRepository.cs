@@ -8,7 +8,7 @@ namespace EnvironmentServer.DAL.Repositories;
 
 public class DockerComposeFileRepository : RepositoryBase<DockerComposeFile>
 {
-    public DockerComposeFileRepository(Database db) : base(db, "docker_composer_files") { }
+    public DockerComposeFileRepository(Database db) : base(db, "docker_compose_files") { }
 
     public async Task<IEnumerable<DockerComposeFile>> GetForUser(long id)
     {
