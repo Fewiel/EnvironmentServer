@@ -72,5 +72,20 @@ namespace EnvironmentServer.Web.Controllers
             AddInfo("Composer File added");
             return View(new DockerComposeFile());
         }
+
+        public async Task<IActionResult> StartAsync(long id)
+        {
+            DockerContainer container = await DB.DockerContainer.GetByIDAsync(id);
+
+            if (container == null)
+                return RedirectToAction("Index");
+
+            if (!container.Active)
+                DB.CmdAction.CreateTask(new CmdAction() { Action = "docker.start", Id_Variable = id } );
+
+            DB.CmdAction.CreateTask(new CmdAction() { Action = "docker.stop", Id_Variable = id });
+
+            return RedirectToAction("Index");
+        }
     }
 }
