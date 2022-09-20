@@ -37,9 +37,10 @@ public class DockerPortRepository
     public void Insert(DockerPort dp)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        c.Connection.Execute("insert into `docker_ports` (`Port`, `DockerContainerID`) values (@port, @dfid)", new
+        c.Connection.Execute("insert into `docker_ports` (`Port`, `Name`, `DockerContainerID`) values (@port, @name, @dfid)", new
         {
             port = dp.Port,
+            name = dp.Name,
             dfid = dp.DockerContainerID
         });
     }

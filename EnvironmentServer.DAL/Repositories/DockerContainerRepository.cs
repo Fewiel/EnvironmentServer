@@ -55,6 +55,7 @@ public class DockerContainerRepository : RepositoryBase<DockerContainer>
         await c.Connection.ExecuteAsync("update `docker_containers` set " +
             "`DockerID` = @did, `Name` = @name, `Active` = @active where ID = @id;", new
             {
+                id = t.ID,
                 did = t.DockerID,
                 name = t.Name,
                 active = t.Active

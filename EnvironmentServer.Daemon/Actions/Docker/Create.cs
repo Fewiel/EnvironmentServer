@@ -38,9 +38,9 @@ namespace EnvironmentServer.Daemon.Actions.Docker
 
             var dockerFile = DockerFileBuilder.Build(fileTemplate.FileContent, usedPorts, minPort);
 
-            foreach (var dp in dockerFile.Ports)
+            foreach (var dp in dockerFile.Variables)
             {
-                db.DockerPort.Insert(new() { Port = dp, DockerContainerID = container.ID });
+                db.DockerPort.Insert(new() { Port = int.Parse(dp.Value), Name = dp.Key, DockerContainerID = container.ID });
             }
 
             var filePath = $"/root/DockerFiles/{container.ID}.yml";
