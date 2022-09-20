@@ -28,7 +28,7 @@ public class DockerComposeFileRepository : RepositoryBase<DockerComposeFile>
             uid = t.UserID,
             name = t.Name,
             desc = t.Description,
-            cont = t.Content
+            cont = t.FileContent
         });
     }
 
@@ -42,7 +42,7 @@ public class DockerComposeFileRepository : RepositoryBase<DockerComposeFile>
                 uid = t.UserID,
                 name = t.Name,
                 desc = t.Description,
-                cont = t.Content
+                cont = t.FileContent
             });
     }
 }

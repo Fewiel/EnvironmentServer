@@ -40,7 +40,7 @@ namespace EnvironmentServer.Web.Controllers
             var usr = GetSessionUser();
             cf.UserID = usr.ID;
 
-            if (string.IsNullOrEmpty(cf.Name) || string.IsNullOrEmpty(cf.Description) || string.IsNullOrEmpty(cf.Content))
+            if (string.IsNullOrEmpty(cf.Name) || string.IsNullOrEmpty(cf.Description) || string.IsNullOrEmpty(cf.FileContent))
             {
                 AddError("Please fill out all fields");
                 return View(cf);
