@@ -40,7 +40,7 @@ namespace EnvironmentServer.Daemon.Actions.Docker
 
             foreach (var dp in dockerFile.Variables)
             {
-                db.DockerPort.Insert(new() { Port = int.Parse(dp.Key), Name = dp.Value, DockerContainerID = container.ID });
+                db.DockerPort.Insert(new() { Port = dp.Value, Name = dp.Key, DockerContainerID = container.ID });
             }
 
             var filePath = $"/root/DockerFiles/{container.ID}.yml";
