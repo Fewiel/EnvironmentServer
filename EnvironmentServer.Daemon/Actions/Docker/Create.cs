@@ -36,7 +36,7 @@ namespace EnvironmentServer.Daemon.Actions.Docker
             if (minPortSetting != null)
                 minPort = int.Parse(minPortSetting.Value);
 
-            var dockerFile = DockerFileBuilder.Build(fileTemplate.Content, usedPorts, minPort);
+            var dockerFile = DockerFileBuilder.Build(fileTemplate.FileContent, usedPorts, minPort);
 
             foreach (var dp in dockerFile.Ports)
             {
