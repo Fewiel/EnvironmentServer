@@ -9,6 +9,7 @@ using EnvironmentServer.Daemon.Utility;
 using System.IO;
 using Ductus.FluentDocker;
 using Ductus.FluentDocker.Model.Containers;
+using Newtonsoft.Json;
 
 namespace EnvironmentServer.Daemon.Actions.Docker
 {
@@ -59,7 +60,7 @@ namespace EnvironmentServer.Daemon.Actions.Docker
             
             var cont = svc.Containers.FirstOrDefault(x => x.Name != "");
             
-            db.Logs.Add("DEBUG DOCKER", cont.Name);
+            db.Logs.Add("DEBUG DOCKER", JsonConvert.SerializeObject(svc.Containers));
                         
             container.Active = true;
             container.DockerID = $"docker_container_{container.ID}_client_1";
