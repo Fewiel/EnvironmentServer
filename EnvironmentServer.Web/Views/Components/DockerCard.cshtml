@@ -10,7 +10,10 @@
                 </div>
                 <div title="@Model.Container.Name" style="grid-area: name; margin-bottom: 10px; overflow: hidden;">
                     <h5 class="card-title">@Model.Container.Name</h5>
-                    <h5 class="card-title">@Model.Container.DockerID[..10]</h5>
+                    @if (!string.IsNullOrEmpty(Model.Container.DockerID))
+                    {
+                        <h5 class="card-title">@Model.Container.DockerID[..10]</h5>
+                    }                    
                 </div>
                 <div style="grid-area: buttons; width: 100%;">
                     <div class="btn-group" role="group" style="width: 100%;" ;>
