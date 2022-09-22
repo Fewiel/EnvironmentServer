@@ -18,6 +18,9 @@ internal class Stop : ActionBase
 
         var container = await db.DockerContainer.GetByIDAsync(variableID);
 
+        if (!container.Active)
+            return;
+
         foreach (var c in _docker.GetContainers())
         {
             if (c.Id == container.DockerID)
