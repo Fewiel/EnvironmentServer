@@ -8,7 +8,7 @@ namespace EnvironmentServer.DAL.Repositories;
 
 public class DockerComposeFileRepository : RepositoryBase<DockerComposeFile>
 {
-    public DockerComposeFileRepository(Database db) : base(db, "docker_composer_files") { }
+    public DockerComposeFileRepository(Database db) : base(db, "docker_compose_files") { }
 
     public async Task<IEnumerable<DockerComposeFile>> GetForUser(long id)
     {
@@ -22,13 +22,13 @@ public class DockerComposeFileRepository : RepositoryBase<DockerComposeFile>
     public override async Task InsertAsync(DockerComposeFile t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        await c.Connection.ExecuteAsync("insert into `docker_compose_files` (`UserID`, `Name`, `Description`, `Content`) " +
+        await c.Connection.ExecuteAsync("insert into `docker_compose_files` (`UserID`, `Name`, `Description`, `FileContent`) " +
             "values (@uid, @name, @desc, @cont)", new
         {
             uid = t.UserID,
             name = t.Name,
             desc = t.Description,
-            cont = t.Content
+            cont = t.FileContent
         });
     }
 
@@ -36,13 +36,13 @@ public class DockerComposeFileRepository : RepositoryBase<DockerComposeFile>
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
         await c.Connection.ExecuteAsync("update `docker_compose_files` set " +
-            "`UserID` = @uid, `Name` = @name, `Description` = @desc, `Content` = @cont where ID = @id;", new
+            "`UserID` = @uid, `Name` = @name, `Description` = @desc, `FileContent` = @cont where ID = @id;", new
             {
                 id = t.ID,
                 uid = t.UserID,
                 name = t.Name,
                 desc = t.Description,
-                cont = t.Content
+                cont = t.FileContent
             });
     }
 }
