@@ -58,9 +58,9 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                         .Build().Start();
 
             
-            var cont = svc.Containers.FirstOrDefault(x => x.Name != "");
+            var cont = svc.Containers.FirstOrDefault(x => x.Id != "");
             
-            db.Logs.Add("DEBUG DOCKER", JsonConvert.SerializeObject(svc.Containers));
+            db.Logs.Add("DEBUG DOCKER", cont.Id);
                         
             container.Active = true;
             container.DockerID = $"docker_container_{container.ID}_client_1";
