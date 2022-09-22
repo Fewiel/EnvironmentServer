@@ -55,10 +55,12 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                         .FromFile(filePath)
                         .RemoveOrphans()
                         .Build().Start();
+
+            db.Logs.Add("DEBUG DOCKER", svc.Name);
             
             container.Active = true;
             container.DockerID = $"docker_container_{container.ID}_client_1";
-
+            
             await db.DockerContainer.UpdateAsync(container);
         }
     }
