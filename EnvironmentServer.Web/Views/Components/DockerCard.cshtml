@@ -17,23 +17,24 @@
                         @if (Model.Container.Active)
                         {
                             <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID target="_blank">Start</a>
-                        }else
+                        }
+                        else
                         {
                             <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID target="_blank">Stop</a>
                         }
-                        
+
                         <a class="btn btn-primary" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Container.ID target="_blank">Delete</a>
                     </div>
 
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#@Model.Container.ID">
                         Show Port Mapping
                     </button>
-                    
-                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+                    <div class="modal fade" id="@Model.Container.ID" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLongTitle">Port Mapping for @Model.Container.Name</h5>
+                                    <h5 class="modal-title">Port Mapping for @Model.Container.Name</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -41,7 +42,7 @@
                                 <div class="modal-body">
                                     @foreach (var p in Model.ContainerPorts)
                                     {
-                                       @p.Name <span> - </span> @p.Port <br />
+                                        @p.Name <span> - </span> @p.Port <br />
                                     }
                                 </div>
                                 <div class="modal-footer">
