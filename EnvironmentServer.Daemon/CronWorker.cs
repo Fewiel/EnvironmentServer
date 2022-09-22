@@ -80,8 +80,7 @@ namespace EnvironmentServer.Daemon
                 "clear_logs",
                 "invalidate_tokens",
                 "delete_expired_users",
-                "lock_inactive_accounts",
-                "es_cleanup",
+                "lock_inactive_accounts"
                 "pack_environments",
                 "performance_cpu_mem",
                 "delete_inactive_environments",
@@ -146,7 +145,6 @@ namespace EnvironmentServer.Daemon
                 new InvalidateTokens(sp),
                 new DeleteExpiredUsers(sp),
                 new LockInactiveAccounts(sp),
-                new ESCleanup(sp),
                 new PackEnvironments(sp),
                 new PerformanceCheckCPUMem(sp),
                 new DeleteInactiveEnvironments(sp),
