@@ -20,7 +20,7 @@ public class Start : ActionBase
 
         foreach (var c in _docker.GetContainers())
         {
-            if (c.Name == container.Name)
+            if (c.Id == container.DockerID)
             {
                 c.Start();
                 container.Active = true;

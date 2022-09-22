@@ -22,7 +22,7 @@ public class StopAll : ActionBase
             var con = await db.DockerContainer.GetByDockerIDAsync(c.Name);
             con.Active = false;
             await db.DockerContainer.UpdateAsync(con);
-            return;
         }
+        return;
     }
 }

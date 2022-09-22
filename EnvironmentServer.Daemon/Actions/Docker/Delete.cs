@@ -1,6 +1,7 @@
 ﻿using Ductus.FluentDocker.Services;
 using EnvironmentServer.DAL;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,12 +21,15 @@ public class Delete : ActionBase
 
         foreach (var c in _docker.GetContainers())
         {
-            if (c.Name == container.Name)
+            if (c.Id == container.DockerID)
             {
                 c.Stop();
                 c.Dispose();
                 c.Remove(true);
                 db.DockerContainer.Delete(container);
+                var filePath = $"/root/DockerFiles/{container.ID}.yml";
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
                 return;
             }
         }

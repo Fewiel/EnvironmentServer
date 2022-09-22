@@ -20,7 +20,7 @@ internal class Stop : ActionBase
 
         foreach (var c in _docker.GetContainers())
         {
-            if (c.Name == container.Name)
+            if (c.Id == container.DockerID)
             {
                 c.Stop();
                 container.Active = false;

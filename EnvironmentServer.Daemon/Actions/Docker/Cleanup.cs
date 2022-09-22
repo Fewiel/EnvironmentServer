@@ -19,7 +19,7 @@ public class Cleanup : ActionBase
 
         foreach (var c in _docker.GetContainers())
         {
-            var con = containers.FirstOrDefault(container => container.Name == c.Name);
+            var con = containers.FirstOrDefault(container => container.DockerID == c.Id);
             if (con == null)
             {
                 c.Remove(true);
