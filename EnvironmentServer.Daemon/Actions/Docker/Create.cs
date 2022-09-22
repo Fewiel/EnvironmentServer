@@ -48,8 +48,8 @@ namespace EnvironmentServer.Daemon.Actions.Docker
             File.WriteAllText(filePath, dockerFile.Content);
 
             var svc = new Builder()
-                        .UseContainer().WithName(container.ID.ToString())
-                        .UseCompose()
+                        .UseContainer()
+                        .UseCompose().ServiceName(container.ID.ToString())
                         .FromFile(filePath)
                         .RemoveOrphans()
                         .Build().Start();
