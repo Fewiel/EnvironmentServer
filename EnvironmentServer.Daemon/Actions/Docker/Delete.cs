@@ -18,7 +18,7 @@ public class Delete : ActionBase
         var db = sp.GetService<Database>();
 
         var container = await db.DockerContainer.GetByIDAsync(variableID);
-
+        var filePath = $"/root/DockerFiles/{container.ID}.yml";
         foreach (var c in _docker.GetContainers())
         {
             if (c.Id == container.DockerID)
@@ -27,11 +27,14 @@ public class Delete : ActionBase
                 c.Dispose();
                 c.Remove(true);
                 db.DockerContainer.Delete(container);
-                var filePath = $"/root/DockerFiles/{container.ID}.yml";
                 if (File.Exists(filePath))
                     File.Delete(filePath);
                 return;
             }
         }
+
+        db.DockerContainer.Delete(container);
+        if (File.Exists(filePath))
+            File.Delete(filePath);
     }
 }
