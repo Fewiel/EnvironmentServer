@@ -26,7 +26,6 @@ namespace EnvironmentServer.DAL
         public ShopwareVersionInfoRepository ShopwareVersionInfos { get; }
         public TokenRepository Tokens { get; }
         public NewsRepository News { get; }
-        public EnvironmentESRepository EnvironmentsES { get; }
         public UserInformationRepository UserInformation { get; }
         public DepartmentRepository Department { get; }
         public ExhibitionVersionRepository ExhibitionVersion { get; }
@@ -40,7 +39,10 @@ namespace EnvironmentServer.DAL
         public RolePermissionRepository RolePermission { get; }
         public UserLimitRepository UserLimit { get; }
         public UserPermissionRepository UserPermission { get; }
-
+        public DockerContainerRepository DockerContainer { get; }
+        public DockerComposeFileRepository DockerComposeFile { get; }
+        public DockerPortRepository DockerPort { get; }
+        
         public Database(string connString)
         {
             DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -61,7 +63,6 @@ namespace EnvironmentServer.DAL
             ShopwareVersionInfos = new ShopwareVersionInfoRepository(this);
             Tokens = new TokenRepository(this);
             News = new NewsRepository(this);
-            EnvironmentsES = new EnvironmentESRepository(this);
             UserInformation = new UserInformationRepository(this);
             Department = new DepartmentRepository(this);
             ExhibitionVersion = new ExhibitionVersionRepository(this);
@@ -75,6 +76,9 @@ namespace EnvironmentServer.DAL
             RolePermission = new RolePermissionRepository(this);
             UserLimit = new UserLimitRepository(this);
             UserPermission = new UserPermissionRepository(this);
+            DockerPort = new DockerPortRepository(this);
+            DockerComposeFile = new DockerComposeFileRepository(this);
+            DockerContainer = new DockerContainerRepository(this);
 
             if (Users.GetByUsername("admin") == null)
             {

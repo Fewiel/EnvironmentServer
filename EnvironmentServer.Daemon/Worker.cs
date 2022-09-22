@@ -118,7 +118,13 @@ namespace EnvironmentServer.Daemon
                 new CreateTemplate(),
                 new DeleteTemplate(),
                 new HotfixPackedEnvironments(),
-                new EnvironmentSetDevelopment()
+                new EnvironmentSetDevelopment(),
+                new Actions.Docker.Create(),
+                new Actions.Docker.Start(),
+                new Actions.Docker.Stop(),
+                new Actions.Docker.StopAll(),
+                new Actions.Docker.Delete(),
+                new Actions.Docker.Cleanup()
             };
 
             foreach (var a in l)

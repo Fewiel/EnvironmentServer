@@ -26,33 +26,4 @@
         </div>
         <button type="submit" class="btn btn-primary">Update PHP</button>
     </form>
-    <br />
-    <h2>Elastic Search Settings</h2>
-    <form method="post" asp-controller="Env" asp-action="StartElasticSearch">
-        <input type="hidden" asp-for="ID" />
-        <input type="hidden" asp-for="ElasticSearch.DockerID" />
-        <div class="alert alert-info">
-            You can control the Docker container via SSH. Use the container name for this.<br />
-            Use the Start button to start the container!<br />
-            Important: <br />
-            - All containers will be stopped at 02:00!<br />
-            - Unused containers will be deleted after 30 days.
-        </div>
-        <br />
-        <div class="mb-3">
-            <label asp-for="ElasticSearch.ESVersion" class="form-label">ElasticSearch Version</label>
-            <input asp-for="ElasticSearch.ESVersion" value=@Model.ElasticSearch.ESVersion placeholder="For SW5: 6.8.1, For SW6: 7.5.2" class="form-control" />
-            <span asp-validation-for="ElasticSearch.ESVersion"></span>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">ElasticSearch Running: @Model.ElasticSearch.Active.ToString()</label>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">ElasticSearch IP:Port: localhost:@Model.ElasticSearch.Port</label>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Container Name: @Model.ElasticSearch.DockerID</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Start/Stop</button>
-    </form>
 </div>

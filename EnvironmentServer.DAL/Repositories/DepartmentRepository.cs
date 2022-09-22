@@ -19,7 +19,7 @@ public class DepartmentRepository
         using var c = new MySQLConnectionWrapper(DB.ConnString);
         return c.Connection.QuerySingleOrDefault<Department>("select * from departments where ID = @id;", new
         {
-            id = id
+            id
         });
     }
 
