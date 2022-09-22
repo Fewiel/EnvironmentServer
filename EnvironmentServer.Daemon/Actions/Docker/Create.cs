@@ -55,7 +55,7 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                         .Build().Start();
 
             container.Active = true;
-            container.DockerID = svc.Containers.FirstOrDefault(x => x.Id == "").Id;
+            container.DockerID = svc.Containers.FirstOrDefault(x => x.Id != "").Id;
 
             await db.DockerContainer.UpdateAsync(container);
         }
