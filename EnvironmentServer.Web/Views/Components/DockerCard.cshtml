@@ -20,19 +20,19 @@
 
                         @if (!Model.Container.Active)
                         {
-                            <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID target="_blank">Start</a>
+                            <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Start</a>
                         }
                         else
                         {
-                            <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID target="_blank">Stop</a>
+                            <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Stop</a>
                         }
 
-                        <a class="btn btn-primary" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Container.ID target="_blank">Delete</a>
+                        <a class="btn btn-primary" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Container.ID>Delete</a>
                     </div>
 
                     @foreach (var p in Model.ContainerPorts)
                     {
-                        @p.Name <span> - </span> @p.Port <br />
+                        @p.Name<span>: </span>@p.Port<span>,</span>
                     }
 
                 </div>
