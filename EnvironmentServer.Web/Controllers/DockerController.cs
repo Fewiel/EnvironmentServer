@@ -1,5 +1,6 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.Models;
 using EnvironmentServer.Web.ViewModels.Docker;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers
 {
+    [Permission("permissions_docker")]
     public class DockerController : ControllerBase
     {
         public DockerController(Database db) : base(db)
@@ -40,10 +42,18 @@ namespace EnvironmentServer.Web.Controllers
 
             return View(ccvm);
         }
-
+                
         public async Task<IActionResult> CreateAsync([FromForm] CreateContainerViewModel ccvm)
         {
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
             var container = new DockerContainer { Name = ccvm.Container.Name, UserID = GetSessionUser().ID, DockerComposeFileID = ccvm.Container.DockerComposeFileID };
+            var limit = DB.Limit.GetLimit(usr, "docker_max");
+
+            if ((await DB.DockerContainer.GetByDockerCountForUser(usr.ID)) >= limit)
+            {
+                AddError("You have reached the miximum of containers");
+                return RedirectToAction("Index");
+            }
 
             var id = await DB.DockerContainer.InsertAsync(container);
             DB.CmdAction.CreateTask(new CmdAction { Action = "docker.create", Id_Variable = id });
@@ -51,12 +61,14 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        [Permission("permissions_docker_admin")]
         [HttpGet]
         public IActionResult CreateComposerFile()
         {
             return View(new DockerComposeFile());
         }
 
+        [Permission("permissions_docker_admin")]
         public async Task<IActionResult> CreateComposerFile([FromForm] DockerComposeFile cf)
         {
             var usr = GetSessionUser();

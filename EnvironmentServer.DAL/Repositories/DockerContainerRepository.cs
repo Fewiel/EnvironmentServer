@@ -37,6 +37,16 @@ public class DockerContainerRepository : RepositoryBase<DockerContainer>
         });
     }
 
+    public async Task<int> GetByDockerCountForUser(long uid)
+    {
+        using var c = new MySQLConnectionWrapper(DB.ConnString);
+        return await c.Connection.QuerySingleAsync<int>("select COUNT(*) from `docker_containers` where UserID = @uid;", new
+        {
+            uid
+        });
+    }
+
+
     public override async Task<int> InsertAsync(DockerContainer t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);

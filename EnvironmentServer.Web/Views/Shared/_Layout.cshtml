@@ -10,6 +10,8 @@
     var usersManage = usr != null && DB.Permission.HasPermission(usr, "users_manage");
     var templateManage = usr != null && DB.Permission.HasPermission(usr, "template_manage");
     var permissionsManage = usr != null && DB.Permission.HasPermission(usr, "permissions_manage");
+    var dockerPermission = usr != null && DB.Permission.HasPermission(usr, "permissions_docker");
+    var dockerAdminPermission = usr != null && DB.Permission.HasPermission(usr, "permissions_docker_admin");
 
     bool HasAdminPermission() => settingsEdit || usersManage || templateManage || permissionsManage;
 }
@@ -39,6 +41,12 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        @if (dockerPermission)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Docker" asp-action="Index">Docker</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="News" asp-action="Index">News</a>
                         </li>
@@ -67,6 +75,11 @@
                                     @if (permissionsManage)
                                     {
                                         <li><a class="dropdown-item" asp-area="" asp-controller="Rights" asp-action="Roles">Manage Roles</a></li>
+                                    }
+
+                                    @if (dockerAdminPermission)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Docker" asp-action="CreateComposerFile">Manage Composer Files</a></li>
                                     }
                                 </ul>
                             </li>
