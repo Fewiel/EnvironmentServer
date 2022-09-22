@@ -116,6 +116,10 @@ namespace EnvironmentServer.Web.Controllers
         public IActionResult Delete(long id)
         {
             var env = DB.Environments.Get(id);
+
+            if (env.UserID != GetSessionUser().ID)
+                return RedirectToAction("Index", "Home");
+
             if (env == null)
             {
                 AddError("Could not find Environment");

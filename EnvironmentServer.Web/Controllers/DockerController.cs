@@ -80,6 +80,9 @@ namespace EnvironmentServer.Web.Controllers
             if (container == null)
                 return RedirectToAction("Index");
 
+            if ((await DB.DockerContainer.GetByIDAsync(id)).UserID != GetSessionUser().ID)
+                return RedirectToAction("Index");
+
             if (!container.Active)
             {
                 DB.CmdAction.CreateTask(new CmdAction() { Action = "docker.start", Id_Variable = id });
@@ -92,8 +95,11 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(long id)
+        public async Task<IActionResult> DeleteAsync(long id)
         {
+            if ((await DB.DockerContainer.GetByIDAsync(id)).UserID != GetSessionUser().ID)
+                return RedirectToAction("Index");
+
             DB.CmdAction.CreateTask(new CmdAction { Action = "docker.delete", Id_Variable = id });
             return RedirectToAction("Index");
         }
