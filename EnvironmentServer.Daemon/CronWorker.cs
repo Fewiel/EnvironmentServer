@@ -80,7 +80,7 @@ namespace EnvironmentServer.Daemon
                 "clear_logs",
                 "invalidate_tokens",
                 "delete_expired_users",
-                "lock_inactive_accounts"
+                "lock_inactive_accounts",
                 "pack_environments",
                 "performance_cpu_mem",
                 "delete_inactive_environments",
