@@ -51,7 +51,6 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
-
         [HttpGet]
         public IActionResult CreateComposerFile()
         {
@@ -90,6 +89,12 @@ namespace EnvironmentServer.Web.Controllers
                 DB.CmdAction.CreateTask(new CmdAction() { Action = "docker.stop", Id_Variable = id });
             }
 
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(long id)
+        {
+            DB.CmdAction.CreateTask(new CmdAction { Action = "docker.delete", Id_Variable = id });
             return RedirectToAction("Index");
         }
     }
