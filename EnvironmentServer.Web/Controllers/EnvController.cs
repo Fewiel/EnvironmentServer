@@ -21,38 +21,6 @@ namespace EnvironmentServer.Web.Controllers
             return View();
         }
 
-        public async Task<IActionResult> StartElasticSearchAsync(long id, [FromForm] UpdateViewModel cvm)
-        {
-
-            if (DB.EnvironmentsES.GetByEnvironmentID(id) == null)
-            {
-                await DB.EnvironmentsES.AddAsync(id, cvm.ElasticSearch.ESVersion);
-            }
-            else if (DB.EnvironmentsES.GetByEnvironmentID(id).ESVersion != cvm.ElasticSearch.ESVersion)
-            {
-                await DB.EnvironmentsES.Remove(cvm.ElasticSearch.DockerID);
-                await DB.EnvironmentsES.AddAsync(id, cvm.ElasticSearch.ESVersion);
-            }
-            else if (DB.EnvironmentsES.GetByEnvironmentID(id).Active == false)
-            {
-                await DB.EnvironmentsES.StartContainer(cvm.ElasticSearch.DockerID);
-            }
-            else
-            {
-                await DB.EnvironmentsES.StopContainer(cvm.ElasticSearch.DockerID);
-            }
-
-            var createViewModel = new UpdateViewModel()
-            {
-                ID = id,
-                EnvironmentName = DB.Environments.Get(id).InternalName,
-                PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
-                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
-                ElasticSearch = DB.EnvironmentsES.GetByEnvironmentID(id)
-            };
-            return View("Update", createViewModel);
-        }
-
         public IActionResult Development(long id)
         {
             DB.Environments.SetTaskRunning(id, true);
@@ -71,27 +39,13 @@ namespace EnvironmentServer.Web.Controllers
         [HttpGet]
         public IActionResult Update(long id)
         {
-            var es = DB.EnvironmentsES.GetByEnvironmentID(id);
-            if (es == null)
-            {
-                es = new EnvironmentES
-                {
-                    Active = false,
-                    DockerID = "Not configured",
-                    EnvironmentID = id,
-                    ESVersion = "",
-                    Port = 0
-                };
-            }
-
             var createViewModel = new UpdateViewModel()
             {
                 ID = id,
                 DisplayName = DB.Environments.Get(id).DisplayName,
                 EnvironmentName = DB.Environments.Get(id).InternalName,
                 PhpVersions = System.Enum.GetValues(typeof(PhpVersion)).Cast<PhpVersion>()
-                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString())),
-                ElasticSearch = es
+                    .Select(v => new SelectListItem(v.AsString(), ((int)v).ToString()))
             };
             return View(createViewModel);
         }

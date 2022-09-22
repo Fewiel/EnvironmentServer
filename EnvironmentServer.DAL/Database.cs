@@ -26,7 +26,6 @@ namespace EnvironmentServer.DAL
         public ShopwareVersionInfoRepository ShopwareVersionInfos { get; }
         public TokenRepository Tokens { get; }
         public NewsRepository News { get; }
-        public EnvironmentESRepository EnvironmentsES { get; }
         public UserInformationRepository UserInformation { get; }
         public DepartmentRepository Department { get; }
         public ExhibitionVersionRepository ExhibitionVersion { get; }
@@ -64,7 +63,6 @@ namespace EnvironmentServer.DAL
             ShopwareVersionInfos = new ShopwareVersionInfoRepository(this);
             Tokens = new TokenRepository(this);
             News = new NewsRepository(this);
-            EnvironmentsES = new EnvironmentESRepository(this);
             UserInformation = new UserInformationRepository(this);
             Department = new DepartmentRepository(this);
             ExhibitionVersion = new ExhibitionVersionRepository(this);
