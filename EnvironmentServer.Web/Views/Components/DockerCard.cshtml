@@ -18,7 +18,7 @@
                 <div style="grid-area: buttons; width: 100%;">
                     <div class="btn-group" role="group" style="width: 100%;" ;>
 
-                        @if (Model.Container.Active)
+                        @if (!Model.Container.Active)
                         {
                             <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID target="_blank">Start</a>
                         }
