@@ -50,16 +50,19 @@ namespace EnvironmentServer.Daemon.Actions.Docker
 
             var svc = new Builder()
                         .UseContainer()
-                        .WithName($"docker-container-{container.ID}")
-                        .UseCompose().ServiceName($"docker-container-{container.ID}")
+                        .WithName($"docker_container_{container.ID}")
+                        .UseCompose().ServiceName($"docker_container_{container.ID}")
                         .FromFile(filePath)
                         .RemoveOrphans()
                         .Build().Start();
 
-            db.Logs.Add("DEBUG DOCKER", svc.Name);
             
+            var cont = svc.Containers.FirstOrDefault(x => x.Name != "");
+            
+            db.Logs.Add("DEBUG DOCKER", cont.Name);
+                        
             container.Active = true;
-            container.DockerID = $"docker-container-{container.ID}-client-1";
+            container.DockerID = $"docker_container_{container.ID}_client_1";
             
             await db.DockerContainer.UpdateAsync(container);
         }
