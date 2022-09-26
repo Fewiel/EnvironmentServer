@@ -26,7 +26,7 @@ public abstract class RepositoryBase<T> where T : IDBIdentifier
     public async Task<T> GetByIDAsync(long id)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        return await c.Connection.QuerySingleAsync<T>($"select * from `{TableName}` where ID = @id;", new
+        return await c.Connection.QuerySingleOrDefaultAsync<T>($"select * from `{TableName}` where ID = @id;", new
         {
             id
         });

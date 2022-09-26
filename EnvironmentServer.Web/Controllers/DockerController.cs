@@ -109,6 +109,9 @@ namespace EnvironmentServer.Web.Controllers
 
         public async Task<IActionResult> DeleteAsync(long id)
         {
+            if ((await DB.DockerContainer.GetByIDAsync(id)) == null)
+                return RedirectToAction("Index");
+
             if ((await DB.DockerContainer.GetByIDAsync(id)).UserID != GetSessionUser().ID)
                 return RedirectToAction("Index");
 
