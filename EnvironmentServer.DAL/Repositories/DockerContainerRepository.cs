@@ -53,7 +53,7 @@ public class DockerContainerRepository : RepositoryBase<DockerContainer>
         return await c.Connection.QuerySingleAsync<int>("insert into `docker_containers` (`DockerID`, `UserID`, `Name`, `DockerComposeFileID`) values " +
             "(@did, @uid, @name, @dcfid); SELECT LAST_INSERT_ID();", new
             {
-                did = "in startup",
+                did = "in startup...",
                 uid = t.UserID,
                 name = t.Name,
                 dcfid = t.DockerComposeFileID
