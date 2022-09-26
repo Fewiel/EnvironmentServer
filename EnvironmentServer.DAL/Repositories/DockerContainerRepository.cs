@@ -50,9 +50,10 @@ public class DockerContainerRepository : RepositoryBase<DockerContainer>
     public override async Task<int> InsertAsync(DockerContainer t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        return await c.Connection.QuerySingleAsync<int>("insert into `docker_containers` (`UserID`, `Name`, `DockerComposeFileID`) values " +
-            "(@uid, @name, @dcfid); SELECT LAST_INSERT_ID();", new
+        return await c.Connection.QuerySingleAsync<int>("insert into `docker_containers` (`DockerID`, `UserID`, `Name`, `DockerComposeFileID`) values " +
+            "(@did, @uid, @name, @dcfid); SELECT LAST_INSERT_ID();", new
             {
+                did = "in startup",
                 uid = t.UserID,
                 name = t.Name,
                 dcfid = t.DockerComposeFileID
