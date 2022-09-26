@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using EnvironmentServer.Daemon.Utility;
 using System.IO;
 using Ductus.FluentDocker;
+using EnvironmentServer.DAL.StringConstructors;
+using CliWrap;
 
 namespace EnvironmentServer.Daemon.Actions.Docker
 {
@@ -42,6 +44,20 @@ namespace EnvironmentServer.Daemon.Actions.Docker
             {
                 db.DockerPort.Insert(new() { Port = dp.Value, Name = dp.Key, DockerContainerID = container.ID });
             }
+
+            if (dockerFile.Variables.ContainsKey("http"))
+            {
+                File.WriteAllText($"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf", ProxyConfConstructor.Construct
+                    .WithPort(dockerFile.Variables["http"])
+                    .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy());
+                await Cli.Wrap("/bin/bash")
+                .WithArguments($"-c \"a2ensite web-container-{container.ID}.conf\"")
+                .ExecuteAsync();
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments("-c \"service apache2 reload\"")
+                    .ExecuteAsync();
+            }
+
 
             var filePath = $"/root/DockerFiles/{container.ID}.yml";
 

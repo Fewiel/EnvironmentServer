@@ -1,4 +1,5 @@
-﻿using Ductus.FluentDocker.Services;
+﻿using CliWrap;
+using Ductus.FluentDocker.Services;
 using EnvironmentServer.DAL;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
@@ -26,6 +27,19 @@ public class Delete : ActionBase
                 c.Stop();
                 c.Dispose();
                 c.Remove(true);
+
+                var httpProxyPath = $"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf";
+                if (File.Exists(httpProxyPath))
+                {                    
+                    await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"a2dissite web-container-{container.ID}.conf\"")
+                    .ExecuteAsync();
+                    await Cli.Wrap("/bin/bash")
+                        .WithArguments("-c \"service apache2 reload\"")
+                        .ExecuteAsync();
+                    File.Delete(httpProxyPath);
+                }
+
                 db.DockerContainer.Delete(container);
                 if (File.Exists(filePath))
                     File.Delete(filePath);
