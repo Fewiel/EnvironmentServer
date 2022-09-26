@@ -13,26 +13,38 @@
                     @if (!string.IsNullOrEmpty(Model.Container.DockerID))
                     {
                         <h5 class="card-title">@Model.Container.DockerID[..12]</h5>
-                    }                    
+                    }
                 </div>
                 <div style="grid-area: buttons; width: 100%;">
                     <div class="btn-group" role="group" style="width: 100%;" ;>
-
-                        @if (!Model.Container.Active)
+                        @if (Model.Container.DockerID != "in startup")
                         {
-                            <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Start</a>
-                        }
+                            @if (!Model.Container.Active)
+                            {
+                                <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Start</a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Stop</a>
+                            }
+                            <a class="btn btn-primary" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Container.ID>Delete</a>
+                        } 
                         else
-                        {
-                            <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Stop</a>
+                        {                            
+                            <a class="btn btn-primary me-auto disabled" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Start</a>
+                            <a class="btn btn-primary disabled" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Container.ID>Delete</a>
                         }
-
-                        <a class="btn btn-primary" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Container.ID>Delete</a>
                     </div>
 
                     @foreach (var p in Model.ContainerPorts)
                     {
-                        @p.Name<span>: </span>@p.Port<span>,</span>
+                        @p.Name
+
+                        <span>: </span>
+
+                        @p.Port
+
+                        <span>,</span>
                     }
 
                 </div>
