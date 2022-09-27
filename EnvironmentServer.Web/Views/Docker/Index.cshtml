@@ -5,14 +5,14 @@
     ViewData["Title"] = "Docker";
 }
 
-<div class="row row-cols-md-4" style="margin-top: 15px; text-align: center;">
+<div class="row row-cols-md-6" style="margin-top: 15px; text-align: center;">
 
     @foreach (var c in Model)
     {
         <partial name="/Views/Components/DockerCard.cshtml" model=c />
     }
 
-    <div class="col-md-4 px-1">
+    <div class="col-md-6 px-1">
         <div class="card mb-2 align-middle d-flex align-content-center hovercard" style="height: 200px;">
             <a asp-controller="Docker" asp-action="Create" class="text-decoration-none text-body fullHeight justify-content-center d-flex">
                 <i class="bi bi-plus-lg align-self-center" style="font-size: 50px"></i>
