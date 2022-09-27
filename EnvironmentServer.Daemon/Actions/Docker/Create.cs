@@ -45,18 +45,27 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                 db.DockerPort.Insert(new() { Port = dp.Value, Name = dp.Key, DockerContainerID = container.ID });
             }
 
-            if (dockerFile.Variables.TryGetValue("http", out var port))
+            try
             {
-                File.WriteAllText($"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf", ProxyConfConstructor.Construct
-                    .WithPort(port)
-                    .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy());
-                await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite web-container-{container.ID}.conf\"")
-                .ExecuteAsync();
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments("-c \"service apache2 reload\"")
+                if (dockerFile.Variables.TryGetValue("http", out var port))
+                {
+                    File.WriteAllText($"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf",
+                        ProxyConfConstructor.Construct.WithPort(port)
+                            .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy());
+                    await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"a2ensite web-container-{container.ID}.conf\"")
                     .ExecuteAsync();
+                    await Cli.Wrap("/bin/bash")
+                        .WithArguments("-c \"service apache2 reload\"")
+                        .ExecuteAsync();
+                }
             }
+            catch (System.Exception ex)
+            {
+                db.Logs.Add("DEBUG", ex.ToString());
+                throw;
+            }
+            
 
             var filePath = $"/root/DockerFiles/{container.ID}.yml";
 
