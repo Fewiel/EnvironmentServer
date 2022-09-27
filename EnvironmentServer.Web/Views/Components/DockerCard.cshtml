@@ -40,9 +40,8 @@
                     {
                         @if(p.Name == "http")
                         {
-                            //$"web-container-{container.ID}.{db.Settings.Get("domain").Value}"
                             var link = $"https://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
-                            <a href="" target="_blank">http (Link)</a>
+                            <a href="@link" target="_blank">http (Link)</a>
                         }
                         else
                         {
