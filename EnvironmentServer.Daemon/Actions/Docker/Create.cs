@@ -10,6 +10,7 @@ using System.IO;
 using Ductus.FluentDocker;
 using EnvironmentServer.DAL.StringConstructors;
 using CliWrap;
+using System.Text.Json;
 
 namespace EnvironmentServer.Daemon.Actions.Docker
 {
@@ -45,27 +46,30 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                 db.DockerPort.Insert(new() { Port = dp.Value, Name = dp.Key, DockerContainerID = container.ID });
             }
 
-            try
-            {
-                if (dockerFile.Variables.TryGetValue("http", out var port))
-                {
-                    File.WriteAllText($"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf",
-                        ProxyConfConstructor.Construct.WithPort(port)
-                            .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy());
-                    await Cli.Wrap("/bin/bash")
+            db.Logs.Add("DEBUG", JsonSerializer.Serialize(dockerFile));
+            db.Logs.Add("DEBUG", JsonSerializer.Serialize(container));
+
+            db.Logs.Add("DEBUG", "Pre IF");
+            if (dockerFile.Variables.TryGetValue("http", out var port))
+            {                
+                db.Logs.Add("DEBUG", "Post IF");
+
+                var config = ProxyConfConstructor.Construct.WithPort(port)
+                        .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy();
+
+                db.Logs.Add("DEBUG", "var Config done");
+
+                File.WriteAllText($"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf", config);
+
+                db.Logs.Add("DEBUG", "File Written");
+
+                await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"a2ensite web-container-{container.ID}.conf\"")
                     .ExecuteAsync();
-                    await Cli.Wrap("/bin/bash")
-                        .WithArguments("-c \"service apache2 reload\"")
-                        .ExecuteAsync();
-                }
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments("-c \"service apache2 reload\"")
+                    .ExecuteAsync();
             }
-            catch (System.Exception ex)
-            {
-                db.Logs.Add("DEBUG", ex.ToString());
-                throw;
-            }
-            
 
             var filePath = $"/root/DockerFiles/{container.ID}.yml";
 
