@@ -41,7 +41,7 @@ namespace EnvironmentServer.DAL.Repositories
             }
 
             reader.Close();
-
+            DB.Logs.Add("SettingsRepository", $"Setting {key} not found");
             return null;
         }
 

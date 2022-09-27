@@ -54,6 +54,10 @@ namespace EnvironmentServer.Daemon.Actions.Docker
             {                
                 db.Logs.Add("DEBUG", "Post IF");
 
+                db.Logs.Add("DEBUG", port.ToString());
+                db.Logs.Add("DEBUG", db.Settings.Get("domain").Value);
+                db.Logs.Add("DEBUG", container.ID.ToString());
+
                 var config = ProxyConfConstructor.Construct.WithPort(port)
                         .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy();
 
