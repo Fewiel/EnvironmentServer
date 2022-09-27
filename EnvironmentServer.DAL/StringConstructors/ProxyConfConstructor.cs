@@ -15,7 +15,7 @@ public class ProxyConfConstructor
 
     public ProxyConfConstructor WithPort(int port)
     {
-        Port = Port.ToString();
+        Port = port.ToString();
         return this;
     }
 

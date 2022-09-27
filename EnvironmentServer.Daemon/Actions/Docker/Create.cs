@@ -46,26 +46,12 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                 db.DockerPort.Insert(new() { Port = dp.Value, Name = dp.Key, DockerContainerID = container.ID });
             }
 
-            db.Logs.Add("DEBUG", JsonSerializer.Serialize(dockerFile));
-            db.Logs.Add("DEBUG", JsonSerializer.Serialize(container));
-
-            db.Logs.Add("DEBUG", "Pre IF");
             if (dockerFile.Variables.TryGetValue("http", out var port))
-            {                
-                db.Logs.Add("DEBUG", "Post IF");
-
-                db.Logs.Add("DEBUG", port.ToString());
-                db.Logs.Add("DEBUG", db.Settings.Get("domain").Value);
-                db.Logs.Add("DEBUG", container.ID.ToString());
-
+            {
                 var config = ProxyConfConstructor.Construct.WithPort(port)
                         .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy();
 
-                db.Logs.Add("DEBUG", "var Config done");
-
                 File.WriteAllText($"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf", config);
-
-                db.Logs.Add("DEBUG", "File Written");
 
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"a2ensite web-container-{container.ID}.conf\"")
