@@ -61,6 +61,21 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                     .ExecuteAsync();
             }
 
+            if (dockerFile.Variables.TryGetValue("https", out var portssl))
+            {
+                var config = ProxyConfConstructor.Construct.WithPort(portssl)
+                        .WithDomain($"ssl-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpsProxy();
+
+                File.WriteAllText($"/etc/apache2/sites-available/ssl-container-{container.ID}.conf", config);
+
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"a2ensite ssl-container-{container.ID}.conf\"")
+                    .ExecuteAsync();
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments("-c \"service apache2 reload\"")
+                    .ExecuteAsync();
+            }
+
             var filePath = $"/root/DockerFiles/{container.ID}.yml";
 
             File.WriteAllText(filePath, dockerFile.Content);

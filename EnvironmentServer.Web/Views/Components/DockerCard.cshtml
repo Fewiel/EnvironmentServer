@@ -28,9 +28,9 @@
                                 <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Data.Container.ID>Stop</a>
                             }
                             <a class="btn btn-primary" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Data.Container.ID>Delete</a>
-                        } 
+                        }
                         else
-                        {                            
+                        {
                             <a class="btn btn-primary me-auto disabled" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Data.Container.ID>Start</a>
                             <a class="btn btn-primary disabled" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Data.Container.ID>Delete</a>
                         }
@@ -38,18 +38,20 @@
 
                     @foreach (var p in Model.Data.ContainerPorts)
                     {
-                        @if(p.Name == "http")
+                        @if (p.Name == "http")
                         {
                             var linkhttp = $"http://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
                             <a href="@linkhttp" target="_blank">http (Link)</a>
-                            <span> - </span>
-                            var linkhttps = $"https://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
+                        }
+                        else if (p.Name == "https")
+                        {
+                            var linkhttps = $"https://ssl-container-{@Model.Data.Container.ID}.{@Model.Domain}";
                             <a href="@linkhttps" target="_blank">https (Link)</a>
                         }
                         else
                         {
-                            @p.Name                            
-                        }                        
+                            @p.Name
+                        }
 
                         <span>: </span>
 
@@ -57,7 +59,6 @@
 
                         <span>,</span>
                     }
-
                 </div>
             </div>
         </div>

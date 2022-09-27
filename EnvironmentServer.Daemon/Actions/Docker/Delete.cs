@@ -40,6 +40,18 @@ public class Delete : ActionBase
                     File.Delete(httpProxyPath);
                 }
 
+                var httpsProxyPath = $"/etc/apache2/sites-available/ssl-container-{container.ID}.conf";
+                if (File.Exists(httpsProxyPath))
+                {
+                    await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"a2dissite ssl-container-{container.ID}.conf\"")
+                    .ExecuteAsync();
+                    await Cli.Wrap("/bin/bash")
+                        .WithArguments("-c \"service apache2 reload\"")
+                        .ExecuteAsync();
+                    File.Delete(httpsProxyPath);
+                }
+                
                 db.DockerContainer.Delete(container);
                 if (File.Exists(filePath))
                     File.Delete(filePath);
