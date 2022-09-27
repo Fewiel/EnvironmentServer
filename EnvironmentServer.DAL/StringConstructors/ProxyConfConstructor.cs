@@ -35,8 +35,8 @@ public class ProxyConfConstructor
     ServerName {Domain}
     ServerAlias {Domain}
     ProxyPreserveHost On
-    ProxyPass / http://127.0.0.1:{Port}/
-    ProxyPassReverse / http://127.0.0.1:{Port}/
+    ProxyPass / https://127.0.0.1:{Port}/
+    ProxyPassReverse / https://127.0.0.1:{Port}/
     SSLEngine on
     SSLCertificateFile /etc/letsencrypt/live/shopdev.de/cert.pem
     SSLCertificateKeyFile /etc/letsencrypt/live/shopdev.de/privkey.pem
