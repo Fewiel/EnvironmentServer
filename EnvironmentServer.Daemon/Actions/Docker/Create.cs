@@ -45,10 +45,10 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                 db.DockerPort.Insert(new() { Port = dp.Value, Name = dp.Key, DockerContainerID = container.ID });
             }
 
-            if (dockerFile.Variables.ContainsKey("http"))
+            if (dockerFile.Variables.TryGetValue("http", out var port))
             {
                 File.WriteAllText($"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf", ProxyConfConstructor.Construct
-                    .WithPort(dockerFile.Variables["http"])
+                    .WithPort(port)
                     .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy());
                 await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"a2ensite web-container-{container.ID}.conf\"")
