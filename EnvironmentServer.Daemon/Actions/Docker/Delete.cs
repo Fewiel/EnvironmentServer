@@ -28,7 +28,7 @@ public class Delete : ActionBase
                 c.Dispose();
                 c.Remove(true);
 
-                var httpProxyPath = $"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf";
+                var httpProxyPath = $"/etc/apache2/sites-available/web-container-{container.ID}.conf";
                 if (File.Exists(httpProxyPath))
                 {                    
                     await Cli.Wrap("/bin/bash")
