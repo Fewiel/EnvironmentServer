@@ -36,41 +36,40 @@
                             <a class="btn btn-primary disabled" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Data.Container.ID>Delete</a>
                         }
                     </div>
-
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Port</th>
-                                <th scope="col">Link</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var p in Model.Data.ContainerPorts)
-                            {
-                                <tr>
-                                    <td>@p.Name</td>
-                                    <td>@p.Port</td>
-                                    @if (p.Name == "http")
-                                    {
-                                        var linkhttp = $"http://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
-                                        <td><a href="@linkhttp" target="_blank">http</a></td>
-                                    }
-                                    else if (p.Name == "https")
-                                    {
-                                        var linkhttps = $"https://ssl-container-{@Model.Data.Container.ID}.{@Model.Domain}";
-                                        <td><a href="@linkhttps" target="_blank">https</a></td>
-                                    }
-                                    else
-                                    {
-                                        <td>None</td>
-                                    }
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
                 </div>
             </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Port</th>
+                        <th scope="col">Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Data.ContainerPorts)
+                    {
+                        <tr>
+                            <td>@p.Name</td>
+                            <td>@p.Port</td>
+                            @if (p.Name == "http")
+                            {
+                                var linkhttp = $"http://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
+                                <td><a href="@linkhttp" target="_blank">http</a></td>
+                            }
+                            else if (p.Name == "https")
+                            {
+                                var linkhttps = $"https://ssl-container-{@Model.Data.Container.ID}.{@Model.Domain}";
+                                <td><a href="@linkhttps" target="_blank">https</a></td>
+                            }
+                            else
+                            {
+                                <td>None</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
