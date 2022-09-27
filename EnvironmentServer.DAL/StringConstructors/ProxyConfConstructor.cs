@@ -24,7 +24,7 @@ public class ProxyConfConstructor
         return $@"
 <VirtualHost *:80>
     ServerName {Domain}
-    Redirect permanent / {Domain}
+    Redirect permanent / https://{Domain}
 </VirtualHost>
 
 <VirtualHost *:443>
