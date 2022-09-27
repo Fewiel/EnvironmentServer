@@ -1,7 +1,7 @@
-﻿using CliWrap;
-using Dapper;
+﻿using Dapper;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Utility;
+using EnvironmentServer.Utility;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -119,33 +119,22 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             DB.Logs.Add("DAL", "Start Useradd: " + user.Username);
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"useradd -p $(openssl passwd -1 $'{shellPassword}') {user.Username}\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"usermod -G sftp_users {user.Username}\"")
-                .ExecuteAsync();
+            await Bash.UserAddAsync(user.Username, shellPassword);
+            await Bash.UserModGroupAsync(user.Username, "sftp_users");
 
             DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
 
-            await Cli.Wrap("/bin/bash")
-               .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}\"")
-               .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 700 /home/{user.Username}\"")
-                .ExecuteAsync();
-
+            await Bash.ChmodAsync("700", $"/home/{user.Username}");
+            await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}");
+            
             DB.Logs.Add("DAL", "Create user files folder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}/files");
             Directory.CreateDirectory($"/home/{user.Username}/files/php");
             Directory.CreateDirectory($"/home/{user.Username}/files/php/tmp");
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/files\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files\"")
-                .ExecuteAsync();
+
+            await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files", true);
+            await Bash.ChmodAsync(user.Username, $"/home/{user.Username}/files");
 
             DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
             var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
@@ -159,21 +148,12 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             conf = string.Format(phpfpm, user.Username, "php8.1-fpm");
             File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf);
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php5.6-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php7.2-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php7.4-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php8.0-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php8.1-fpm reload\"")
-                .ExecuteAsync();
+            await Bash.ServiceReloadAsync("php5.6-fpm");
+            await Bash.ServiceReloadAsync("php7.2-fpm");
+            await Bash.ServiceReloadAsync("php7.4-fpm");
+            await Bash.ServiceReloadAsync("php8.0-fpm");
+            await Bash.ServiceReloadAsync("php8.1-fpm");
+
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
 
@@ -188,13 +168,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         {
             var path = "/home/" + user;
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user}:sftp_users {path}\"")
-                .ExecuteAsync();
-
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 700 /home/{user}\"")
-                .ExecuteAsync();
+            await Bash.ChownAsync(user, "sftp_users", path);
+            await Bash.ChmodAsync("700", path);
         }
 
         public async Task RegenerateConfig()
@@ -226,25 +201,12 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 }
             }
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php5.6-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php7.2-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php7.4-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php8.0-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php8.1-fpm reload\"")
-                .ExecuteAsync();
-
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
+            await Bash.ServiceReloadAsync("php5.6-fpm");
+            await Bash.ServiceReloadAsync("php7.2-fpm");
+            await Bash.ServiceReloadAsync("php7.4-fpm");
+            await Bash.ServiceReloadAsync("php8.0-fpm");
+            await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ReloadApacheAsync();
         }
 
         public async Task UpdateAsync(User user, string shellPassword)
@@ -277,9 +239,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             c.Connection.Execute("FLUSH PRIVILEGES;");
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"echo -e '{user.Username}:{shellPassword}' | chpasswd\"")
-                .ExecuteAsync();
+            await Bash.CommandAsync($"echo -e '{user.Username}:{shellPassword}' | chpasswd", log: false);
         }
 
         public async Task UpdateByAdminAsync(User usr, bool newPassword)
@@ -313,9 +273,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                     password = shellPassword
                 });
 
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"echo -e '{user.Username}:{shellPassword}' | chpasswd\"")
-                    .ExecuteAsync();
+                await Bash.CommandAsync($"echo -e '{user.Username}:{shellPassword}' | chpasswd", log: false);
 
                 DB.Mail.Send("Password reseted", string.Format(DB.Settings.Get("mail_account_password").Value, usr.Username, shellPassword), usr.Email);
             }
@@ -358,9 +316,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
                 password = shellPassword
             });
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"echo -e '{user.Username}:{shellPassword}' | chpasswd\"")
-                .ExecuteAsync();
+            await Bash.CommandAsync($"echo -e '{user.Username}:{shellPassword}' | chpasswd", log: false);
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
@@ -407,21 +363,11 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             File.Delete($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf");
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php5.6-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php7.2-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php7.4-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php8.0-fpm reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service php8.1-fpm reload\"")
-                .ExecuteAsync();
+            await Bash.ServiceReloadAsync("php5.6-fpm");
+            await Bash.ServiceReloadAsync("php7.2-fpm");
+            await Bash.ServiceReloadAsync("php7.4-fpm");
+            await Bash.ServiceReloadAsync("php8.0-fpm");
+            await Bash.ServiceReloadAsync("php8.1-fpm");
 
             DB.Logs.Add("DAL", "Delete user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);
@@ -432,9 +378,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             c.Connection.Execute($"DROP USER {MySqlHelper.EscapeString(user.Username)}@'localhost';");
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"userdel {user.Username} --force\"")
-                .ExecuteAsync();
+            await Bash.CommandAsync($"userdel {user.Username} --force");
 
             Directory.Delete($"/home/{user.Username}", true);
             DB.Logs.Add("DAL", "Delete user complete for " + user.Username);
@@ -468,9 +412,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
 
             Directory.CreateDirectory($"/home/{usr.Username}/.ssh");
             File.WriteAllText($"/home/{usr.Username}/.ssh/authorized_keys", usr.SSHPublicKey);
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {usr.Username}:sftp_users /home/{usr.Username}/.ssh\"")
-                .ExecuteAsync();
+
+            await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/.ssh", true);
         }
 
         public void SendSSHConfirmation(User user)

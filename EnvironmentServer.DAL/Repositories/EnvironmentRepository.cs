@@ -1,18 +1,14 @@
-﻿using CliWrap;
-using Dapper;
+﻿using Dapper;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.StringConstructors;
 using EnvironmentServer.DAL.Utility;
+using EnvironmentServer.Utility;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using Ubiety.Dns.Core.Records.NotUsed;
 
 namespace EnvironmentServer.DAL.Repositories
 {
@@ -184,20 +180,15 @@ namespace EnvironmentServer.DAL.Repositories
 
             //Create environment dir            
             Directory.CreateDirectory($"/home/{user.Username}/files/{environment.InternalName}");
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}/files/{environment.InternalName}\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/{environment.InternalName}\"")
-                .ExecuteAsync();
+
+            await Bash.CommandAsync($"chown {user.Username}:sftp_users /home/{user.Username}/files/{environment.InternalName}");
+            await Bash.CommandAsync($"chmod 755 /home/{user.Username}/files/{environment.InternalName}");
+
             //Create log dir
             Directory.CreateDirectory($"/home/{user.Username}/files/logs/{environment.InternalName}");
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {user.Username}:sftp_users /home/{user.Username}/files/logs/{environment.InternalName}\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chmod 755 /home/{user.Username}/files/logs/{environment.InternalName}\"")
-                .ExecuteAsync();
+
+            await Bash.ChownAsync(user.Username, "sfpt_users", $"/home/{user.Username}/files/logs/{environment.InternalName}");
+            await Bash.ChmodAsync("755", $"/home/{user.Username}/files/logs/{environment.InternalName}");
 
             //Create Apache2 configuration            
             var docRoot = $"/home/{user.Username}/files/{environment.InternalName}{(sw6 ? "/public" : "")}";
@@ -217,15 +208,9 @@ namespace EnvironmentServer.DAL.Repositories
             var conf = File.Exists(".nossl") ? builder.Build() : builder.BuildSSL();
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf", conf);
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{environment.InternalName}.conf\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
+
+            await Bash.ApacheEnableSiteAsync($"{user.Username}_{environment.InternalName}.conf");
+            await Bash.ReloadApacheAsync();
 
             return lastID;
         }
@@ -241,12 +226,8 @@ namespace EnvironmentServer.DAL.Repositories
             Command.Connection = c.Connection;
             Command.ExecuteNonQuery();
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{environment.InternalName}.conf\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
+            await Bash.ApacheDisableSiteAsync($"{user.Username}_{environment.InternalName}.conf");
+            await Bash.ReloadApacheAsync();
 
             var envVersion = environment.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
             var sw_version = envVersion == null ? "N/A" : envVersion.Value;
@@ -266,15 +247,9 @@ namespace EnvironmentServer.DAL.Repositories
                 .WithUsername(user.Username).BuildSSL();
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf", conf);
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
-            var cmd = await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{environment.InternalName}.conf\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
+
+            await Bash.CommandAsync($"{user.Username}_{environment.InternalName}.conf");
+            await Bash.ReloadApacheAsync();
         }
 
         public void SetDisplayName(long id, string dname)
@@ -360,12 +335,8 @@ namespace EnvironmentServer.DAL.Repositories
         {
             DB.Logs.Add("DAL", "Delete Environment " + environment.InternalName + " for " + user.Username);
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{environment.InternalName}.conf\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
+            await Bash.ApacheDisableSiteAsync($"{user.Username}_{environment.InternalName}.conf");
+            await Bash.ReloadApacheAsync();
 
             File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf");
 

@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CliWrap" Version="3.3.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -15,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EnvironmentServer.DAL\EnvironmentServer.DAL.csproj" />
     <ProjectReference Include="..\EnvironmentServer.SlackBot\EnvironmentServer.SlackBot.csproj" />
+    <ProjectReference Include="..\EnvironmentServer.Utility\EnvironmentServer.Utility.csproj" />
   </ItemGroup>
 
 </Project>

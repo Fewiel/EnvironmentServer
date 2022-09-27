@@ -1,5 +1,4 @@
-﻿using Ductus.FluentDocker.Commands;
-using Ductus.FluentDocker.Services;
+﻿using Ductus.FluentDocker.Services;
 using EnvironmentServer.DAL;
 using Microsoft.Extensions.DependencyInjection;
 using Ductus.FluentDocker.Builders;
@@ -7,10 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnvironmentServer.Daemon.Utility;
 using System.IO;
-using Ductus.FluentDocker;
 using EnvironmentServer.DAL.StringConstructors;
-using CliWrap;
-using System.Text.Json;
+using EnvironmentServer.Utility;
 
 namespace EnvironmentServer.Daemon.Actions.Docker
 {
@@ -53,12 +50,8 @@ namespace EnvironmentServer.Daemon.Actions.Docker
 
                 File.WriteAllText($"/etc/apache2/sites-available/web-container-{container.ID}.conf", config);
 
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"a2ensite web-container-{container.ID}.conf\"")
-                    .ExecuteAsync();
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments("-c \"service apache2 reload\"")
-                    .ExecuteAsync();
+                await Bash.CommandAsync($"a2ensite web-container-{container.ID}.conf");
+                await Bash.ReloadApacheAsync();
             }
 
             if (dockerFile.Variables.TryGetValue("https", out var portssl))
@@ -68,12 +61,8 @@ namespace EnvironmentServer.Daemon.Actions.Docker
 
                 File.WriteAllText($"/etc/apache2/sites-available/ssl-container-{container.ID}.conf", config);
 
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"a2ensite ssl-container-{container.ID}.conf\"")
-                    .ExecuteAsync();
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments("-c \"service apache2 reload\"")
-                    .ExecuteAsync();
+                await Bash.CommandAsync($"a2ensite ssl-container-{container.ID}.conf");
+                await Bash.ReloadApacheAsync();
             }
 
             var filePath = $"/root/DockerFiles/{container.ID}.yml";

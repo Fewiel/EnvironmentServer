@@ -5,10 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CliWrap" Version="3.3.3" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Ductus.FluentDocker" Version="2.10.44" />
     <PackageReference Include="MySql.Data" Version="8.0.26" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EnvironmentServer.Utility\EnvironmentServer.Utility.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,6 +7,7 @@ using Dapper;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Repositories;
 using EnvironmentServer.Mail;
+using EnvironmentServer.Utility;
 
 namespace EnvironmentServer.DAL
 {
@@ -79,6 +80,8 @@ namespace EnvironmentServer.DAL
             DockerPort = new DockerPortRepository(this);
             DockerComposeFile = new DockerComposeFileRepository(this);
             DockerContainer = new DockerContainerRepository(this);
+
+            Bash.LogCallback = Logs.Add;
 
             if (Users.GetByUsername("admin") == null)
             {
