@@ -24,7 +24,10 @@ public class ProxyConfConstructor
         return $@"
 <VirtualHost *:80>
     ServerName {Domain}
-    Redirect permanent / https://{Domain}
+    ServerAlias {Domain}
+    ProxyPreserveHost On
+    ProxyPass / http://127.0.0.1:{Port}/
+    ProxyPassReverse / http://127.0.0.1:{Port}/
 </VirtualHost>
 
 <VirtualHost *:443>
