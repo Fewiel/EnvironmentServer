@@ -1,4 +1,4 @@
-﻿@model EnvironmentServer.Web.Models.DockerContainerData
+﻿@model EnvironmentServer.Web.ViewModels.Docker.DockerCardViewModel
 
 
 <div class="col-md-4 px-1">
@@ -8,37 +8,46 @@
                 <div style="grid-area: logo;">
                     <img src="~/img/docker.svg" width="100" height="100" style="padding-right: 15px;" />
                 </div>
-                <div title="@Model.Container.Name" style="grid-area: name; margin-bottom: 10px; overflow: hidden;">
-                    <h5 class="card-title">@Model.Container.Name</h5>
-                    @if (!string.IsNullOrEmpty(Model.Container.DockerID))
+                <div title="@Model.Data.Container.Name" style="grid-area: name; margin-bottom: 10px; overflow: hidden;">
+                    <h5 class="card-title">@Model.Data.Container.Name</h5>
+                    @if (!string.IsNullOrEmpty(Model.Data.Container.DockerID))
                     {
-                        <h5 class="card-title">@Model.Container.DockerID[..12]</h5>
+                        <h5 class="card-title">@Model.Data.Container.DockerID[..12]</h5>
                     }
                 </div>
                 <div style="grid-area: buttons; width: 100%;">
                     <div class="btn-group" role="group" style="width: 100%;" ;>
-                        @if (Model.Container.DockerID != "in startup...")
+                        @if (Model.Data.Container.DockerID != "in startup...")
                         {
-                            @if (!Model.Container.Active)
+                            @if (!Model.Data.Container.Active)
                             {
-                                <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Start</a>
+                                <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Data.Container.ID>Start</a>
                             }
                             else
                             {
-                                <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Stop</a>
+                                <a class="btn btn-primary me-auto" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Data.Container.ID>Stop</a>
                             }
-                            <a class="btn btn-primary" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Container.ID>Delete</a>
+                            <a class="btn btn-primary" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Data.Container.ID>Delete</a>
                         } 
                         else
                         {                            
-                            <a class="btn btn-primary me-auto disabled" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Container.ID>Start</a>
-                            <a class="btn btn-primary disabled" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Container.ID>Delete</a>
+                            <a class="btn btn-primary me-auto disabled" asp-controller="Docker" asp-action="Start" asp-route-id=@Model.Data.Container.ID>Start</a>
+                            <a class="btn btn-primary disabled" asp-controller="Docker" asp-action="Delete" asp-route-id=@Model.Data.Container.ID>Delete</a>
                         }
                     </div>
 
-                    @foreach (var p in Model.ContainerPorts)
+                    @foreach (var p in Model.Data.ContainerPorts)
                     {
-                        @p.Name
+                        @if(p.Name == "http")
+                        {
+                            //$"web-container-{container.ID}.{db.Settings.Get("domain").Value}"
+                            var link = $"https://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
+                            <a href="" target="_blank">http (Link)</a>
+                        }
+                        else
+                        {
+                            @p.Name                            
+                        }                        
 
                         <span>: </span>
 

@@ -1,4 +1,5 @@
-﻿@model EnvironmentServer.Web.ViewModels.Docker.DockerIndexViewModel
+﻿@using EnvironmentServer.Web.ViewModels.Docker
+@model IEnumerable<DockerCardViewModel>
 
 @{
     ViewData["Title"] = "Docker";
@@ -6,7 +7,7 @@
 
 <div class="row row-cols-md-4" style="margin-top: 15px; text-align: center;">
 
-    @foreach (var c in Model.Containers)
+    @foreach (var c in Model)
     {
         <partial name="/Views/Components/DockerCard.cshtml" model=c />
     }

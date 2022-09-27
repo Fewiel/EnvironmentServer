@@ -58,7 +58,6 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                     .ExecuteAsync();
             }
 
-
             var filePath = $"/root/DockerFiles/{container.ID}.yml";
 
             File.WriteAllText(filePath, dockerFile.Content);

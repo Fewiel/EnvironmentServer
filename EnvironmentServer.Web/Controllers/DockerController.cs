@@ -19,16 +19,19 @@ namespace EnvironmentServer.Web.Controllers
         public async Task<IActionResult> IndexAsync()
         {
             List<DockerContainer> containers = (List<DockerContainer>)await DB.DockerContainer.GetAllForUserAsync(GetSessionUser().ID);
-            List<DockerContainerData> dData = new();
+            List<DockerCardViewModel> dData = new();
+            var domain = DB.Settings.Get("domain").Value;
 
             foreach (var c in containers)
             {
-                dData.Add(new() { Container = c, ContainerPorts = DB.DockerPort.GetForContainer(c.ID) });
+                dData.Add(new()
+                {
+                    Data = new() { Container = c, ContainerPorts = DB.DockerPort.GetForContainer(c.ID) },
+                    Domain = domain
+                });
             }
 
-            DockerIndexViewModel dview = new() { Containers = dData };
-
-            return View(dview);
+            return View(dData);
         }
 
         [HttpGet]
