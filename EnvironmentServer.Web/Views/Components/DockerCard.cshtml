@@ -40,8 +40,11 @@
                     {
                         @if(p.Name == "http")
                         {
-                            var link = $"https://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
-                            <a href="@link" target="_blank">http (Link)</a>
+                            var linkhttp = $"http://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
+                            <a href="@linkhttp" target="_blank">http (Link)</a>
+                            <span> - </span>
+                            var linkhttps = $"https://web-container-{@Model.Data.Container.ID}.{@Model.Domain}";
+                            <a href="@linkhttps" target="_blank">https (Link)</a>
                         }
                         else
                         {
