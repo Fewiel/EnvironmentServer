@@ -51,7 +51,7 @@ namespace EnvironmentServer.Daemon.Actions.Docker
                 var config = ProxyConfConstructor.Construct.WithPort(port)
                         .WithDomain($"web-container-{container.ID}.{db.Settings.Get("domain").Value}").BuildHttpProxy();
 
-                File.WriteAllText($"/etc/apache2/sites-avalibe/web-container-{container.ID}.conf", config);
+                File.WriteAllText($"/etc/apache2/sites-available/web-container-{container.ID}.conf", config);
 
                 await Cli.Wrap("/bin/bash")
                     .WithArguments($"-c \"a2ensite web-container-{container.ID}.conf\"")
