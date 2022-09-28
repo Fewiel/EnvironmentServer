@@ -111,7 +111,6 @@ namespace EnvironmentServer.Daemon
                 new CloneGit(),
                 new UpdateChroot(),
                 new DownloadExtractAutoinstall(),
-                new SetupExhibition(),
                 new RestoreEnvironment(),
                 new RegeneratePhpConfig(),
                 new FastDeploy(),

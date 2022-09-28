@@ -1,8 +1,7 @@
-﻿using CliWrap;
-using EnvironmentServer.DAL;
+﻿using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
+using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -39,9 +38,7 @@ public class EnvironmentSetDevelopment : ActionBase
         conf = Regex.Replace(conf, PatternSW6AppEnv, env.DevelopmentMode ? "$1prod$3" : "$1dev$3");
         File.WriteAllText(path, conf);
 
-        await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown {usr.Username}:sftp_users /home/{usr.Username}/files/{env.InternalName}\"")
-                .ExecuteAsync();
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
 
         db.Environments.SetDevelopmentMode(variableID, !env.DevelopmentMode);
 

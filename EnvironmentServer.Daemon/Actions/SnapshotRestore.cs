@@ -1,7 +1,7 @@
-﻿using CliWrap;
-using EnvironmentServer.DAL;
+﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Utility;
 using EnvironmentServer.Interfaces;
+using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
@@ -32,30 +32,17 @@ namespace EnvironmentServer.Daemon.Actions
 
             db.Logs.Add("Daemon", "SnapshotRestore - Disable Site: " + env.InternalName);
             //Stop Website (a2dissite)
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2dissite {user.Username}_{env.InternalName}.conf\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
+            await Bash.ApacheDisableSiteAsync($"{user.Username}_{env.InternalName}.conf");
+            await Bash.ReloadApacheAsync();
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R root:root /home/{user.Username}/files/{env.InternalName}\"")
-                .ExecuteAsync();
+            await Bash.ChownAsync("root", "root", $"/home/{user.Username}/files/{env.InternalName}", true);
 
             db.Logs.Add("Daemon", "SnapshotRestore - git reset --hard: " + env.InternalName);
             //Git reset            
-
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"git reset --hard {snap.Hash}\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+            await Bash.CommandAsync($"git reset --hard {snap.Hash}", $"/home/{user.Username}/files/{env.InternalName}");
 
             //git clean -f -d
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"git clean -f -d\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+            await Bash.CommandAsync("git clean -f -d", $"/home/{user.Username}/files/{env.InternalName}");
 
             db.Logs.Add("Daemon", "SnapshotRestore - Recreate/dump database: " + env.InternalName);
             //Recreate Database            
@@ -81,23 +68,15 @@ namespace EnvironmentServer.Daemon.Actions
                 }
             }
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"mysql -u {config.Username} -p{config.Password} " + dbString + " < db.sql\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+            await Bash.CommandAsync($"mysql -u {config.Username} -p{config.Password} \" + dbString + \" < db.sql",
+                $"/home/{user.Username}/files/{env.InternalName}", log: false);
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username}:sftp_users /home/{user.Username}/files/{env.InternalName}\"")
-                .ExecuteAsync();
+            await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
 
             db.Logs.Add("Daemon", "SnapshotRestore - Enable Site: " + env.InternalName);
             //restart site
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"a2ensite {user.Username}_{env.InternalName}.conf\"")
-                .ExecuteAsync();
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"service apache2 reload\"")
-                .ExecuteAsync();
+            await Bash.ApacheEnableSiteAsync($"{user.Username}_{env.InternalName}.conf");
+            await Bash.ReloadApacheAsync();
 
             db.Environments.SetTaskRunning(env.ID, false);
 

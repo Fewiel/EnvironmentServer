@@ -1,6 +1,6 @@
-﻿using CliWrap;
-using Ductus.FluentDocker.Services;
+﻿using Ductus.FluentDocker.Services;
 using EnvironmentServer.DAL;
+using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Linq;
@@ -30,25 +30,19 @@ public class Delete : ActionBase
 
                 var httpProxyPath = $"/etc/apache2/sites-available/web-container-{container.ID}.conf";
                 if (File.Exists(httpProxyPath))
-                {                    
-                    await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"a2dissite web-container-{container.ID}.conf\"")
-                    .ExecuteAsync();
-                    await Cli.Wrap("/bin/bash")
-                        .WithArguments("-c \"service apache2 reload\"")
-                        .ExecuteAsync();
+                {
+                    await Bash.ApacheDisableSiteAsync($"web-container-{container.ID}.conf");
+                    await Bash.ReloadApacheAsync();
+
                     File.Delete(httpProxyPath);
                 }
 
                 var httpsProxyPath = $"/etc/apache2/sites-available/ssl-container-{container.ID}.conf";
                 if (File.Exists(httpsProxyPath))
                 {
-                    await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"a2dissite ssl-container-{container.ID}.conf\"")
-                    .ExecuteAsync();
-                    await Cli.Wrap("/bin/bash")
-                        .WithArguments("-c \"service apache2 reload\"")
-                        .ExecuteAsync();
+                    await Bash.ApacheDisableSiteAsync($"ssl-container-{container.ID}.conf");
+                    await Bash.ReloadApacheAsync();
+
                     File.Delete(httpsProxyPath);
                 }
                 

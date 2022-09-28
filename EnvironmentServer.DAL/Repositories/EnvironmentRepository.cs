@@ -3,7 +3,7 @@ using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.StringConstructors;
 using EnvironmentServer.DAL.Utility;
-using EnvironmentServer.Utility;
+using EnvironmentServer.Util;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.IO;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using EnvironmentServer.Daemon.Utility;
 using System.IO;
 using EnvironmentServer.DAL.StringConstructors;
-using EnvironmentServer.Utility;
+using EnvironmentServer.Util;
 
 namespace EnvironmentServer.Daemon.Actions.Docker
 {

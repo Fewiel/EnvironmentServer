@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EnvironmentServer.Utility\EnvironmentServer.Utility.csproj" />
+    <ProjectReference Include="..\EnvironmentServer.Util\EnvironmentServer.Util.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,13 +1,7 @@
-﻿using CliWrap;
-using EnvironmentServer.DAL;
-using EnvironmentServer.DAL.Models;
+﻿using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
-using EnvironmentServer.SlackBot;
+using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Daemon.Actions
@@ -25,39 +19,20 @@ namespace EnvironmentServer.Daemon.Actions
 
             var url = System.IO.File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/dl.txt");
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"rm dl.txt\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+            await Bash.CommandAsync("rm dl.txt", $"/home/{user.Username}/files/{env.InternalName}");
 
             db.Logs.Add("Daemon", "Clone Repo for: " + env.InternalName + " URL: " + url);
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"git init\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+            await Bash.CommandAsync("git init", $"/home/{user.Username}/files/{env.InternalName}");
 
             var repo = url.Substring(0, url.IndexOf("/commit/"));
             var hash = url.Substring(url.LastIndexOf('/') + 1);
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"git remote add origin {repo}\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+            await Bash.CommandAsync($"git remote add origin {repo}", $"/home/{user.Username}/files/{env.InternalName}");
+            await Bash.CommandAsync($"git fetch origin {hash}", $"/home/{user.Username}/files/{env.InternalName}");
+            await Bash.CommandAsync($"git reset --hard FETCH_HEAD", $"/home/{user.Username}/files/{env.InternalName}");
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"git fetch origin {hash}\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
-
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"git reset --hard FETCH_HEAD\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
-
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
-                .ExecuteAsync();
+            await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
 
             db.Environments.SetTaskRunning(env.ID, false);
 

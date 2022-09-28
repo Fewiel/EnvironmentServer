@@ -1,29 +1,63 @@
 ﻿using CliWrap;
+using System.Text;
 
-namespace EnvironmentServer.Utility;
+namespace EnvironmentServer.Util;
 
 public static class Bash
 {
     public static Action<string, string>? LogCallback { get; set; }
 
-    public static async Task CommandAsync(string cmd, string? workingDir = null, bool log = true)
+    public static async Task CommandAsync(string cmd, string? workingDir = null, bool log = true, bool validation = true)
     {
         if (log)
             LogCallback?.Invoke("Bash Command", cmd);
 
         if (workingDir == null)
         {
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"{cmd}\"")
-                .ExecuteAsync();
+            if (validation)
+            {
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"{cmd}\"")
+                    .ExecuteAsync();
+            }
+            else
+            {
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"{cmd}\"")
+                    .WithValidation(CommandResultValidation.None)
+                    .ExecuteAsync();
+                
+            }
         }
         else
         {
-            await Cli.Wrap("/bin/bash")
+            if (validation)
+            {
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"{cmd}\"")
+                    .WithWorkingDirectory(workingDir)
+                    .ExecuteAsync();
+            }
+            else
+            {
+                await Cli.Wrap("/bin/bash")
+                    .WithArguments($"-c \"{cmd}\"")
+                    .WithWorkingDirectory(workingDir)
+                    .WithValidation(CommandResultValidation.None)
+                    .ExecuteAsync();
+            }            
+        }
+    }
+
+    public static async Task<StringBuilder> CommandQueryAsync(string cmd, string workingDir)
+    {
+        StringBuilder result = new();
+        await Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"{cmd}\"")
                 .WithWorkingDirectory(workingDir)
+                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(result))
                 .ExecuteAsync();
-        }
+        return result;
     }
 
     public static async Task ApacheEnableSiteAsync(string siteConfig) => await CommandAsync($"a2ensite {siteConfig}");

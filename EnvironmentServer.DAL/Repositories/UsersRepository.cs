@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Utility;
-using EnvironmentServer.Utility;
+using EnvironmentServer.Util;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;

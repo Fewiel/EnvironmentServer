@@ -1,13 +1,8 @@
-﻿using CliWrap;
-using EnvironmentServer.DAL;
+﻿using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
+using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Daemon.Actions
@@ -23,15 +18,12 @@ namespace EnvironmentServer.Daemon.Actions
             var user = db.Users.GetByID(userID);
             var env = db.Environments.Get(variableID);
 
-            var url = System.IO.File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/dl.txt");
+            var url = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/dl.txt");
             var filename = url.Substring(url.LastIndexOf('/') + 1);
 
             db.Logs.Add("Daemon", "download_extract for: " + env.InternalName + ", " + user.Username + " LINK: " + url);
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments("-c \"rm dl.txt\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+            await Bash.CommandAsync("rm dl.txt", $"/home/{user.Username}/files/{env.InternalName}");
 
             if (!Directory.Exists("/root/env/dl-cache"))
                 Directory.CreateDirectory("/root/env/dl-cache/");
@@ -40,43 +32,31 @@ namespace EnvironmentServer.Daemon.Actions
             {
                 db.Logs.Add("Daemon", "File found for: " + env.InternalName + " File: " + url);
                 db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"unzip /root/env/dl-cache/{filename}\"")
-                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                    .ExecuteAsync();
+
+                await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
             }
             else if (filename.Contains("install_"))
             {
                 db.Logs.Add("Daemon", "Download File for: " + env.InternalName + " File: " + url);
-                await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"wget {url} -O /root/env/dl-cache/{filename}\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+
+                await Bash.CommandAsync($"wget {url} -O /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
 
                 db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"unzip /root/env/dl-cache/{filename}\"")
-                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                    .ExecuteAsync();
+
+                await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
             }
             else
             {
                 db.Logs.Add("Daemon", "Download File for: " + env.InternalName + " File: " + url);
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"wget {url} -O /home/{user.Username}/files/{env.InternalName}/{filename}\"")
-                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                    .ExecuteAsync();
+
+                await Bash.CommandAsync($"wget {url} -O /home/{user.Username}/files/{env.InternalName}/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
 
                 db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"unzip {filename}\"")
-                    .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                    .ExecuteAsync();
+
+                await Bash.CommandAsync($"unzip {filename}", $"/home/{user.Username}/files/{env.InternalName}");
             }
 
-            await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
-                .ExecuteAsync();
+            await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
 
             db.Environments.SetTaskRunning(env.ID, false);
 

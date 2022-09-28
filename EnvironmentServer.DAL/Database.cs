@@ -7,7 +7,7 @@ using Dapper;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Repositories;
 using EnvironmentServer.Mail;
-using EnvironmentServer.Utility;
+using EnvironmentServer.Util;
 
 namespace EnvironmentServer.DAL
 {

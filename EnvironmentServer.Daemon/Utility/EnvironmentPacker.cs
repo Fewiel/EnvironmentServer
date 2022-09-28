@@ -1,10 +1,8 @@
-﻿using CliWrap;
-using EnvironmentServer.DAL;
+﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Interfaces;
+using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -40,10 +38,8 @@ internal static class EnvironmentPacker
             File.Delete($"/home/{usr.Username}/files/inactive/{env.InternalName}.zip");
 
         //Zip Environment to inactive folder
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"zip -r /home/{usr.Username}/files/inactive/{env.InternalName}.zip {env.InternalName}\"")
-            .WithWorkingDirectory($"/home/{usr.Username}/files/")
-            .ExecuteAsync();
+        await Bash.CommandAsync($"zip -r /home/{usr.Username}/files/inactive/{env.InternalName}.zip {env.InternalName}",
+            $"/home/{usr.Username}/files/");
 
         //Check for SW5 or SW6
         var sw6 = Directory.Exists($"/home/{usr.Username}/files/{env.InternalName}/public");
@@ -81,9 +77,7 @@ internal static class EnvironmentPacker
         db.Environments.SetStored(env.ID, true);
 
         //Set Privileges to user
-        await Cli.Wrap("/bin/bash")
-                        .WithArguments($"-c \"chown -R {usr.Username}:sftp_users /home/{usr.Username}/files/{env.InternalName}\"")
-                        .ExecuteAsync();
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
     }
 
     public static async Task UnpackEnvironmentAsync(ServiceProvider sp, Environment env)
@@ -105,15 +99,10 @@ internal static class EnvironmentPacker
         Directory.Delete($"/home/{usr.Username}/files/{env.InternalName}", true);
 
         //Unzip Environment
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"unzip /home/{usr.Username}/files/inactive/{env.InternalName}.zip\"")
-            .WithWorkingDirectory($"/home/{usr.Username}/files")
-            .ExecuteAsync();
+        await Bash.CommandAsync($"unzip /home/{usr.Username}/files/inactive/{env.InternalName}.zip", $"/home/{usr.Username}/files");
 
         //Set Privileges to user
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"chown -R {usr.Username} /home/{usr.Username}/files/{env.InternalName}\"")
-            .ExecuteAsync();
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", true);
 
         //Delete stored environment
         File.Delete($"/home/{usr.Username}/files/inactive/{env.InternalName}.zip");
@@ -129,12 +118,8 @@ internal static class EnvironmentPacker
         db.Logs.Add("Daemon", $"Create Template for {usr.ID} - {usr.Username} - Template: {template.ID} - {template.Name}");
 
         //Disable Site
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"a2dissite {usr.Username}_{env.InternalName}.conf\"")
-            .ExecuteAsync();
-        await Cli.Wrap("/bin/bash")
-            .WithArguments("-c \"service apache2 reload\"")
-            .ExecuteAsync();
+        await Bash.ApacheDisableSiteAsync($"{usr.Username}_{env.InternalName}.conf");
+        await Bash.ReloadApacheAsync();
 
         //Delete Cache
         DeleteCache(usr.Username, env.InternalName);
@@ -142,10 +127,8 @@ internal static class EnvironmentPacker
         //Dump DB to folder
         var dbString = usr.Username + "_" + env.InternalName;
 
-        await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"mysqldump -u {dbString} -p{env.DBPassword} --hex-blob --default-character-set=utf8 " + dbString + " --result-file=db.sql\"")
-                .WithWorkingDirectory($"/home/{usr.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+        await Bash.CommandAsync($"mysqldump -u {dbString} -p{env.DBPassword} --hex-blob --default-character-set=utf8 " + dbString + " --result-file=db.sql",
+            $"/home/{usr.Username}/files/{env.InternalName}");
 
         //Move Environment to tmp folder
         var templatePath = $"/root/templates/{template.ID}-{template.Name}";
@@ -154,18 +137,12 @@ internal static class EnvironmentPacker
         var tmpPath = $"/root/templates/tmp/{usr.Username}/{template.Name}";
         Directory.CreateDirectory(tmpPath);
 
-        await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"cp -a {env.InternalName}/. {tmpPath}\"")
-                .WithWorkingDirectory($"/home/{usr.Username}/files")
+        await Bash.CommandAsync($"cp -a {env.InternalName}/. {tmpPath}",
+            $"/home/{usr.Username}/files");
 
-                .ExecuteAsync();
         //Enable Site
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"a2ensite {usr.Username}_{env.InternalName}.conf\"")
-            .ExecuteAsync();
-        await Cli.Wrap("/bin/bash")
-            .WithArguments("-c \"service apache2 reload\"")
-            .ExecuteAsync();
+        await Bash.ApacheEnableSiteAsync($"{usr.Username}_{env.InternalName}.conf");
+        await Bash.ReloadApacheAsync();
 
         //Replace parts in Config
         var sw6 = Directory.Exists($"{tmpPath}/public");
@@ -205,10 +182,7 @@ internal static class EnvironmentPacker
         File.Delete($"{tmpPath}/db.sql");
 
         //Zip all to Template folder
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"zip -r {templatePath}/{template.Name}.zip .\"")
-            .WithWorkingDirectory($"{tmpPath}")
-            .ExecuteAsync();
+        await Bash.CommandAsync($"zip -r {templatePath}/{template.Name}.zip .", $"{tmpPath}");
 
         //Remove tmp folder
         Directory.Delete($"{tmpPath}", true);
@@ -224,10 +198,8 @@ internal static class EnvironmentPacker
         db.Logs.Add("Daemon", $"Template Deploy for {user.ID} - {user.Username} - Template: {template.ID} - {template.Name}");
 
         //Unzip template
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"unzip -o -q /root/templates/{template.ID}-{template.Name}/{template.Name}.zip\"")
-            .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-            .ExecuteAsync();
+        await Bash.CommandAsync($"unzip -o -q /root/templates/{template.ID}-{template.Name}/{template.Name}.zip",
+            $"/home/{user.Username}/files/{env.InternalName}");
 
         //Replace parts in config
         var sw6 = Directory.Exists($"/home/{user.Username}/files/{env.InternalName}/public");
@@ -266,15 +238,11 @@ internal static class EnvironmentPacker
         File.Delete($"/home/{user.Username}/files/{env.InternalName}/db-tmp.sql");
 
         //Set Privileges to user
-        await Cli.Wrap("/bin/bash")
-            .WithArguments($"-c \"chown -R {user.Username} /home/{user.Username}/files/{env.InternalName}\"")
-            .ExecuteAsync();
+        await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
 
         //Import DB
-        await Cli.Wrap("/bin/bash")
-                .WithArguments($"-c \"mysql -u {user.Username}_{env.InternalName} -p{env.DBPassword} {user.Username}_{env.InternalName} < db.sql\"")
-                .WithWorkingDirectory($"/home/{user.Username}/files/{env.InternalName}")
-                .ExecuteAsync();
+        await Bash.CommandAsync($"mysql -u {user.Username}_{env.InternalName} -p{env.DBPassword} {user.Username}_{env.InternalName} < db.sql",
+            $"/home/{user.Username}/files/{env.InternalName}");
 
         db.Logs.Add("Daemon", $"Template Deploy sucessful for {user.ID} - {user.Username} - Template: {template.ID} - {template.Name}");
     }

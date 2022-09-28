@@ -14,7 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EnvironmentServer.DAL\EnvironmentServer.DAL.csproj" />
     <ProjectReference Include="..\EnvironmentServer.SlackBot\EnvironmentServer.SlackBot.csproj" />
-    <ProjectReference Include="..\EnvironmentServer.Utility\EnvironmentServer.Utility.csproj" />
+    <ProjectReference Include="..\EnvironmentServer.Util\EnvironmentServer.Util.csproj" />
   </ItemGroup>
 
 </Project>
