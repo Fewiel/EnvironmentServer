@@ -1,5 +1,6 @@
 ﻿using CliWrap;
 using System.Text;
+using System.Text.Json;
 
 namespace EnvironmentServer.Util;
 
@@ -24,6 +25,9 @@ public static class Bash
             cli = cli.WithValidation(CommandResultValidation.None);
 
         await cli.ExecuteAsync();
+
+        if (log)
+            LogCallback?.Invoke("Bash Command", $"Finished {JsonSerializer.Serialize(cli)}");
     }
 
     public static async Task<StringBuilder> CommandQueryAsync(string cmd, string workingDir)
