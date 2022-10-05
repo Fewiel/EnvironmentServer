@@ -19,7 +19,7 @@ namespace EnvironmentServer.DAL.Repositories
         public async Task<IEnumerable<Log>> Get()
         {
             using var c = new MySQLConnectionWrapper(DB.ConnString);
-            return await c.Connection.QueryAsync<Log>("select * from `logs`");
+            return await c.Connection.QueryAsync<Log>("SELECT * FROM `logs` order by Id DESC");
         }
 
         public void Add(string source, string message)
