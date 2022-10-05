@@ -37,9 +37,9 @@ public static class Bash
         return result;
     }
 
-    public static async Task ApacheEnableSiteAsync(string siteConfig) => await CommandAsync($"a2ensite {siteConfig}");
+    public static async Task ApacheEnableSiteAsync(string siteConfig) => await CommandAsync($"a2ensite {siteConfig}", validation: false);
 
-    public static async Task ApacheDisableSiteAsync(string siteConfig) => await CommandAsync($"a2dissite {siteConfig}");
+    public static async Task ApacheDisableSiteAsync(string siteConfig) => await CommandAsync($"a2dissite {siteConfig}", validation: false);
 
     public static async Task ReloadApacheAsync() => await CommandAsync("service apache2 reload");
 
