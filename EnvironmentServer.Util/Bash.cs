@@ -24,8 +24,13 @@ public static class Bash
         if (!validation)
             cli = cli.WithValidation(CommandResultValidation.None);
 
-        await cli.ExecuteAsync();
+        StringBuilder result = new();
+        cli = cli.WithStandardOutputPipe(PipeTarget.ToStringBuilder(result));
 
+        await cli.ExecuteAsync(); 
+        
+        if (log)
+            LogCallback?.Invoke("Bash Command Error", $"Result: {JsonSerializer.Serialize(result)}");
         if (log)
             LogCallback?.Invoke("Bash Command", $"Finished {JsonSerializer.Serialize(cli)}");
     }
