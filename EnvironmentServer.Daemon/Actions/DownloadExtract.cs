@@ -39,7 +39,7 @@ namespace EnvironmentServer.Daemon.Actions
             {
                 db.Logs.Add("Daemon", "Download File for: " + env.InternalName + " File: " + url);
 
-                await Bash.CommandAsync($"wget {url} -O /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
+                await Bash.CommandAsync($"wget {url} -O /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}", validation: false);
 
                 db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
@@ -49,7 +49,7 @@ namespace EnvironmentServer.Daemon.Actions
             {
                 db.Logs.Add("Daemon", "Download File for: " + env.InternalName + " File: " + url);
 
-                await Bash.CommandAsync($"wget {url} -O /home/{user.Username}/files/{env.InternalName}/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
+                await Bash.CommandAsync($"wget {url} -O /home/{user.Username}/files/{env.InternalName}/{filename}", $"/home/{user.Username}/files/{env.InternalName}", validation: false);
 
                 db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
