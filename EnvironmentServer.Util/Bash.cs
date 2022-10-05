@@ -33,9 +33,9 @@ public static class Bash
         await cli.ExecuteAsync(); 
         
         if (log)
-            LogCallback?.Invoke("Bash Command Error", $"Result: {JsonSerializer.Serialize(result)}");
+            LogCallback?.Invoke("Bash Command OutoutPipe", $"Result: {JsonSerializer.Serialize(result)}");
         if (log)
-            LogCallback?.Invoke("Bash Command Error", $"Result: {JsonSerializer.Serialize(error)}");
+            LogCallback?.Invoke("Bash Command ErrorPipe", $"Result: {JsonSerializer.Serialize(error)}");
         if (log)
             LogCallback?.Invoke("Bash Command", $"Finished {JsonSerializer.Serialize(cli)}");
     }
