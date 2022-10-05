@@ -34,7 +34,7 @@ internal class DownloadExtractAutoinstall : ActionBase
             db.Logs.Add("Daemon", "File found for: " + env.InternalName + " File: " + url);
             db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
-            await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
+            await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}", validation: false);
         }
         else
         {
@@ -44,7 +44,7 @@ internal class DownloadExtractAutoinstall : ActionBase
 
             db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
-            await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
+            await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}", validation: false);
         }
 
         await Bash.ChownAsync(user.Username, "sftps_users", $"/home/{user.Username}/files/{env.InternalName}", true);

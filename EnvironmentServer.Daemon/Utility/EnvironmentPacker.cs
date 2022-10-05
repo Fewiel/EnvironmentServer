@@ -99,7 +99,7 @@ internal static class EnvironmentPacker
         Directory.Delete($"/home/{usr.Username}/files/{env.InternalName}", true);
 
         //Unzip Environment
-        await Bash.CommandAsync($"unzip /home/{usr.Username}/files/inactive/{env.InternalName}.zip", $"/home/{usr.Username}/files");
+        await Bash.CommandAsync($"unzip /home/{usr.Username}/files/inactive/{env.InternalName}.zip", $"/home/{usr.Username}/files", validation: false);
 
         //Set Privileges to user
         await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", true);
@@ -199,7 +199,7 @@ internal static class EnvironmentPacker
 
         //Unzip template
         await Bash.CommandAsync($"unzip -o -q /root/templates/{template.ID}-{template.Name}/{template.Name}.zip",
-            $"/home/{user.Username}/files/{env.InternalName}");
+            $"/home/{user.Username}/files/{env.InternalName}", validation: false);
 
         //Replace parts in config
         var sw6 = Directory.Exists($"/home/{user.Username}/files/{env.InternalName}/public");

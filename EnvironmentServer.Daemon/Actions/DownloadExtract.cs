@@ -33,7 +33,7 @@ namespace EnvironmentServer.Daemon.Actions
                 db.Logs.Add("Daemon", "File found for: " + env.InternalName + " File: " + url);
                 db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
-                await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
+                await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}", validation: false);
             }
             else if (filename.Contains("install_"))
             {
@@ -43,7 +43,7 @@ namespace EnvironmentServer.Daemon.Actions
 
                 db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
-                await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}");
+                await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}", validation: false);
             }
             else
             {
@@ -53,7 +53,7 @@ namespace EnvironmentServer.Daemon.Actions
 
                 db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
-                await Bash.CommandAsync($"unzip {filename}", $"/home/{user.Username}/files/{env.InternalName}");
+                await Bash.CommandAsync($"unzip {filename}", $"/home/{user.Username}/files/{env.InternalName}", validation: false);
             }
 
             await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
