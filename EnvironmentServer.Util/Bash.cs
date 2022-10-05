@@ -12,41 +12,15 @@ public static class Bash
         if (log)
             LogCallback?.Invoke("Bash Command", cmd);
 
-        if (workingDir == null)
-        {
-            if (validation)
-            {
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"{cmd}\"")
-                    .ExecuteAsync();
-            }
-            else
-            {
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"{cmd}\"")
-                    .WithValidation(CommandResultValidation.None)
-                    .ExecuteAsync();
-                
-            }
-        }
-        else
-        {
-            if (validation)
-            {
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"{cmd}\"")
-                    .WithWorkingDirectory(workingDir)
-                    .ExecuteAsync();
-            }
-            else
-            {
-                await Cli.Wrap("/bin/bash")
-                    .WithArguments($"-c \"{cmd}\"")
-                    .WithWorkingDirectory(workingDir)
-                    .WithValidation(CommandResultValidation.None)
-                    .ExecuteAsync();
-            }            
-        }
+        var cli = Cli.Wrap("/bin/bash").WithArguments($"-c \"{cmd}\"");
+
+        if (workingDir != null)
+            cli = cli.WithWorkingDirectory(workingDir);
+
+        if (validation)
+            cli = cli.WithValidation(CommandResultValidation.None);
+
+        await cli.ExecuteAsync();
     }
 
     public static async Task<StringBuilder> CommandQueryAsync(string cmd, string workingDir)
