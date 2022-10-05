@@ -22,7 +22,7 @@ internal class DownloadExtractAutoinstall : ActionBase
         var url = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/dl.txt");
         var filename = url[(url.LastIndexOf('/') + 1)..];
 
-        db.Logs.Add("Daemon", "download_extract for: " + env.InternalName + ", " + user.Username + " LINK: " + url);
+        db.Logs.Add("Daemon", "download_extract_autoinstall for: " + env.InternalName + ", " + user.Username + " LINK: " + url);
 
         await Bash.CommandAsync($"rm dl.txt", $"/home/{user.Username}/files/{env.InternalName}");
 

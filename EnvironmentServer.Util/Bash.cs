@@ -18,10 +18,10 @@ public static class Bash
         var cli = Cli.Wrap("/bin/bash").WithArguments($"-c \"{cmd}\"");
 
         if (workingDir != null)
-            cli = cli.WithWorkingDirectory(workingDir);
+            cli.WithWorkingDirectory(workingDir);
 
         if (validation)
-            cli = cli.WithValidation(CommandResultValidation.None);
+            cli.WithValidation(CommandResultValidation.None);
 
         await cli.ExecuteAsync();
     }
