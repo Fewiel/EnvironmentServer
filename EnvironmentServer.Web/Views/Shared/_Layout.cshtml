@@ -12,8 +12,9 @@
     var permissionsManage = usr != null && DB.Permission.HasPermission(usr, "permissions_manage");
     var dockerPermission = usr != null && DB.Permission.HasPermission(usr, "permissions_docker");
     var dockerAdminPermission = usr != null && DB.Permission.HasPermission(usr, "permissions_docker_admin");
+    var viewLogs = usr != null && DB.Permission.HasPermission(usr, "logs");
 
-    bool HasAdminPermission() => settingsEdit || usersManage || templateManage || permissionsManage;
+    bool HasAdminPermission() => settingsEdit || usersManage || templateManage || permissionsManage || viewLogs || dockerAdminPermission;
 }
 
 <!DOCTYPE html>
@@ -80,6 +81,11 @@
                                     @if (dockerAdminPermission)
                                     {
                                         <li><a class="dropdown-item" asp-area="" asp-controller="Docker" asp-action="CreateComposerFile">Manage Composer Files</a></li>
+                                    }
+
+                                    @if (viewLogs)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="SystemLogs" asp-action="CreateComposerFile">Logs</a></li>
                                     }
                                 </ul>
                             </li>

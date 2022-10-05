@@ -1,10 +1,8 @@
 ﻿using Dapper;
+using EnvironmentServer.DAL.Models;
 using EnvironmentServer.DAL.Utility;
 using MySql.Data.MySqlClient;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.DAL.Repositories
@@ -16,6 +14,12 @@ namespace EnvironmentServer.DAL.Repositories
         public LogRepository(Database database)
         {
             DB = database;
+        }
+
+        public async Task<IEnumerable<Log>> Get()
+        {
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            return await c.Connection.QueryAsync<Log>("select * from `logs`");
         }
 
         public void Add(string source, string message)

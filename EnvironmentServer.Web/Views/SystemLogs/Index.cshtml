@@ -1,0 +1,13 @@
+﻿@model IEnumerable<EnvironmentServer.DAL.Models.Log>
+@{
+    ViewData["Title"] = "Logs";
+}
+
+<textarea disabled style="width: -webkit-fill-available; height: 800px;">
+
+    @foreach (var l in Model)
+    {
+        <text>[@l.Timestamp.ToString()] - [@l.Source]: @l.Message</text>
+    }
+
+</textarea>
