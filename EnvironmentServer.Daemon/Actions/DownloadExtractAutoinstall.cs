@@ -40,7 +40,7 @@ internal class DownloadExtractAutoinstall : ActionBase
         {
             db.Logs.Add("Daemon", "Download File for: " + env.InternalName + " File: " + url);
 
-            await Bash.CommandAsync($"wget {url} -O /root/env/dl-cache/{filename}", validation: false);
+            await Bash.CommandAsync($"wget {url} -O /root/env/dl-cache/{filename}");
 
             db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
