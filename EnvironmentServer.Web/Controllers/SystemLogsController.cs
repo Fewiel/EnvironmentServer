@@ -1,6 +1,7 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.Web.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace EnvironmentServer.Web.Controllers;
 
@@ -11,8 +12,9 @@ public class SystemLogsController : ControllerBase
     {
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> IndexAsync()
     {
-        return View(DB.Logs.Get());
+        var logs = await DB.Logs.Get();
+        return View(logs);
     }
 }
