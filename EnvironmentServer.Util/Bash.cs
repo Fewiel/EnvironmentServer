@@ -27,10 +27,15 @@ public static class Bash
         StringBuilder result = new();
         cli = cli.WithStandardOutputPipe(PipeTarget.ToStringBuilder(result));
 
+        StringBuilder error = new();
+        cli = cli.WithStandardErrorPipe(PipeTarget.ToStringBuilder(error));
+
         await cli.ExecuteAsync(); 
         
         if (log)
             LogCallback?.Invoke("Bash Command Error", $"Result: {JsonSerializer.Serialize(result)}");
+        if (log)
+            LogCallback?.Invoke("Bash Command Error", $"Result: {JsonSerializer.Serialize(error)}");
         if (log)
             LogCallback?.Invoke("Bash Command", $"Finished {JsonSerializer.Serialize(cli)}");
     }
