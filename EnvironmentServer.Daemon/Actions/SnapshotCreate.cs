@@ -37,7 +37,7 @@ namespace EnvironmentServer.Daemon.Actions
             
             db.Logs.Add("Daemon", "SnapshotCreate - Create database dump: " + env.InternalName);
             //Create database dump in site folder
-            await Bash.CommandAsync($"mysqldump -u {{config.Username}} -p{{config.Password}} \" + dbString + \" > db.sql",
+            await Bash.CommandAsync($"mysqldump -u {config.Username} -p{config.Password} \"{dbString}\" > db.sql",
                 $"/home/{user.Username}/files/{env.InternalName}");
 
             await Bash.ChownAsync("root", "root", $"/home/{user.Username}/files/{env.InternalName}", true);
