@@ -85,7 +85,7 @@ internal class DownloadExtractAutoinstall : ActionBase
                     $"/home/{user.Username}/files/{env.InternalName}");
             }
 
-            await Bash.ChmodAsync(user.Username, $"/home/{user.Username}/files/{env.InternalName}", true);
+            await Bash.ChmodAsync("755", $"/home/{user.Username}/files/{env.InternalName}", true);
 
             db.Environments.SetTaskRunning(env.ID, false);
 
