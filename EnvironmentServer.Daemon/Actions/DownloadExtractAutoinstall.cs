@@ -47,7 +47,7 @@ internal class DownloadExtractAutoinstall : ActionBase
             await Bash.CommandAsync($"unzip /root/env/dl-cache/{filename}", $"/home/{user.Username}/files/{env.InternalName}", validation: false);
         }
 
-        await Bash.ChownAsync(user.Username, "sftps_users", $"/home/{user.Username}/files/{env.InternalName}", true);
+        await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
 
         var dbname = user.Username + "_" + env.InternalName;
         var envVersion = env.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
