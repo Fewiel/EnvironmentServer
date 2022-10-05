@@ -20,7 +20,7 @@ public static class Bash
         if (workingDir != null)
             cli.WithWorkingDirectory(workingDir);
 
-        if (validation)
+        if (!validation)
             cli.WithValidation(CommandResultValidation.None);
 
         await cli.ExecuteAsync();
