@@ -10,7 +10,10 @@ public static class Bash
     public static async Task CommandAsync(string cmd, string? workingDir = null, bool log = true, bool validation = true)
     {
         if (log)
-            LogCallback?.Invoke("Bash Command", cmd);
+            LogCallback?.Invoke("Bash Command", $"{cmd}");
+
+        if (log && workingDir != null)
+            LogCallback?.Invoke("Bash Command", $"Working Dir: {workingDir}");
 
         var cli = Cli.Wrap("/bin/bash").WithArguments($"-c \"{cmd}\"");
 
