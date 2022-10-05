@@ -187,7 +187,7 @@ namespace EnvironmentServer.DAL.Repositories
             //Create log dir
             Directory.CreateDirectory($"/home/{user.Username}/files/logs/{environment.InternalName}");
 
-            await Bash.ChownAsync(user.Username, "sfpt_users", $"/home/{user.Username}/files/logs/{environment.InternalName}");
+            await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/logs/{environment.InternalName}");
             await Bash.ChmodAsync("755", $"/home/{user.Username}/files/logs/{environment.InternalName}");
 
             //Create Apache2 configuration            

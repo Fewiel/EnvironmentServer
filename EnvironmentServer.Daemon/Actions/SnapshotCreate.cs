@@ -64,7 +64,7 @@ namespace EnvironmentServer.Daemon.Actions
             Command.Connection = c.Connection;
             Command.ExecuteNonQuery();
 
-            await Bash.ChownAsync(user.Username, "sfpt_users", $"/home/{user.Username}/files/{env.InternalName}", true);
+            await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
 
             db.Logs.Add("Daemon", "SnapshotCreate - Enable Site: " + env.InternalName);
             //restart site
