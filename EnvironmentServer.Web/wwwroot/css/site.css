@@ -35,7 +35,6 @@
 
 .no-scrollbars {
     scrollbar-width: none;
-    text-align: center;
 }
 
 .no-scrollbars::-webkit-scrollbar {
