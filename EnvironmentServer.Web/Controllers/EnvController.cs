@@ -71,6 +71,12 @@ namespace EnvironmentServer.Web.Controllers
         {
             var env = DB.Environments.Get(id);
 
+            if (env == null)
+            {
+                AddError("Environment not found");
+                return RedirectToAction("Index", "Home");
+            }
+
             if (env.UserID != GetSessionUser().ID)
                 return RedirectToAction("Index", "Home");
 

@@ -54,7 +54,7 @@ namespace EnvironmentServer.Web.Controllers
 
             if ((await DB.DockerContainer.GetByDockerCountForUser(usr.ID)) >= limit)
             {
-                AddError("You have reached the miximum of containers");
+                AddError("You have reached the maximum of containers");
                 return RedirectToAction("Index");
             }
 
