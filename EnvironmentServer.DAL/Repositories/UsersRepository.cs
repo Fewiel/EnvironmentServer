@@ -134,7 +134,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             Directory.CreateDirectory($"/home/{user.Username}/files/php/tmp");
 
             await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files", true);
-            await Bash.ChmodAsync(user.Username, $"/home/{user.Username}/files");
+            await Bash.ChmodAsync("755", $"/home/{user.Username}/files");
 
             DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
             var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
