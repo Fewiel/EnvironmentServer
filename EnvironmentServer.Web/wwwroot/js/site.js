@@ -10,5 +10,10 @@ const CopyToClipboard = (text) => {
     temp.select();
     document.execCommand("copy");
     document.body.removeChild(temp);
-    alert("Copied to your clipboard!");
+    Swal.fire({
+        icon: 'success',
+        title: 'Copied to your clipboard',
+        showConfirmButton: false,
+        timer: 2000
+    })
 };
