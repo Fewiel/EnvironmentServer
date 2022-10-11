@@ -53,3 +53,7 @@
 .dev-login .dev-login__badge svg {
             fill: #fff;
 }
+
+.card {
+            width: 87%;
+}
