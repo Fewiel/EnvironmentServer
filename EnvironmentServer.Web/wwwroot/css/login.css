@@ -15,7 +15,6 @@
     flex-direction: row;
     overflow: hidden;
     background-image: url(/img/login-img.png);
-    background-position: 50%;
     background-size: cover;
     opacity: 1;
     transition: opacity .3s ease-in-out,padding .2s ease-in-out;
