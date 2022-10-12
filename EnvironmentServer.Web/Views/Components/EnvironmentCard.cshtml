@@ -147,7 +147,7 @@
                 </a>
             </div>
             <div class="icon-button">
-                <a class="icon-link" onclick="AreYouSurePromt();" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>
+                <a class="icon-link" onclick="return AreYouSurePromt();" asp-controller="Env" asp-action="Delete" asp-route-id=@Model.ID>
                     <div class="icontooltip">
                         <i class="ms-Icon ms-Icon--Delete" aria-hidden="true"></i>
                         <span class="icontooltiptext">Delete</span>

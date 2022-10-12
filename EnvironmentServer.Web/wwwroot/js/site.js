@@ -33,8 +33,7 @@ const AreYouSurePromt = () => {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, do it!',
-        cancelButtonText: 'No, cancel!',
-        reverseButtons: true
+        cancelButtonText: 'No, cancel!'
     }).then((result) => {
         if (result.isConfirmed) {
             swalWithBootstrapButtons.fire(
