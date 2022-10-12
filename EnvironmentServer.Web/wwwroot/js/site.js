@@ -54,7 +54,6 @@ const AreYouSurePromt = () => {
             return false;
         }
     })
-    return false;
 };
 
 
