@@ -30,6 +30,17 @@
 </head>
 <body class="fullHeight">
     <header>
+        <script>
+            function myFunction() {
+                var x = document.getElementById("myDIV");
+                if (x.style.display === "none") {
+                    x.style.display = "block";
+                } 
+                else {
+                    x.style.display = "none";
+                }
+            }
+        </script>
         <nav class="navbar navbar-expand-lg navbar-toggleable-sm navbar-light box-shadow mb-3" style="margin-bottom: 0 !important;">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/img/shopdev.png" width="150" height="50" style="padding-right: 15px;" /></a>
@@ -37,7 +48,7 @@
                     <span class="navbar-text">
                         <partial name="/Views/Components/Login.cshtml" model=usr />
                     </span>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    <button onclick="myFunction()" class="navbar-toggler" type="button" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -45,7 +56,7 @@
             </div>
         </nav>
         <nav class="navbar navbar-expand-lg navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3" style="margin-bottom: 0 !important;">
-            <div class="container">
+            <div class="container myDIV">
                 <div class="navbar-collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
