@@ -72,3 +72,8 @@
     flex-direction: row;
     flex-wrap: wrap;
 }}
+
+li.nav-item {
+    flex-grow: 0;
+    padding-right: 20px;
+}
