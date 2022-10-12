@@ -17,3 +17,38 @@ const CopyToClipboard = (text) => {
         timer: 2000
     })
 };
+
+const AreYouSurePromt = Swal.mixin({
+    customClass: {
+        confirmButton: 'btn btn-success',
+        cancelButton: 'btn btn-danger'
+    },
+    buttonsStyling: false
+})
+
+AreYouSurePromt.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, just do it!',
+    cancelButtonText: 'No, cancel!',
+    reverseButtons: true
+}).then((result) => {
+    if (result.isConfirmed) {
+        AreYouSurePromt.fire(
+            'Deleted!',
+            'No more turning back...',
+            'success'
+        )
+    } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+    ) {
+        AreYouSurePromt.fire(
+            'Cancelled',
+            'Maybe next time...',
+            'error'
+        )
+    }
+})
