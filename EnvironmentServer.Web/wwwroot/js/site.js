@@ -26,7 +26,7 @@ const swalWithBootstrapButtons = Swal.mixin({
     buttonsStyling: false
 })
 
-const AreYouSurePromt = () => {        
+function AreYouSurePromt() {        
     return swalWithBootstrapButtons.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
