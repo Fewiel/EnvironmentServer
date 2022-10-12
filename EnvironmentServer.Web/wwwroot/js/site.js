@@ -27,13 +27,14 @@ const swalWithBootstrapButtons = Swal.mixin({
 })
 
 const AreYouSurePromt = () => {
+    return false;
     swalWithBootstrapButtons.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, do it!',
-        cancelButtonText: 'No, cancel!'
+        cancelButtonText: 'No, cancel!'        
     }).then((result) => {
         if (result.isConfirmed) {
             swalWithBootstrapButtons.fire(
@@ -41,6 +42,7 @@ const AreYouSurePromt = () => {
                 'There is no more turning back...',
                 'success'
             )
+            return true;
         } else if (
             /* Read more about handling dismissals below */
             result.dismiss === Swal.DismissReason.cancel
@@ -50,6 +52,7 @@ const AreYouSurePromt = () => {
                 'Maybe next time...',
                 'error'
             )
+            return false;
         }
     })
 };
