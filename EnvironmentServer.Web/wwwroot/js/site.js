@@ -26,8 +26,8 @@ const swalWithBootstrapButtons = Swal.mixin({
     buttonsStyling: false
 })
 
-const AreYouSurePromt = () => {    
-    swalWithBootstrapButtons.fire({
+const AreYouSurePromt = () => {        
+    return swalWithBootstrapButtons.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
         icon: 'warning',
@@ -41,7 +41,6 @@ const AreYouSurePromt = () => {
                 'There is no more turning back...',
                 'success'
             )
-            return true;
         } else if (
             /* Read more about handling dismissals below */
             result.dismiss === Swal.DismissReason.cancel
@@ -51,7 +50,6 @@ const AreYouSurePromt = () => {
                 'Maybe next time...',
                 'error'
             )
-            return false;
         }
     })
 };
