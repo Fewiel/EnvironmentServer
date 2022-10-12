@@ -19,7 +19,6 @@ const CopyToClipboard = (text) => {
 };
 
 function Confirmation() {
-    var r = false;
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -34,7 +33,7 @@ function Confirmation() {
                 'There is no more turning back...',
                 'success'
             )
-            r = true;
+            return true;
         } else if (
             /* Read more about handling dismissals below */
             result.dismiss === Swal.DismissReason.cancel
@@ -44,10 +43,9 @@ function Confirmation() {
                 'Maybe next time...',
                 'error'
             )
-            r = false;
+            return false;
         }
     });
-    return r;
 }
 
 function AreYouSurePromt() {    
