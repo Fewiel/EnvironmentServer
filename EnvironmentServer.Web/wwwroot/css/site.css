@@ -45,3 +45,24 @@
 .dropdown-toggle-hide::after {
     display: none;
 }
+
+.navbar {
+    padding: 0;
+}
+
+.navbar-brand {
+    padding: 0;
+}
+
+.collapse:not(.show) {
+    display: contents;
+}
+
+@media (min-width: 592px) {
+.navbar-expand-lg .navbar-nav {
+    flex-direction: row;
+}}
+
+.dm-sm-inline-flex {
+    display: contents;
+}
