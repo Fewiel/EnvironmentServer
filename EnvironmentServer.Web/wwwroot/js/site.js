@@ -33,7 +33,7 @@ function AreYouSurePromt() {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, do it!',
-        cancelButtonText: 'No, cancel!'        
+        cancelButtonText: 'No, cancel!'
     }).then((result) => {
         if (result.isConfirmed) {
             swalWithBootstrapButtons.fire(
@@ -51,7 +51,7 @@ function AreYouSurePromt() {
                 'error'
             )
         }
-    })
+    });
 };
 
 
