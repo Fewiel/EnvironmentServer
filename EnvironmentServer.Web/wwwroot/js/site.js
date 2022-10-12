@@ -18,8 +18,8 @@ const CopyToClipboard = (text) => {
     })
 };
 
-function Confirmation() {
-    Swal.fire({
+function AreYouSurePromt() {    
+    await Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
         icon: 'warning',
@@ -46,8 +46,4 @@ function Confirmation() {
             return false;
         }
     });
-}
-
-function AreYouSurePromt() {    
-    return Confirmation();
 };
