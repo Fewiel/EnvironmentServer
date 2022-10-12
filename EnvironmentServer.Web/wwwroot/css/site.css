@@ -66,3 +66,9 @@
 .navbar-text {
     padding-right: 2rem;
 }
+
+@media (min-width: 392px) {
+.navbar-expand-lg .navbar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+}}
