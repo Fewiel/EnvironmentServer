@@ -18,7 +18,7 @@ const CopyToClipboard = (text) => {
     })
 };
 
-function AreYouSurePromt() {
+function Confirmation() {
     var r = false;
     Swal.fire({
         title: 'Are you sure?',
@@ -32,7 +32,7 @@ function AreYouSurePromt() {
             Swal.fire(
                 'Done!',
                 'There is no more turning back...',
-                'success'                
+                'success'
             )
             r = true;
         } else if (
@@ -45,7 +45,11 @@ function AreYouSurePromt() {
                 'error'
             )
             r = false;
-        }       
+        }
     });
     return r;
+}
+
+function AreYouSurePromt() {    
+    return Confirmation();
 };
