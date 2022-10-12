@@ -57,3 +57,12 @@
 .dm-sm-inline-flex {
     display: contents;
 }
+
+@media (min-width: 992px) {
+.navbar-expand-lg .navbar-toggler {
+    display: block;
+}}
+
+.navbar-text {
+    padding-right: 2rem;
+}
