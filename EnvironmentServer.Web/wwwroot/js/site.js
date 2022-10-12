@@ -18,16 +18,8 @@ const CopyToClipboard = (text) => {
     })
 };
 
-const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
-    },
-    buttonsStyling: false
-})
-
 function AreYouSurePromt() {        
-    return swalWithBootstrapButtons.fire({
+    return Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
         icon: 'warning',
@@ -36,7 +28,7 @@ function AreYouSurePromt() {
         cancelButtonText: 'No, cancel!'
     }).then((result) => {
         if (result.isConfirmed) {
-            swalWithBootstrapButtons.fire(
+            Swal.fire(
                 'Done!',
                 'There is no more turning back...',
                 'success'
@@ -45,7 +37,7 @@ function AreYouSurePromt() {
             /* Read more about handling dismissals below */
             result.dismiss === Swal.DismissReason.cancel
         ) {
-            swalWithBootstrapButtons.fire(
+            Swal.fire(
                 'Cancelled',
                 'Maybe next time...',
                 'error'
