@@ -18,8 +18,8 @@ const CopyToClipboard = (text) => {
     })
 };
 
-function AreYouSurePromt() {    
-    await Swal.fire({
+export function AreYouSurePromt() {    
+    return Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
         icon: 'warning',
@@ -33,7 +33,6 @@ function AreYouSurePromt() {
                 'There is no more turning back...',
                 'success'
             )
-            return true;
         } else if (
             /* Read more about handling dismissals below */
             result.dismiss === Swal.DismissReason.cancel
@@ -43,7 +42,6 @@ function AreYouSurePromt() {
                 'Maybe next time...',
                 'error'
             )
-            return false;
         }
     });
 };
