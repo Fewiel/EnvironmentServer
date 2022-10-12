@@ -4,7 +4,7 @@
 // Write your JavaScript code.
 
 const CopyToClipboard = (text) => {
-    const temp = document.createElement("input");    
+    const temp = document.createElement("input");
     temp.setAttribute("value", text);
     document.body.appendChild(temp);
     temp.select();
@@ -18,7 +18,7 @@ const CopyToClipboard = (text) => {
     })
 };
 
-const AreYouSurePromt = Swal.mixin({
+const swalWithBootstrapButtons = Swal.mixin({
     customClass: {
         confirmButton: 'btn btn-success',
         cancelButton: 'btn btn-danger'
@@ -26,29 +26,33 @@ const AreYouSurePromt = Swal.mixin({
     buttonsStyling: false
 })
 
-AreYouSurePromt.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, just do it!',
-    cancelButtonText: 'No, cancel!',
-    reverseButtons: true
-}).then((result) => {
-    if (result.isConfirmed) {
-        AreYouSurePromt.fire(
-            'Deleted!',
-            'No more turning back...',
-            'success'
-        )
-    } else if (
-        /* Read more about handling dismissals below */
-        result.dismiss === Swal.DismissReason.cancel
-    ) {
-        AreYouSurePromt.fire(
-            'Cancelled',
-            'Maybe next time...',
-            'error'
-        )
-    }
-})
+const AreYouSurePromt = () => {
+    swalWithBootstrapButtons.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, do it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            swalWithBootstrapButtons.fire(
+                'Done!',
+                'There is no more turning back...',
+                'success'
+            )
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            swalWithBootstrapButtons.fire(
+                'Cancelled',
+                'Maybe next time...',
+                'error'
+            )
+        }
+    })
+};
+
+
