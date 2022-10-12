@@ -19,7 +19,7 @@ const CopyToClipboard = (text) => {
 };
 
 function AreYouSurePromt() {        
-    return Swal.fire({
+    Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
         icon: 'warning',
