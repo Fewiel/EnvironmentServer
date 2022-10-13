@@ -33,12 +33,11 @@ function AreYouSurePromt(url) {
                 title: 'Done!',
                 text: 'There is no more turning back...',
                 icon: 'success',
-                timer: 1000
-                },
-                function () {
-                    console.log(url);
-                    window.location.href = url;
-                });            
+                timer: 2000
+            }).then(() => {
+                console.log(url);
+                window.location.href = url;
+            });            
         } else if (
             result.dismiss === Swal.DismissReason.cancel
         ) {
