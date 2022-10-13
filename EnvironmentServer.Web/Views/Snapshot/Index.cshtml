@@ -29,8 +29,8 @@
                     <a>@snap.Created</a>
                 </td>
                 <td>
-                    <a asp-action="RestoreConfirm" asp-route-id="@snap.Id">Restore</a>
-                    <a style="cursor: pointer;" onclick=@Html.Raw($"\"return AreYouSurePromt('../Delete/{@snap.Id}');\"")>Delete</a>
+                    <a class="btn btn-primary" asp-action="RestoreConfirm" asp-route-id="@snap.Id">Restore</a>
+                    <a class="btn btn-danger" style="cursor: pointer;" onclick=@Html.Raw($"\"return AreYouSurePromt('../Delete/{@snap.Id}');\"")>Delete</a>
                 </td>
             </tr>
         }
