@@ -47,7 +47,7 @@
                     <a asp-action="LoginAsUser" asp-route-id="@usr.ID"><i class="bi bi-door-open"></i></a>
                     <a asp-action="Permissions" style="margin-left: 10px;" asp-route-id="@usr.ID"><i class="bi bi-key"></i></a>
                     <a asp-action="Update" style="margin-left: 10px;" asp-route-id="@usr.ID"><i class="bi bi-pencil"></i></a>
-                    <a style="margin-left: 10px; cursor: pointer;" onclick=@Html.Raw($"\"return AreYouSurePromt('../Delete/{@usr.ID}');\"")><i style="color:#FF0000" class="bi bi-trash"></i></a>
+                    <a style="margin-left: 10px; cursor: pointer;" onclick=@Html.Raw($"\"return AreYouSurePromt('../Users/Delete/{@usr.ID}');\"")><i style="color:#FF0000" class="bi bi-trash"></i></a>
                 </td>
             </tr>
         }
