@@ -376,5 +376,11 @@ namespace EnvironmentServer.DAL.Repositories
 
             return Regex.Replace(name, "[^0-9a-zA-Z]+", "");
         }
+
+        public async Task SetSSLAsync(string dbname)
+        {
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            await c.Connection.ExecuteAsync($"UPDATE {dbname}.s_core_shops SET secure = '1' WHERE id = 1;");
+        }
     }
 }
