@@ -18,7 +18,7 @@ const CopyToClipboard = (text) => {
     })
 };
 
-function AreYouSurePromt() {
+function AreYouSurePromt(url) {
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -26,5 +26,25 @@ function AreYouSurePromt() {
         showCancelButton: true,
         confirmButtonText: 'Yes, do it!',
         cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Done!',
+                text: 'There is no more turning back...',
+                type: 'success'
+                },
+                function () {
+                    window.location = url;
+                });            
+        } else if (
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            Swal.fire(
+                'Cancelled',
+                'Maybe next time...',
+                'error'
+            )
+        }
     });
+    return false;
 };
