@@ -30,7 +30,7 @@
                 </td>
                 <td>
                     <a asp-action="RestoreConfirm" asp-route-id="@snap.Id">Restore</a>
-                    <a asp-action="Delete" onclick="return confirm('Are you sure to delete this Snapshot?')" asp-route-id="@snap.Id">Delete</a>
+                    <a style="cursor: pointer;" onclick=@Html.Raw($"\"return AreYouSurePromt('../Delete/{@snap.Id}');\"")>Delete</a>
                 </td>
             </tr>
         }
