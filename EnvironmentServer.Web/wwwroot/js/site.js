@@ -19,6 +19,7 @@ const CopyToClipboard = (text) => {
 };
 
 function AreYouSurePromt(url) {
+    console.log(url);
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -34,6 +35,7 @@ function AreYouSurePromt(url) {
                 icon: 'success'
                 },
                 function () {
+                    console.log(url);
                     window.location.href = url;
                 });            
         } else if (
