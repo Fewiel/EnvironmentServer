@@ -33,7 +33,8 @@ function AreYouSurePromt(url) {
                 title: 'Done!',
                 text: 'There is no more turning back...',
                 icon: 'success',
-                timer: 2000
+                timer: 2000,
+                showConfirmButton: false
             }).then(() => {
                 console.log(url);
                 window.location.href = url;
