@@ -83,6 +83,8 @@ internal class DownloadExtractAutoinstall : ActionBase
                     $"--shop-currency=\\\"EUR\\\" --admin-username=\\\"admin\\\" --admin-password=\\\"shopware\\\" " +
                     $"--admin-email=\\\"{user.Email}\\\" --admin-name=\\\"Shopware Demo\\\" --admin-locale=\\\"de_DE\\\"",
                     $"/home/{user.Username}/files/{env.InternalName}");
+
+                await Bash.CommandAsync($"mysql -u {dbname} -p{env.DBPassword} -e \"UPDATE {dbname}.s_core_shops SET secure= '1' WHERE id = 1;\"");
             }
 
             await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
