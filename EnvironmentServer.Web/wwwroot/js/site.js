@@ -32,7 +32,8 @@ function AreYouSurePromt(url) {
             Swal.fire({
                 title: 'Done!',
                 text: 'There is no more turning back...',
-                icon: 'success'
+                icon: 'success',
+                timer: 1000
                 },
                 function () {
                     console.log(url);
