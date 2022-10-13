@@ -34,7 +34,7 @@ function AreYouSurePromt(url) {
                 icon: 'success'
                 },
                 function () {
-                    window.location = url;
+                    window.location.href = url;
                 });            
         } else if (
             result.dismiss === Swal.DismissReason.cancel
