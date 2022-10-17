@@ -17,7 +17,8 @@
                     </h2>
                 </div>
                 <div class="col-2">
-                    <a asp-controller="Docker" asp-action="EditFile" asp-route-id=@f.ID class="btn btn-primary" type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">Edit</a>
+                    <a asp-controller="Docker" asp-action="EditFile" asp-route-id=@f.ID class="btn btn-primary" type="submit">Edit</a>
+                    <a class="btn btn-danger" style="cursor: pointer;" onclick=@Html.Raw($"\"return AreYouSurePromt('../Docker/DeleteFile/{@f.ID}');\"")>Delete</a>
                 </div>
             </div>
         </div>

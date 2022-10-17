@@ -122,15 +122,26 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        [Permission("permissions_docker_admin")]
         public async Task<IActionResult> ListComposerFiles() => View(await DB.DockerComposeFile.GetAllAsync());
 
+        [Permission("permissions_docker_admin")]
         [HttpGet]
         public async Task<IActionResult> EditFile(long id) => View(await DB.DockerComposeFile.GetByIDAsync(id));
 
+        [Permission("permissions_docker_admin")]
         [HttpPost]
         public async Task<IActionResult> EditFile(DockerComposeFile file)
         {
             await DB.DockerComposeFile.UpdateAsync(file);
+            return RedirectToAction("ListComposerFiles", "Docker");
+        }
+
+        [Permission("permissions_docker_admin")]
+        public async Task<IActionResult> DeleteFile(long id)
+        {
+            var f = await DB.DockerComposeFile.GetByIDAsync(id);
+            DB.DockerComposeFile.Delete(f);
             return RedirectToAction("ListComposerFiles", "Docker");
         }
     }

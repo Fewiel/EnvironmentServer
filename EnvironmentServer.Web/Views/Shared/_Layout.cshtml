@@ -100,7 +100,8 @@
 
                                     @if (dockerAdminPermission)
                                     {
-                                        <li><a class="dropdown-item" asp-area="" asp-controller="Docker" asp-action="CreateComposerFile">Manage Composer Files</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Docker" asp-action="CreateComposerFile">Create Composer Files</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Docker" asp-action="ListComposerFiles">Manage Composer Files</a></li>
                                     }
 
                                     @if (viewLogs)
