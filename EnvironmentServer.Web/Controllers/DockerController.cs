@@ -123,5 +123,15 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         public async Task<IActionResult> ListComposerFiles() => View(await DB.DockerComposeFile.GetAllAsync());
+
+        [HttpGet]
+        public async Task<IActionResult> EditFile(long id) => View(await DB.DockerComposeFile.GetByIDAsync(id));
+
+        [HttpPost]
+        public async Task<IActionResult> EditFile(DockerComposeFile file)
+        {
+            await DB.DockerComposeFile.UpdateAsync(file);
+            return RedirectToAction("ListComposerFiles", "Docker");
+        }
     }
 }

@@ -1,0 +1,24 @@
+﻿@model EnvironmentServer.DAL.Models.DockerComposeFile
+@{
+    ViewData["Title"] = "Docker - Create Composer File";
+}
+
+<div class="d-flex align-items-center justify-content-center fullHeight">
+    <form method="post" asp-action="EditFile" style="width: 1200px;">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Composer File Name</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="FileContent" class="form-label">Content</label>
+            <textarea asp-for="FileContent" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Edit</button>
+    </form>
+</div>
