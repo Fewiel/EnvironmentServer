@@ -121,5 +121,7 @@ namespace EnvironmentServer.Web.Controllers
             DB.CmdAction.CreateTask(new CmdAction { Action = "docker.delete", Id_Variable = id });
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> ListComposerFiles() => View(await DB.DockerComposeFile.GetAllAsync());
     }
 }
