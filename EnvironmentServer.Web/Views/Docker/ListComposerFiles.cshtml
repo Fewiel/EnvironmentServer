@@ -13,14 +13,14 @@
         <form method="post" asp-action="Edit">
             <div class="accordion-item">
                 <div class="row">
-                    <div class="col-11">
+                    <div class="col-10">
                         <h2 class="accordion-header" id="h-@i">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-@i">
                                 ▼ @f.Name - Custom Container Name: <input asp-for=@f.Name value=@f.Name class="form-control" />
                             </button>
                         </h2>
                     </div>
-                    <div class="col-1">
+                    <div class="col-2">
                         <input type="hidden" asp-for=@f.ID value=@f.ID />
                         <button class="btn btn-primary" type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;" onclick="AreYouSurePromt();return false;">Edit</button>
                         <button asp-action="Delete" asp-route-id=@f.ID class="btn btn-danger" onclick="AreYouSurePromt();return false;">Delete</button>
