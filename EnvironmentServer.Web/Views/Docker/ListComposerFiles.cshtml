@@ -11,13 +11,13 @@
             <div class="row">
                 <div class="col-10">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse">
-                            @f.Name class="form-control" />
+                        <button class="accordion-button collapsed" data-bs-toggle="collapse">
+                            @f.Name
                         </button>
                     </h2>
                 </div>
                 <div class="col-2">
-                    <button class="btn btn-primary" type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">Edit</button>
+                    <button asp-controller="Docker" asp-action="EditFile" asp-route-id=@f.ID class="btn btn-primary" type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">Edit</button>
                 </div>
             </div>
         </div>
