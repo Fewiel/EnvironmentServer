@@ -25,10 +25,10 @@
                         <button class="btn btn-primary" type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;" onclick="AreYouSurePromt();return false;">Edit</button>
                         <button asp-action="Delete" asp-route-id=@f.ID class="btn btn-danger" onclick="AreYouSurePromt();return false;">Delete</button>
                     </div>
-                </div>
-                <div class="accordion-collapse collapse" id="c-@i" data-bs-parent="#files">
-                    <div class="accordion-body">
-                        <textarea type="text" asp-for=@f.FileContent value=@f.FileContent style="width: 100%;" />
+                    <div class="accordion-collapse collapse" id="c-@i" data-bs-parent="#files">
+                        <div class="accordion-body">
+                            <textarea type="text" asp-for=@f.FileContent value=@f.FileContent style="width: 100%;" />
+                        </div>
                     </div>
                 </div>
             </div>
