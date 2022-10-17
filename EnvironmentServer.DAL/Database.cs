@@ -43,6 +43,7 @@ namespace EnvironmentServer.DAL
         public DockerContainerRepository DockerContainer { get; }
         public DockerComposeFileRepository DockerComposeFile { get; }
         public DockerPortRepository DockerPort { get; }
+        public ShopwareConfigRepository ShopwareConfig { get; }
         
         public Database(string connString)
         {
@@ -80,6 +81,7 @@ namespace EnvironmentServer.DAL
             DockerPort = new DockerPortRepository(this);
             DockerComposeFile = new DockerComposeFileRepository(this);
             DockerContainer = new DockerContainerRepository(this);
+            ShopwareConfig = new ShopwareConfigRepository(this);
 
             Bash.LogCallback = Logs.Add;
 
