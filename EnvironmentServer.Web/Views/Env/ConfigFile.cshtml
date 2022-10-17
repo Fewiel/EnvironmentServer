@@ -1,0 +1,31 @@
+﻿@model EnvironmentServer.DAL.Models.ShopwareConfig
+@{
+    ViewData["Title"] = "Docker - Create Composer File";
+}
+
+@if (Model.ID != -1)
+{    
+    <div class="d-flex align-items-center justify-content-center fullHeight">
+        <span>Latest Update: @Model.LatestChange</span>
+        <a asp-controller="Env" asp-action="ReloadConfig" asp-route-id=@Model.EnvID>Press here to reload config</a>
+        
+        <form method="post" asp-action="WriteConfig" style="width: 1200px;">
+            <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="EnvID" />            
+            <div class="mb-3">
+                <label asp-for="Content" class="form-label">Content</label>
+                <textarea asp-for="Content" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Config</button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="d-flex align-items-center justify-content-center fullHeight">
+        <span>
+            config editor not yet initialised            
+        </span>
+        <a asp-controller="Env" asp-action="InitConfig" asp-route-id=@Model.EnvID>Press here to initialise</a>
+    </div>
+}

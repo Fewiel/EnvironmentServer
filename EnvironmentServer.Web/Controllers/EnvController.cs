@@ -1,12 +1,9 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
-using EnvironmentServer.DAL.Repositories;
 using EnvironmentServer.Web.ViewModels.Env;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MySql.Data.MySqlClient;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -149,6 +146,38 @@ namespace EnvironmentServer.Web.Controllers
             DB.Environments.ChangePermanent(id);
             AddInfo("Environment is set to permanent");
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfigFileAsync(long id)
+        {
+            var swConfig = await DB.ShopwareConfig.GetByEnvIDAsync(id);
+
+            if (swConfig.ID < 0)
+            {
+                swConfig.ID = -1;
+                swConfig.EnvID = id;
+            }
+
+            return View(swConfig);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfigFileAsync(ShopwareConfig swConfig)
+        {
+            await DB.ShopwareConfig.UpdateAsync(swConfig);
+
+            DB.Environments.SetTaskRunning(swConfig.EnvID, true);
+
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "write_config",
+                Id_Variable = swConfig.EnvID,
+                ExecutedById = GetSessionUser().ID
+            });
+
+            AddInfo("Config Saved");
+            return View(swConfig);
         }
     }
 }
