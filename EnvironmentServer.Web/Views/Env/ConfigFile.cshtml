@@ -5,24 +5,26 @@
 
 @if (Model.ID != -1)
 {
-    <br />
-    <a asp-controller="Env" asp-action="UpdateConfigFile" asp-route-id=@Model.EnvID class="btn btn-primary">Press here to reload config</a>
-    <br />
-    <form method="post" asp-action="ConfigFile" style="width: 1200px;">
-        <input type="hidden" asp-for="ID" />
-        <input type="hidden" asp-for="EnvID" />
-        <div class="mb-3">
-            <label asp-for="Content" class="form-label">Content</label>
-            <textarea asp-for="Content" class="form-control" style="height: 400px;"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Save Config</button>
-    </form>
+        <br />
+        <a asp-controller="Env" asp-action="UpdateConfigFile" asp-route-id=@Model.EnvID class="btn btn-primary">Press here to reload config</a>
+        <br />
+        <form method="post" asp-action="ConfigFile" style="width: 1200px;">
+            <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="EnvID" />
+            <div class="mb-3">
+                <label asp-for="Content" class="form-label">Content</label>
+                <textarea asp-for="Content" class="form-control" style="height: 400px;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Config</button>
+        </form>
 }
 else
 {
-    <div class="d-flex align-items-center justify-content-center fullHeight">
-        <span>
-            Initialisation has been triggered - This may take a moment - Please reload the page.
-        </span>
-    </div>
+        <meta http-equiv="refresh" content="2" >
+        <div class="d-flex align-items-center justify-content-center fullHeight">
+            <span>
+                    
+                Initialisation has been triggered - This may take a moment - Please reload the page.
+            </span>
+        </div>
 }
