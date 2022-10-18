@@ -161,7 +161,7 @@ namespace EnvironmentServer.Web.Controllers
                 swConfig = new ShopwareConfig();
                 swConfig.ID = -1;
                 swConfig.EnvID = id;
-                swConfig.LatestChange = DateTime.Now;
+                swConfig.LatestChange = DateTimeOffset.Now;
 
                 DB.Environments.SetTaskRunning(swConfig.EnvID, true);
 
