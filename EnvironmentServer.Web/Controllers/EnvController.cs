@@ -4,6 +4,7 @@ using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.ViewModels.Env;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
 using static Org.BouncyCastle.Math.EC.ECCurve;
@@ -177,6 +178,8 @@ namespace EnvironmentServer.Web.Controllers
         public async Task<IActionResult> ConfigFileAsync(ShopwareConfig swConfig)
         {
             await DB.ShopwareConfig.UpdateAsync(swConfig);
+
+            DB.Logs.Add("Web", JsonConvert.SerializeObject(swConfig));
 
             DB.Environments.SetTaskRunning(swConfig.EnvID, true);
 
