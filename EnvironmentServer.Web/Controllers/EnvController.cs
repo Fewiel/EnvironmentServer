@@ -5,6 +5,7 @@ using EnvironmentServer.Web.ViewModels.Env;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using static Org.BouncyCastle.Math.EC.ECCurve;
@@ -160,6 +161,7 @@ namespace EnvironmentServer.Web.Controllers
                 swConfig = new ShopwareConfig();
                 swConfig.ID = -1;
                 swConfig.EnvID = id;
+                swConfig.LatestChange = DateTime.Now;
 
                 DB.Environments.SetTaskRunning(swConfig.EnvID, true);
 
