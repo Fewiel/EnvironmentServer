@@ -15,24 +15,22 @@ public class ShopwareConfigRepository : RepositoryBase<ShopwareConfig>
     public override async Task InsertAsync(ShopwareConfig t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        await c.Connection.ExecuteAsync("insert into `shopware_config` (`EnvID`, `Content`, `LatestUpdate`) " +
-            "values (@envID, @content, @latestupdate)", new
+        await c.Connection.ExecuteAsync("insert into `shopware_config` (`EnvID`, `Content`) " +
+            "values (@envID, @content)", new
             {
                 envID = t.EnvID,
-                content = t.Content,
-                latestupdate = DateTime.Now.ToString("YYYY-MM-DD HH:MI:SS")
+                content = t.Content
             });
     }
 
     public override async Task UpdateAsync(ShopwareConfig t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        await c.Connection.ExecuteAsync("update `shopware_config` set `EnvID` = @envID, `Content` = @content, `LatestUpdate` = @latestupdate where `ID` = @id;", new
+        await c.Connection.ExecuteAsync("update `shopware_config` set `EnvID` = @envID, `Content` = @content where `ID` = @id;", new
         {
             id = t.ID,
             envID = t.EnvID,
-            content = t.Content,
-            latestupdate = DateTime.Now.ToString("YYYY-MM-DD HH:MI:SS")
+            content = t.Content
         });
     }
 
