@@ -22,11 +22,11 @@ public class WriteConfig : ActionBase
 
         if (File.Exists(path + "config.php"))
         {
-            File.WriteAllText(swConf.Content, path + "config.php");
+            File.WriteAllText(path + "config.php", swConf.Content);
         }
         else if (File.Exists(path + ".env"))
         {
-            File.WriteAllText(swConf.Content, path + ".env");
+            File.WriteAllText(path + ".env", swConf.Content);
         }
         else
         {
