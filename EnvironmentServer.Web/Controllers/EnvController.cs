@@ -154,8 +154,9 @@ namespace EnvironmentServer.Web.Controllers
         {
             var swConfig = await DB.ShopwareConfig.GetByEnvIDAsync(id);
 
-            if (swConfig.ID <= 0)
+            if (swConfig == null)
             {
+                swConfig = new ShopwareConfig();
                 swConfig.ID = -1;
                 swConfig.EnvID = id;
 
