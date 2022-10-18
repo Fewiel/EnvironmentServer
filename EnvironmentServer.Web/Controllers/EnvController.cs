@@ -177,9 +177,9 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> ConfigFileAsync(ShopwareConfig swConfig)
         {
-            await DB.ShopwareConfig.UpdateAsync(swConfig);
-
             DB.Environments.SetTaskRunning(swConfig.EnvID, true);
+
+            await DB.ShopwareConfig.UpdateAsync(swConfig);            
 
             DB.CmdAction.CreateTask(new CmdAction
             {

@@ -37,8 +37,8 @@ public class WriteConfig : ActionBase
             db.Logs.Add("ShopwareConfig", "Error - Could not find config file");
             return;
         }
-
-        await db.ShopwareConfig.UpdateAsync(swConf);
+        
         db.Environments.SetTaskRunning(env.ID, false);
+        await db.ShopwareConfig.UpdateAsync(swConf);
     }
 }
