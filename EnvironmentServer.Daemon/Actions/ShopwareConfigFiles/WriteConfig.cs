@@ -1,4 +1,5 @@
 ﻿using EnvironmentServer.DAL;
+using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
@@ -23,10 +24,12 @@ public class WriteConfig : ActionBase
         if (File.Exists(path + "config.php"))
         {
             File.WriteAllText(path + "config.php", swConf.Content);
+            await Bash.ChownAsync(usr.Username, "stfp_users", path + "config.php");
         }
         else if (File.Exists(path + ".env"))
         {
             File.WriteAllText(path + ".env", swConf.Content);
+            await Bash.ChownAsync(usr.Username, "stfp_users", path + ".env");
         }
         else
         {
