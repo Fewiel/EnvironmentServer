@@ -1,10 +1,8 @@
 ﻿using EnvironmentServer.DAL;
 using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.IO;
 using System.Threading.Tasks;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace EnvironmentServer.Daemon.Actions.ShopwareConfigFiles;
 
@@ -24,12 +22,12 @@ public class WriteConfig : ActionBase
         if (File.Exists(path + "config.php"))
         {
             File.WriteAllText(path + "config.php", swConf.Content);
-            await Bash.ChownAsync(usr.Username, "stfp_users", path + "config.php");
+            await Bash.ChownAsync(usr.Username, "stfp_users", path, true);
         }
         else if (File.Exists(path + ".env"))
         {
             File.WriteAllText(path + ".env", swConf.Content);
-            await Bash.ChownAsync(usr.Username, "stfp_users", path + ".env");
+            await Bash.ChownAsync(usr.Username, "stfp_users", path, true);
         }
         else
         {
