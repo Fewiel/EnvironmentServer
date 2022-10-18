@@ -123,7 +123,10 @@ namespace EnvironmentServer.Daemon
                 new Actions.Docker.Stop(),
                 new Actions.Docker.StopAll(),
                 new Actions.Docker.Delete(),
-                new Actions.Docker.Cleanup()
+                new Actions.Docker.Cleanup(),
+                new Actions.ShopwareConfigFiles.GetConfig(),
+                new Actions.ShopwareConfigFiles.UpdateConfig(),
+                new Actions.ShopwareConfigFiles.WriteConfig()
             };
 
             foreach (var a in l)
