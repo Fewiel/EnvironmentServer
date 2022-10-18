@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace EnvironmentServer.Daemon.Actions.ShopwareConfigFiles;
 
@@ -30,10 +31,13 @@ public class UpdateConfig : ActionBase
         }
         else
         {
+            db.Environments.SetTaskRunning(env.ID, false);
             db.Logs.Add("ShopwareConfig", "Error - Could not find config file");
             return;
         }
 
+        db.Logs.Add("ShopwareConfig", "ReadConfig" + JsonConvert.SerializeObject(swConf));
+        db.Environments.SetTaskRunning(env.ID, false);
         await db.ShopwareConfig.UpdateAsync(swConf);
     }
 }
