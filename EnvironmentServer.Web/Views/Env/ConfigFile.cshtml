@@ -4,22 +4,20 @@
 }
 
 @if (Model.ID != -1)
-{    
-    <div class="d-flex align-items-center justify-content-center fullHeight">
-        <span>Latest Update: @Model.LatestChange</span>
-        <br />
-        <a asp-controller="Env" asp-action="UpdateConfigFile" asp-route-id=@Model.EnvID class="btn btn-primary">Press here to reload config</a>
-        <br />
-        <form method="post" asp-action="ConfigFile" style="width: 1200px;">
-            <input type="hidden" asp-for="ID" />
-            <input type="hidden" asp-for="EnvID" />            
-            <div class="mb-3">
-                <label asp-for="Content" class="form-label">Content</label>
-                <textarea asp-for="Content" class="form-control"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Save Config</button>
-        </form>
-    </div>
+{
+    <span>Latest Update: @Model.LatestChange</span>
+    <br />
+    <a asp-controller="Env" asp-action="UpdateConfigFile" asp-route-id=@Model.EnvID class="btn btn-primary">Press here to reload config</a>
+    <br />
+    <form method="post" asp-action="ConfigFile" style="width: 1200px;">
+        <input type="hidden" asp-for="ID" />
+        <input type="hidden" asp-for="EnvID" />
+        <div class="mb-3">
+            <label asp-for="Content" class="form-label">Content</label>
+            <textarea asp-for="Content" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Config</button>
+    </form>
 }
 else
 {
