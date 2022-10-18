@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using System.Threading.Tasks;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace EnvironmentServer.Web.Controllers
 {
@@ -153,10 +154,19 @@ namespace EnvironmentServer.Web.Controllers
         {
             var swConfig = await DB.ShopwareConfig.GetByEnvIDAsync(id);
 
-            if (swConfig.ID < 0)
+            if (swConfig.ID <= 0)
             {
                 swConfig.ID = -1;
                 swConfig.EnvID = id;
+
+                DB.Environments.SetTaskRunning(swConfig.EnvID, true);
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "get_config",
+                    Id_Variable = swConfig.EnvID,
+                    ExecutedById = GetSessionUser().ID
+                });
             }
 
             return View(swConfig);
@@ -178,6 +188,20 @@ namespace EnvironmentServer.Web.Controllers
 
             AddInfo("Config Saved");
             return View(swConfig);
+        }
+
+        public IActionResult UpdateConfigFile(long id)
+        {
+            DB.Environments.SetTaskRunning(id, true);
+
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "update_config",
+                Id_Variable = id,
+                ExecutedById = GetSessionUser().ID
+            });
+            AddInfo("Update triggered - Wait until the task has been executed"); 
+            return RedirectToAction("Index", "Home");
         }
     }
 }

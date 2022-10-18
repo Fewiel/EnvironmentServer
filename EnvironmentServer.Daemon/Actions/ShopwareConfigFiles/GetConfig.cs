@@ -30,10 +30,12 @@ public class GetConfig : ActionBase
         }
         else
         {
+            db.Environments.SetTaskRunning(env.ID, false);
             db.Logs.Add("ShopwareConfig", "Error - Could not find config file");
             return;
         }
 
+        db.Environments.SetTaskRunning(env.ID, false);
         await db.ShopwareConfig.InsertAsync(swConf);        
     }
 }

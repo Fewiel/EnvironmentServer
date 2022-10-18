@@ -1,7 +1,9 @@
 ﻿using EnvironmentServer.DAL;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Threading.Tasks;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace EnvironmentServer.Daemon.Actions.ShopwareConfigFiles;
 
@@ -28,10 +30,13 @@ public class WriteConfig : ActionBase
         }
         else
         {
+            db.Environments.SetTaskRunning(env.ID, false);
             db.Logs.Add("ShopwareConfig", "Error - Could not find config file");
             return;
         }
 
+        swConf.LatestChange = DateTimeOffset.Now;
         await db.ShopwareConfig.UpdateAsync(swConf);
+        db.Environments.SetTaskRunning(env.ID, false);
     }
 }
