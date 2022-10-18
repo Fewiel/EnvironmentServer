@@ -18,7 +18,7 @@ public class GetConfig : ActionBase
         var usr = db.Users.GetByID(env.UserID);
         var path = $"/home/{usr.Username}/files/{env.InternalName}/";
 
-        var swConf = new ShopwareConfig() {EnvID = env.ID, LatestChange = DateTimeOffset.Now };
+        var swConf = new ShopwareConfig() {EnvID = env.ID, LatestChange = DateTime.Now };
 
         if (File.Exists(path + "config.php"))
         {

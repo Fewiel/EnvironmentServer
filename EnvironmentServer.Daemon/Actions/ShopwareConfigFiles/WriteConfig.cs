@@ -35,7 +35,7 @@ public class WriteConfig : ActionBase
             return;
         }
 
-        swConf.LatestChange = DateTimeOffset.Now;
+        swConf.LatestChange = DateTime.Now;
         await db.ShopwareConfig.UpdateAsync(swConf);
         db.Environments.SetTaskRunning(env.ID, false);
     }
