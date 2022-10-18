@@ -22,12 +22,12 @@ public class WriteConfig : ActionBase
         if (File.Exists(path + "config.php"))
         {
             File.WriteAllText(path + "config.php", swConf.Content);
-            await Bash.ChownAsync(usr.Username, "stfp_users", path, true);
+            await Bash.ChownAsync(usr.Username, "sftp_users", path, true);
         }
         else if (File.Exists(path + ".env"))
         {
             File.WriteAllText(path + ".env", swConf.Content);
-            await Bash.ChownAsync(usr.Username, "stfp_users", path, true);
+            await Bash.ChownAsync(usr.Username, "sftp_users", path, true);
         }
         else
         {
