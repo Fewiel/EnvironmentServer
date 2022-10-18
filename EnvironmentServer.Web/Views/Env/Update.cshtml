@@ -13,6 +13,9 @@
         <button type="submit" class="btn btn-primary">Change Name</button>
     </form>
     <br />
+    <span>Shopware Config</span>
+    <a asp-controller="Env" asp-action="ConfigFile" asp-route-id="ID" class="btn btn-primary">Edit Shopware Config/Env File</a>
+    <br />
     <h2>Php Settings</h2>
     <form method="post" asp-controller="Env" asp-action="Update" asp- style="width: 400px;">
         <input type="hidden" asp-for="ID" />
