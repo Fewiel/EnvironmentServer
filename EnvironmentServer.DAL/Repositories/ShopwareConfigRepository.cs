@@ -20,7 +20,7 @@ public class ShopwareConfigRepository : RepositoryBase<ShopwareConfig>
             {
                 envID = t.EnvID,
                 content = t.Content,
-                latestupdate = DateTimeOffset.Now
+                latestupdate = DateTime.Now.ToString("YYYY-MM-DD HH:MI:SS")
             });
     }
 
@@ -28,12 +28,12 @@ public class ShopwareConfigRepository : RepositoryBase<ShopwareConfig>
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
         await c.Connection.ExecuteAsync("update `shopware_config` set `EnvID` = @envID, `Content` = @content, `LatestUpdate` = @latestupdate where `ID` = @id;", new
-            {
-                id = t.ID,
-                envID = t.EnvID,
-                content = t.Content,
-                latestupdate = DateTimeOffset.Now
-            });
+        {
+            id = t.ID,
+            envID = t.EnvID,
+            content = t.Content,
+            latestupdate = DateTime.Now.ToString("YYYY-MM-DD HH:MI:SS")
+        });
     }
 
     public async Task<ShopwareConfig> GetByEnvIDAsync(long id)
