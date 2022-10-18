@@ -8,8 +8,8 @@
     <div class="d-flex align-items-center justify-content-center fullHeight">
         <span>Latest Update: @Model.LatestChange</span>
         <a asp-controller="Env" asp-action="UpdateConfigFile" asp-route-id=@Model.EnvID>Press here to reload config</a>
-        
-        <form method="post" asp-action="WriteConfig" style="width: 1200px;">
+
+        <form method="post" asp-action="ConfigFile" style="width: 1200px;">
             <input type="hidden" asp-for="ID" />
             <input type="hidden" asp-for="EnvID" />            
             <div class="mb-3">
