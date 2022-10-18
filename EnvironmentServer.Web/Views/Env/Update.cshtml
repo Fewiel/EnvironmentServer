@@ -14,7 +14,7 @@
     </form>
     <br />
     <span>Shopware Config</span>
-    <a asp-controller="Env" asp-action="ConfigFile" asp-route-id="ID" class="btn btn-primary">Edit Shopware Config/Env File</a>
+    <a asp-controller="Env" asp-action="ConfigFile" asp-route-id=@Model.ID class="btn btn-primary">Edit Shopware Config/Env File</a>
     <br />
     <h2>Php Settings</h2>
     <form method="post" asp-controller="Env" asp-action="Update" asp- style="width: 400px;">
