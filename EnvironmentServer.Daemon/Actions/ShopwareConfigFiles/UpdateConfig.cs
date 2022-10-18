@@ -36,7 +36,6 @@ public class UpdateConfig : ActionBase
             return;
         }
 
-        db.Logs.Add("ShopwareConfig", "ReadConfig" + JsonConvert.SerializeObject(swConf));
         db.Environments.SetTaskRunning(env.ID, false);
         await db.ShopwareConfig.UpdateAsync(swConf);
     }

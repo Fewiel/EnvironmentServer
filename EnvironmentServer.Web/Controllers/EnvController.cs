@@ -179,8 +179,6 @@ namespace EnvironmentServer.Web.Controllers
         {
             await DB.ShopwareConfig.UpdateAsync(swConfig);
 
-            DB.Logs.Add("Web", JsonConvert.SerializeObject(swConfig));
-
             DB.Environments.SetTaskRunning(swConfig.EnvID, true);
 
             DB.CmdAction.CreateTask(new CmdAction
