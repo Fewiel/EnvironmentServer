@@ -26,9 +26,8 @@ public class ShopwareConfigRepository : RepositoryBase<ShopwareConfig>
     public override async Task UpdateAsync(ShopwareConfig t)
     {
         using var c = new MySQLConnectionWrapper(DB.ConnString);
-        await c.Connection.ExecuteAsync("update `shopware_config` set `EnvID` = @envID, `Content` = @content where `ID` = @id;", new
+        await c.Connection.ExecuteAsync("update `shopware_config` set `Content` = @content where `EnvID` = @envID;", new
         {
-            id = t.ID,
             envID = t.EnvID,
             content = t.Content
         });
