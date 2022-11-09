@@ -49,6 +49,8 @@ public class Delete : ActionBase
                 db.DockerContainer.Delete(container);
                 if (File.Exists(filePath))
                     File.Delete(filePath);
+
+                await Bash.CommandAsync("docker network prune", validation: false);
                 return;
             }
         }
