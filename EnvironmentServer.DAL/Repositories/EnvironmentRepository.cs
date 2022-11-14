@@ -248,7 +248,7 @@ namespace EnvironmentServer.DAL.Repositories
 
             File.WriteAllText($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf", conf);
 
-            await Bash.CommandAsync($"{user.Username}_{environment.InternalName}.conf");
+            await Bash.ApacheEnableSiteAsync($"{user.Username}_{environment.InternalName}.conf");
             await Bash.ReloadApacheAsync();
         }
 
