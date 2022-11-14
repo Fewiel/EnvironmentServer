@@ -48,16 +48,6 @@ namespace EnvironmentServer.Web.Controllers
             return View(dash);
         }
 
-        public IActionResult Pma()
-        {
-            return Redirect("https://" + DB.Settings.Get("pma_htacces_login").Value + "@" + DB.Settings.Get("pma_link").Value);
-        }
-
-        public IActionResult MailHog()
-        {
-            return Redirect("https://" + DB.Settings.Get("pma_htacces_login").Value + "@mh." + DB.Settings.Get("domain").Value);
-        }
-
         [AdminOnly]
         public IActionResult Privacy()
         {

@@ -13,6 +13,8 @@
     var dockerPermission = usr != null && DB.Permission.HasPermission(usr, "permissions_docker");
     var dockerAdminPermission = usr != null && DB.Permission.HasPermission(usr, "permissions_docker_admin");
     var viewLogs = usr != null && DB.Permission.HasPermission(usr, "logs");
+    var pmaLink = "https://" + DB.Settings.Get("pma_htacces_login").Value + "@" + DB.Settings.Get("pma_link").Value;
+    var mhLink = "https://" + DB.Settings.Get("pma_htacces_login").Value + "@mh." + DB.Settings.Get("domain").Value;
 
     bool HasAdminPermission() => settingsEdit || usersManage || templateManage || permissionsManage || viewLogs || dockerAdminPermission;
 }
@@ -132,10 +134,10 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Pma">PhpMyAdmin</a>
+                            <a class="nav-link" href="@pmaLink" target="_blank" rel="noreferrer">PhpMyAdmin</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="MailHog">MailHog</a>
+                            <a class="nav-link" href="@mhLink" target="_blank" rel="noreferrer">MailHog</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" target="_blank" href="https://github.com/Fewiel/EnvironmentServer/issues">Support</a>
