@@ -63,11 +63,12 @@ public class FastDeploy : ActionBase
         var hosts = new Hosts().Discover();
         var _docker = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
         var db = sp.GetService<Database>();
+        var esPort = 0;
 
         if (_docker == null)
         {
             db.Logs.Add("docker.start", "Docker not found on Host");
-            return 0;
+            return esPort;
         }
 
         var containerId = await db.DockerContainer.InsertAsync(new DAL.Models.DockerContainer
@@ -82,6 +83,7 @@ public class FastDeploy : ActionBase
         var usedPorts = db.DockerPort.Get().Select(i => i.Port).ToList();
         var minPortSetting = db.Settings.Get("docker_port_min");
         var minPort = 10000;
+        
 
         if (minPortSetting != null)
             minPort = int.Parse(minPortSetting.Value);
@@ -91,6 +93,7 @@ public class FastDeploy : ActionBase
         foreach (var dp in dockerFile.Variables)
         {
             db.DockerPort.Insert(new() { Port = dp.Value, Name = dp.Key, DockerContainerID = container.ID });
+            esPort = dp.Value;
         }
 
         if (dockerFile.Variables.TryGetValue("http", out var port))
@@ -131,6 +134,6 @@ public class FastDeploy : ActionBase
 
         await db.DockerContainer.UpdateAsync(container);
 
-        return port;
+        return containe;
     }
 }
