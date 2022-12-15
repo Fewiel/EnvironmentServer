@@ -26,7 +26,7 @@ public class Start : ActionBase
             if (c.Id == container.DockerID)
             {
                 c.Start();
-                container.Active = true;
+                container.Active = true;                
                 await db.DockerContainer.UpdateAsync(container);
                 return;
             }
