@@ -40,7 +40,6 @@ public class FastDeploy : ActionBase
         if (System.IO.File.Exists($"/home/{usr.Username}/files/{env.InternalName}/template.sh"))
         {
             await Bash.CommandAsync($"bash template.sh", $"/home/{usr.Username}/files/{env.InternalName}");
-            await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
         }
 
         if (System.IO.File.Exists($"/home/{usr.Username}/files/{env.InternalName}/.elasticsearch"))
@@ -54,6 +53,8 @@ public class FastDeploy : ActionBase
             cnf = Regex.Replace(cnf, PatternSW6ESIndexing, "SHOPWARE_ES_INDEXING_ENABLED=\"1\"");
             System.IO.File.WriteAllText($"/home/{usr.Username}/files/{env.InternalName}/.env", cnf);
         }
+
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
 
         db.Environments.SetTaskRunning(env.ID, false);
     }
