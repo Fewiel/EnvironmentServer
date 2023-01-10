@@ -126,7 +126,8 @@ namespace EnvironmentServer.Daemon
                 new Actions.Docker.Cleanup(),
                 new Actions.ShopwareConfigFiles.GetConfig(),
                 new Actions.ShopwareConfigFiles.UpdateConfig(),
-                new Actions.ShopwareConfigFiles.WriteConfig()
+                new Actions.ShopwareConfigFiles.WriteConfig(),
+                new BackupEnvironment()
             };
 
             foreach (var a in l)
