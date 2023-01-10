@@ -130,7 +130,7 @@ namespace EnvironmentServer.Web.Controllers
         {
             DB.Logs.Add("Debug", "EnvSetupViewModel: " + JsonConvert.SerializeObject(esv));
 
-            if (!string.IsNullOrEmpty(esv.ExhibitionFile))
+            if (!string.IsNullOrEmpty(esv.ExhibitionFile) || esv.TemplateID != 0)
             {
                 esv.ShopwareVersion = "6";
                 esv.MajorShopwareVersion = 6;
