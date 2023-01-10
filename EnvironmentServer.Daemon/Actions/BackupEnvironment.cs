@@ -27,9 +27,9 @@ public class BackupEnvironment : ActionBase
 
         PackerHelper.DeleteCache(usr.Username, env.InternalName);
 
-        if (Directory.Exists(backupDir))
-            Directory.CreateDirectory($"/home/{usr.Username}/files/backups");
-
+        if (!Directory.Exists(backupDir))
+            Directory.CreateDirectory(backupDir);
+        
         await Bash.CommandAsync($"mysqldump -u {dbString} -p{env.DBPassword} --hex-blob --default-character-set=utf8 " + dbString + " --result-file=db.sql",
             $"/home/{usr.Username}/files/{env.InternalName}");
 
@@ -46,6 +46,9 @@ public class BackupEnvironment : ActionBase
 
         await Bash.CommandAsync($"zip -r {backupFile} {env.InternalName}",
             $"/home/{usr.Username}/files/");
+
+        await Bash.ChownAsync(usr.Username, "sftp_users", backupDir, true);
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", true);
 
         if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
         {
