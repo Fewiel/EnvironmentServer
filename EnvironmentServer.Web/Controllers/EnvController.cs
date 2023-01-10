@@ -207,5 +207,17 @@ namespace EnvironmentServer.Web.Controllers
             AddInfo("Update triggered - Wait until the task has been executed"); 
             return RedirectToAction("Index", "Home");
         }
+
+        public IActionResult BackupEnvironment(long id)
+        {
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "backup_environment",
+                Id_Variable = id,
+                ExecutedById = GetSessionUser().ID
+            });
+            AddInfo("Backup triggered - You will recive a message when the backup is finished");
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
