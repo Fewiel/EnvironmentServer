@@ -58,6 +58,14 @@ internal class DownloadExtractAutoinstall : ActionBase
         {
             if (envVersion.Value[0] == '6')
             {
+                await Bash.CommandAsync("composer install",
+                    $"/home/{user.Username}/files/{env.InternalName}");
+
+                await Bash.CommandAsync("php8.0 bin/console assets:install",
+                    $"/home/{user.Username}/files/{env.InternalName}");
+
+                File.Move($"/home/{user.Username}/files/{env.InternalName}/.htaccess.dist", $"/home/{user.Username}/files/{env.InternalName}/.htaccess");
+
                 //SW6
                 await Bash.CommandAsync($"php8.0 bin/console system:setup  --app-env=\\\"prod\\\" " +
                     $"--env=\\\"prod\\\" -f -vvv " +
@@ -82,7 +90,7 @@ internal class DownloadExtractAutoinstall : ActionBase
                     $"--shop-name=\\\"{env.InternalName}\\\" --shop-email=\\\"{user.Email}\\\" " +
                     $"--shop-currency=\\\"EUR\\\" --admin-username=\\\"admin\\\" --admin-password=\\\"shopware\\\" " +
                     $"--admin-email=\\\"{user.Email}\\\" --admin-name=\\\"Shopware Demo\\\" --admin-locale=\\\"de_DE\\\"",
-                    $"/home/{user.Username}/files/{env.InternalName}");                
+                    $"/home/{user.Username}/files/{env.InternalName}");
             }
 
             await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
@@ -96,7 +104,7 @@ internal class DownloadExtractAutoinstall : ActionBase
 
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
-                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value, 
+                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value,
                     env.InternalName, env.Address, adminlink),
                     user.UserInformation.SlackID);
                 if (success)
