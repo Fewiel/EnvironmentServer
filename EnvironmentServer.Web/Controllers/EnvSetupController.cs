@@ -248,7 +248,7 @@ namespace EnvironmentServer.Web.Controllers
 
                 DB.CmdAction.CreateTask(new CmdAction
                 {
-                    Action = "download_extract",
+                    Action = "clone_production_template",
                     Id_Variable = lastID,
                     ExecutedById = GetSessionUser().ID
                 });
@@ -332,6 +332,20 @@ namespace EnvironmentServer.Web.Controllers
             DB.EnvironmentSettings.Insert(envSettingTemplate);
             DB.EnvironmentSettings.Insert(envSettingSWVersion);
             DB.EnvironmentSettings.Insert(envSettingTask);
+
+            if (!string.IsNullOrEmpty(esv.Shopware6VersionDownload))
+            {
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/version.txt",
+                    esv.Shopware6VersionDownload);
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "clone_production_template_install",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+                DB.Environments.SetTaskRunning(lastID, true);
+            }
 
             if (!string.IsNullOrEmpty(esv.ShopwareVersionDownload))
             {
