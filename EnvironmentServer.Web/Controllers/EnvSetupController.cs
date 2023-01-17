@@ -81,6 +81,24 @@ namespace EnvironmentServer.Web.Controllers
             return View(esv);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> MinorVersion6Async([FromForm] EnvSetupViewModel esv)
+        {
+            if (esv.CustomSetupType == "empty")
+                return RedirectToAction(nameof(EmptyWebspaceSettings), esv);
+            if (esv.CustomSetupType == "git")
+                return RedirectToAction(nameof(GitSource), esv);
+            if (esv.CustomSetupType == "wget")
+                return RedirectToAction(nameof(WGetSource), esv);
+            if (esv.CustomSetupType == "exhibition")
+                return RedirectToAction(nameof(Exhibition), esv);
+            if (esv.CustomSetupType == "template")
+                return RedirectToAction(nameof(Template), esv);
+
+            esv.Shopware6Versions = await DB.Shopware6Version.GetVersionsAsync();
+            return View(esv);
+        }
+
         public IActionResult EmptyWebspaceSettings(EnvSetupViewModel esv) => View(esv);
 
         [HttpPost]
@@ -130,7 +148,7 @@ namespace EnvironmentServer.Web.Controllers
         {
             DB.Logs.Add("Debug", "EnvSetupViewModel: " + JsonConvert.SerializeObject(esv));
 
-            if (!string.IsNullOrEmpty(esv.ExhibitionFile) || esv.TemplateID != 0)
+            if (!string.IsNullOrEmpty(esv.ExhibitionFile) || esv.TemplateID != 0 || esv.Shopware6Versions != null)
             {
                 esv.ShopwareVersion = "6";
                 esv.MajorShopwareVersion = 6;
@@ -213,6 +231,20 @@ namespace EnvironmentServer.Web.Controllers
             {
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/dl.txt",
                     esv.ShopwareVersionDownload);
+
+                DB.CmdAction.CreateTask(new CmdAction
+                {
+                    Action = "download_extract",
+                    Id_Variable = lastID,
+                    ExecutedById = GetSessionUser().ID
+                });
+                DB.Environments.SetTaskRunning(lastID, true);
+            }
+
+            if (!string.IsNullOrEmpty(esv.Shopware6VersionDownload))
+            {
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/version.txt",
+                    esv.Shopware6VersionDownload);
 
                 DB.CmdAction.CreateTask(new CmdAction
                 {

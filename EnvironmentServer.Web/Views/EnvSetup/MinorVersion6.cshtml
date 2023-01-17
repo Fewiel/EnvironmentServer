@@ -1,0 +1,36 @@
+﻿@using EnvironmentServer.Web.ViewModels.EnvSetup
+@model EnvSetupViewModel
+@{
+    ViewData["Title"] = "Minor Version - Environment Setup";
+}
+<div class="accordion" id="swversions">
+    @{
+        var i = 0;
+    }
+    @foreach (var v in @Model.Shopware6Versions)
+    {
+        <div class="accordion-item">
+            <div class="row">
+                <div class="col-11">
+                    <h2 class="accordion-header" id="h-@i">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-@i">
+                           @v
+                        </button>
+                    </h2>
+                </div>
+                <div class="col-1">
+                    <form method="post" asp-action="PhpVersion">
+                        <input type="hidden" asp-for="InternalName" />
+                        <input type="hidden" asp-for="DisplayName" />
+                        <input type="hidden" asp-for="MajorShopwareVersion" />
+                        <input type="hidden" asp-for="ShopwareVersion" value=@v />
+                        <input type="hidden" asp-for="Shopware6VersionDownload" value=@v />
+                        <button class="btn btn-primary"
+                        type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">Select @v</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        i++;
+    }
+</div>

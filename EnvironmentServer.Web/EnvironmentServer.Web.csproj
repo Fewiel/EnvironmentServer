@@ -24,4 +24,11 @@
     <ProjectReference Include="..\EnvironmentServer.DAL\EnvironmentServer.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\EnvSetup\MinorVersion6.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -18,6 +18,7 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
         //View Data Single Use
         public string ShopwareVersion { get; set; }
         public string ShopwareVersionDownload { get; set; }
+        public string Shopware6VersionDownload { get; set; }
         public string WgetURL { get; set; }
         public string GitURL { get; set; }
         public string CustomSetupType { get; set; }
@@ -28,6 +29,7 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
         //Display Data
         public IEnumerable<PhpVersion> PhpVersions { get; set; }
         public IEnumerable<ShopwareVersionInfo> ShopwareVersions { get; set; }
+        public IEnumerable<string> Shopware6Versions { get; set; }
         public IEnumerable<ExhibitionVersion> ExhibitionVersions { get; set;}
         public IEnumerable<Template> Templates { get; set; }
     }

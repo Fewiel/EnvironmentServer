@@ -58,14 +58,6 @@ internal class DownloadExtractAutoinstall : ActionBase
         {
             if (envVersion.Value[0] == '6')
             {
-                await Bash.CommandAsync("composer install",
-                    $"/home/{user.Username}/files/{env.InternalName}");
-
-                await Bash.CommandAsync("php8.0 bin/console assets:install",
-                    $"/home/{user.Username}/files/{env.InternalName}");
-
-                File.Move($"/home/{user.Username}/files/{env.InternalName}/.htaccess.dist", $"/home/{user.Username}/files/{env.InternalName}/.htaccess");
-
                 //SW6
                 await Bash.CommandAsync($"php8.0 bin/console system:setup  --app-env=\\\"prod\\\" " +
                     $"--env=\\\"prod\\\" -f -vvv " +
