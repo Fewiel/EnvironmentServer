@@ -85,7 +85,7 @@ namespace EnvironmentServer.Web.Controllers
         public async Task<IActionResult> MinorVersion6Async([FromForm] EnvSetupViewModel esv)
         {
             if (esv.CustomSetupType == "empty")
-                return RedirectToAction(nameof(EmptyWebspaceSettings), esv);
+                return RedirectToAction(nameof(EmptyWebspaceSettings), esv);     
             if (esv.CustomSetupType == "git")
                 return RedirectToAction(nameof(GitSource), esv);
             if (esv.CustomSetupType == "wget")
