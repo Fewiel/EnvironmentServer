@@ -31,7 +31,7 @@ public class CloneProductionTemplate : ActionBase
 
         File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
-        await Bash.CommandAsync($"bin/console assets:install", homeDir);
+        await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
 
         await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
 

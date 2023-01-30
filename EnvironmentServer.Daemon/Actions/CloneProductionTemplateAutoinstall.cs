@@ -33,7 +33,7 @@ namespace EnvironmentServer.Daemon.Actions
 
             File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
-            await Bash.CommandAsync($"bin/console assets:install", homeDir);
+            await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
 
             await Bash.CommandAsync($"php bin/console system:setup --app-env=\\\"prod\\\" " +
                     $"--env=\\\"prod\\\" -f -vvv " +
