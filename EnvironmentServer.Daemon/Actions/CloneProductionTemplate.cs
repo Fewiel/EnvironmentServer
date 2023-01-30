@@ -22,7 +22,7 @@ public class CloneProductionTemplate : ActionBase
         var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
         File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
-        await Bash.CommandAsync($"git clone --branch {version} https://github.com/shopware/production.git {homeDir}", homeDir);
+        await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
 
         await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 

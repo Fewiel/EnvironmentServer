@@ -22,7 +22,7 @@ namespace EnvironmentServer.Daemon.Actions
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
-            await Bash.CommandAsync($"git clone --branch {version} https://github.com/shopware/production.git {homeDir}", homeDir);
+            await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
 
             await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 
@@ -45,7 +45,7 @@ namespace EnvironmentServer.Daemon.Actions
 
             await Bash.CommandAsync($"php bin/console system:install --create-database --basic-setup " +
                 $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
-                $"--shop-currency=\\\"EUR\\\" -n",
+                $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
                 $"/home/{user.Username}/files/{env.InternalName}", validation: false);
 
             await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
