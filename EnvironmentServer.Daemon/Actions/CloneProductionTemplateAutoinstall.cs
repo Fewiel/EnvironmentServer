@@ -1,12 +1,11 @@
-﻿using EnvironmentServer.Daemon.Actions;
-using EnvironmentServer.DAL;
+﻿using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
 using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace EnvironmentServer.Daemon
+namespace EnvironmentServer.Daemon.Actions
 {
     internal class CloneProductionTemplateAutoinstall : ActionBase
     {
@@ -24,7 +23,11 @@ namespace EnvironmentServer.Daemon
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
             await Bash.CommandAsync($"git clone --branch {version} https://github.com/shopware/production.git {homeDir}", homeDir);
-            await Bash.CommandAsync($"composer install", homeDir);
+
+            File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
+            File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
+
+            await Bash.CommandAsync($"composer install -q", homeDir);
 
             File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
