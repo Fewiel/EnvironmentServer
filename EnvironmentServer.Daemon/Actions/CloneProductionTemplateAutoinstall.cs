@@ -24,6 +24,8 @@ namespace EnvironmentServer.Daemon.Actions
 
             await Bash.CommandAsync($"git clone --branch {version} https://github.com/shopware/production.git {homeDir}", homeDir);
 
+            await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
+
             File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
             File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
 
