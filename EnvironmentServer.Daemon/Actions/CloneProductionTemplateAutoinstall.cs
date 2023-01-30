@@ -48,6 +48,8 @@ namespace EnvironmentServer.Daemon.Actions
                 $"--shop-currency=\\\"EUR\\\" -n",
                 $"/home/{user.Username}/files/{env.InternalName}", validation: false);
 
+            await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
+
             db.Environments.SetTaskRunning(env.ID, false);
 
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))

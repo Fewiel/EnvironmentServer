@@ -33,6 +33,8 @@ public class CloneProductionTemplate : ActionBase
 
         await Bash.CommandAsync($"bin/console assets:install", homeDir);
 
+        await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
+
         db.Environments.SetTaskRunning(env.ID, false);
 
         if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
