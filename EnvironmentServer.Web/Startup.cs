@@ -63,6 +63,14 @@ public class Startup
             app.UseExceptionHandler("/Home/Error");
         }
 
+        app.Use(async (context, next) =>
+        {
+            context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            context.Response.Headers.Add("X-Frame-Options", "DENY");
+            context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+            await next();
+        });
+
         //app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseSession();
