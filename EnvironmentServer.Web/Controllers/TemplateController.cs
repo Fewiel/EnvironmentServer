@@ -47,6 +47,18 @@ namespace EnvironmentServer.Web.Controllers
         [Permission("templates_create")]
         public IActionResult Create([FromForm] CreateTemplateViewModel ctvm)
         {
+            if (string.IsNullOrEmpty(ctvm.Name))
+            {
+                AddError("Name is required!");
+                return View(ctvm);
+            }
+
+            if (string.IsNullOrEmpty(ctvm.Descirption))
+            {
+                AddError("Descirption is required!");
+                return View(ctvm);
+            }
+
             var env = DB.Environments.Get(ctvm.EnvironmentID);
 
             ctvm.Name = ctvm.Name.ToLower().Replace(" ", "_");
