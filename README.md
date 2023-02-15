@@ -1,4 +1,4 @@
-# EnvironmentServer
+# ShopDev 1.0 / Shopware Demo (EnvironmentServer)
 
 Solution to create, manage and reset test environments for Shopware 5 and 6.  
 
