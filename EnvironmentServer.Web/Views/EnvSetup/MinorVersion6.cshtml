@@ -7,6 +7,31 @@
     @{
         var i = 0;
     }
+
+    <div class="accordion" id="swversions">
+    <div class="accordion-item">
+        <div class="row">
+            <div class="col-11">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse">
+                        ▼ Current Trunk
+                    </button>
+                </h2>
+                <form method="post" asp-action="PhpVersion">
+                    <input type="hidden" asp-for="InternalName" />
+                    <input type="hidden" asp-for="DisplayName" />
+                    <input type="hidden" asp-for="MajorShopwareVersion" />
+                    <input type="hidden" asp-for="ShopwareVersion" value=trunk />
+                    <input type="hidden" asp-for="ShopwareVersionDownload" value="trunk" />
+                    <button class="btn btn-primary"
+                            type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">
+                        Select trunk
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     @foreach (var v in @Model.Shopware6Versions)
     {
         <div class="accordion-item">
