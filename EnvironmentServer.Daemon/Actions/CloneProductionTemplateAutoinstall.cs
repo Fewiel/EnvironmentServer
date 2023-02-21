@@ -25,7 +25,6 @@ namespace EnvironmentServer.Daemon.Actions
             if (version.ToLower().Contains("rc"))
             {
                 await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
-                await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
             }
             else
             {
@@ -58,6 +57,9 @@ namespace EnvironmentServer.Daemon.Actions
                 $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
                 $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
                 $"/home/{user.Username}/files/{env.InternalName}", validation: false);
+
+            if (version.ToLower().Contains("rc"))
+                await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
 
             await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
 
