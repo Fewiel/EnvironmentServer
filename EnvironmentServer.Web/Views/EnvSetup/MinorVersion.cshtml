@@ -7,6 +7,29 @@
     @{
         var i = 0;
     }
+    <div class="accordion-item">
+        <div class="row">
+            <div class="col-11">
+                <h2 class="accordion-header" id="h-@i">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-@i">
+                        ▼ Current Trunk
+                    </button>
+                </h2>
+                <form method="post" asp-action="PhpVersion">
+                    <input type="hidden" asp-for="InternalName" />
+                    <input type="hidden" asp-for="DisplayName" />
+                    <input type="hidden" asp-for="MajorShopwareVersion" />
+                    <input type="hidden" asp-for="ShopwareVersion" value=trunk />
+                    <input type="hidden" asp-for="ShopwareVersionDownload" value="trunk" />
+                    <button class="btn btn-primary"
+                            type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">
+                        Select trunk
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     @foreach (var v in @Model.ShopwareVersions)
     {
         <div class="accordion-item">
@@ -14,7 +37,7 @@
                 <div class="col-11">
                     <h2 class="accordion-header" id="h-@i">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c-@i">
-                            ▼ @v.Version @(string.IsNullOrEmpty(v.VersionText) ? "" : "- " + v.VersionText) 
+                            ▼ @v.Version @(string.IsNullOrEmpty(v.VersionText) ? "" : "- " + v.VersionText)
                             @(v.Public == 1 ? "" : "- NOT PUBLIC - For testing purposes only")
                         </button>
                     </h2>
@@ -27,7 +50,9 @@
                         <input type="hidden" asp-for="ShopwareVersion" value=@v.Version />
                         <input type="hidden" asp-for="ShopwareVersionDownload" value=@v.DownloadLinkInstall />
                         <button class="btn @(v.Public == 1 ? "btn-primary" : "btn-warning")"
-                        type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">Select</button>
+                            type="submit" style="height: calc(100% - 10px); width: calc(100% - 10px); margin: 5px;">
+                            Select
+                        </button>
                     </form>
                 </div>
             </div>
