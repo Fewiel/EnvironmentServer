@@ -22,7 +22,15 @@ namespace EnvironmentServer.Daemon.Actions
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
-            await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
+            if (version.ToLower().Contains("rc"))
+            {
+                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/plattform.git {homeDir}", homeDir);
+                await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
+            }
+            else
+            {
+                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
+            }
 
             await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 
@@ -31,7 +39,8 @@ namespace EnvironmentServer.Daemon.Actions
 
             await Bash.CommandAsync($"composer install -q", homeDir);
 
-            File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
+            if (File.Exists($"{homeDir}/public/.htaccess.dist"))
+                File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
             await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
 
