@@ -34,8 +34,10 @@ namespace EnvironmentServer.Daemon.Actions
 
             await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 
-            File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
-            File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
+            if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
+                File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
+            if (File.Exists($"{homeDir}/vendor/shopware/recovery/Common/composer.lock"))
+                File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
 
             await Bash.CommandAsync($"composer install -q", homeDir);
 
