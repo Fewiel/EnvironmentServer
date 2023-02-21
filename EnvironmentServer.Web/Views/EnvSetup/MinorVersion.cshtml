@@ -3,11 +3,7 @@
 @{
     ViewData["Title"] = "Minor Version - Environment Setup";
 }
-<div class="accordion" id="swversions">
-    @{
-        var i = 0;
-    }
-    <div class="accordion-item">
+<div class="accordion-item">
         <div class="row">
             <div class="col-11">
                 <h2 class="accordion-header" id="h-@i">
@@ -30,6 +26,10 @@
         </div>
     </div>
 
+<div class="accordion" id="swversions">
+    @{
+        var i = 0;
+    }
     @foreach (var v in @Model.ShopwareVersions)
     {
         <div class="accordion-item">
