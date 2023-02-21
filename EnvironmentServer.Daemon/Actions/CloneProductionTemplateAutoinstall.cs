@@ -24,7 +24,7 @@ namespace EnvironmentServer.Daemon.Actions
 
             if (version.ToLower().Contains("rc"))
             {
-                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/plattform.git {homeDir}", homeDir);
+                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
                 await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
             }
             else
