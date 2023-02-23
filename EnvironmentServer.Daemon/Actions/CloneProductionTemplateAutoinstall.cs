@@ -66,7 +66,7 @@ namespace EnvironmentServer.Daemon.Actions
             if (version.ToLower().Contains("rc"))
                 await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
 
-            await Bash.CommandAsync($"php bin/console user:change-password -p {env.DBPassword} admin");
+            await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}");
 
             await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
 
