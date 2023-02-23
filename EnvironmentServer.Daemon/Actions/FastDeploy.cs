@@ -56,7 +56,7 @@ public class FastDeploy : ActionBase
 
         await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", $"/home/{usr.Username}/files/{env.InternalName}", validation: false);
 
-        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", recrusiv: true);
 
         db.Environments.SetTaskRunning(env.ID, false);
 
