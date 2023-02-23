@@ -1,6 +1,4 @@
 ﻿using CliWrap;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 
@@ -18,35 +16,28 @@ public static class Bash
         if (log && workingDir != null)
             LogCallback?.Invoke("Bash Command", $"Working Dir: {workingDir}");
 
-        var proc = new Process
-        {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = "/bin/bash",
-                Arguments = $"-c \"{cmd}\"",
-                WorkingDirectory = workingDir,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            }
-        };
+        var cli = Cli.Wrap("/bin/bash").WithArguments($"-c \"{cmd}\"");
 
-        proc.Start();
+        if (workingDir != null)
+            cli = cli.WithWorkingDirectory(workingDir);
 
-        var result = proc.StandardOutput.ReadToEnd();
-        var error = proc.StandardError.ReadToEnd();
-        proc.WaitForExit();
+        if (!validation)
+            cli = cli.WithValidation(CommandResultValidation.None);
 
-        if (validation && proc.ExitCode != 0)
-            LogCallback?.Invoke("ERROR Bash", $"Bash Process Failed with exit code: {proc.ExitCode}; Standard Error:{Environment.NewLine}{error}{Environment.NewLine}{result}");
+        StringBuilder result = new();
+        cli = cli.WithStandardOutputPipe(PipeTarget.ToStringBuilder(result));
 
+        StringBuilder error = new();
+        cli = cli.WithStandardErrorPipe(PipeTarget.ToStringBuilder(error));
+
+        await cli.ExecuteAsync(); 
+        
         if (log)
             LogCallback?.Invoke("Bash Command OutoutPipe", $"Result: {JsonSerializer.Serialize(result)}");
         if (log)
             LogCallback?.Invoke("Bash Command ErrorPipe", $"Result: {JsonSerializer.Serialize(error)}");
         if (log)
-            LogCallback?.Invoke("Bash Command", $"Finished {cmd}");
+            LogCallback?.Invoke("Bash Command", $"Finished {JsonSerializer.Serialize(cli)}");
     }
 
     public static async Task<StringBuilder> CommandQueryAsync(string cmd, string workingDir)
