@@ -96,12 +96,12 @@ internal class DownloadExtractAutoinstall : ActionBase
 
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
-                var success = await em.SendMessageAsync("Installation finis",
+                var success = await em.SendMessageAsync($"Installation of {env.InternalName} is finished - Your \"admin\" password is {env.DBPassword}",
                     user.UserInformation.SlackID);
                 if (success)
                     return;
             }
-            db.Mail.Send($"Installation finished for {env.InternalName}!", "", user.Email);
+            db.Mail.Send($"Installation finished for {env.InternalName}!", $"Installation of {env.InternalName} is finished - Your \"admin\" password is {env.DBPassword}", user.Email);
 
         }
         catch (Exception ex)

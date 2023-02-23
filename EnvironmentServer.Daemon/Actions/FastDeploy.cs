@@ -54,7 +54,7 @@ public class FastDeploy : ActionBase
             System.IO.File.WriteAllText($"/home/{usr.Username}/files/{env.InternalName}/.env", cnf);
         }
 
-        await Bash.CommandAsync($" bin/console user:change-password admin -p {env.DBPassword}");
+        await Bash.CommandAsync($" bin/console user:change-password admin -p {env.DBPassword}", validation: false);
 
         await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
 
