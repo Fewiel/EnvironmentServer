@@ -56,11 +56,11 @@ public class CloneProductionTemplate : ActionBase
 
         if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
         {
-            var success = await em.SendMessageAsync($"Download of {env.InternalName} is finished",
+            var success = await em.SendMessageAsync($"Download of {env.InternalName} is finished - Please use a secure password for your environment!",
                 user.UserInformation.SlackID);
             if (success)
                 return;
         }
-        db.Mail.Send($"Installation finished for {env.InternalName}!", $"Download of {env.InternalName} is finished", user.Email);
+        db.Mail.Send($"Download finished for {env.InternalName}!", $"Download of {env.InternalName} is finished - Please use a secure password for your environment", user.Email);
     }
 }

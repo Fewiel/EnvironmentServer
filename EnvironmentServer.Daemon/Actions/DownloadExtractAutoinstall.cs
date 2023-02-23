@@ -80,7 +80,7 @@ internal class DownloadExtractAutoinstall : ActionBase
                     $"--db-password=\\\"{env.DBPassword}\\\" --db-name=\\\"{dbname}\\\" " +
                     $"--shop-locale=\\\"de_DE\\\" --shop-host=\\\"{env.Address}\\\" " +
                     $"--shop-name=\\\"{env.InternalName}\\\" --shop-email=\\\"{user.Email}\\\" " +
-                    $"--shop-currency=\\\"EUR\\\" --admin-username=\\\"admin\\\" --admin-password=\\\"shopware\\\" " +
+                    $"--shop-currency=\\\"EUR\\\" --admin-username=\\\"admin\\\" --admin-password=\\\"{env.DBPassword}\\\" " +
                     $"--admin-email=\\\"{user.Email}\\\" --admin-name=\\\"Shopware Demo\\\" --admin-locale=\\\"de_DE\\\"",
                     $"/home/{user.Username}/files/{env.InternalName}");
             }
@@ -96,14 +96,12 @@ internal class DownloadExtractAutoinstall : ActionBase
 
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             {
-                var success = await em.SendMessageAsync(string.Format(db.Settings.Get("slack_autoinstall_finished").Value,
-                    env.InternalName, env.Address, adminlink),
+                var success = await em.SendMessageAsync("Installation finis",
                     user.UserInformation.SlackID);
                 if (success)
                     return;
             }
-            db.Mail.Send($"Installation finished for {env.InternalName}!", string.Format(
-                db.Settings.Get("mail_download_autoinstall_finished").Value, user.Username, env.InternalName, env.Address, adminlink), user.Email);
+            db.Mail.Send($"Installation finished for {env.InternalName}!", "", user.Email);
 
         }
         catch (Exception ex)

@@ -54,9 +54,20 @@ public class FastDeploy : ActionBase
             System.IO.File.WriteAllText($"/home/{usr.Username}/files/{env.InternalName}/.env", cnf);
         }
 
+        await Bash.CommandAsync($" bin/console user:change-password admin -p {env.DBPassword}");
+
         await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
 
         db.Environments.SetTaskRunning(env.ID, false);
+
+        if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
+        {
+            var success = await em.SendMessageAsync($"Installation of {env.InternalName} is finished - Your \"admin\" password is {env.DBPassword}",
+                usr.UserInformation.SlackID);
+            if (success)
+                return;
+        }
+        db.Mail.Send($"Installation finished for {env.InternalName}!", $"Installation of {env.InternalName} is finished - Your \"admin\" password is {env.DBPassword}", usr.Email);
     }
 
     private async Task<int> SetupESAsync(ServiceProvider sp, long usrID, long cfID, string envName)
