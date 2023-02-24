@@ -56,8 +56,6 @@ public class FastDeploy : ActionBase
 
         await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", $"/home/{usr.Username}/files/{env.InternalName}", validation: false);
 
-        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", recrusiv: true);
-
         db.Environments.SetTaskRunning(env.ID, false);
 
         if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
@@ -68,6 +66,9 @@ public class FastDeploy : ActionBase
                 return;
         }
         db.Mail.Send($"Installation finished for {env.InternalName}!", $"Installation of {env.InternalName} is finished - Your \"admin\" password is {env.DBPassword}", usr.Email);
+
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", recrusiv: true);
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}/var/cache", recrusiv: true);
     }
 
     private async Task<int> SetupESAsync(ServiceProvider sp, long usrID, long cfID, string envName)
