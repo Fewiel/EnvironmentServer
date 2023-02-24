@@ -53,8 +53,9 @@ public class FastDeploy : ActionBase
             cnf = Regex.Replace(cnf, PatternSW6ESIndexing, "SHOPWARE_ES_INDEXING_ENABLED=\"1\"");
             System.IO.File.WriteAllText($"/home/{usr.Username}/files/{env.InternalName}/.env", cnf);
         }
-
-        await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", $"/home/{usr.Username}/files/{env.InternalName}", validation: false);
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", recrusiv: true);
+        
+        await Bash.CommandAsync($"sudo -u {usr.Username} php bin/console user:change-password admin -p {env.DBPassword}", $"/home/{usr.Username}/files/{env.InternalName}", validation: false);
 
         db.Environments.SetTaskRunning(env.ID, false);
 
@@ -67,7 +68,7 @@ public class FastDeploy : ActionBase
         }
         db.Mail.Send($"Installation finished for {env.InternalName}!", $"Installation of {env.InternalName} is finished - Your \"admin\" password is {env.DBPassword}", usr.Email);
 
-        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", recrusiv: true);
+
     }
 
     private async Task<int> SetupESAsync(ServiceProvider sp, long usrID, long cfID, string envName)
@@ -95,7 +96,7 @@ public class FastDeploy : ActionBase
         var usedPorts = db.DockerPort.Get().Select(i => i.Port).ToList();
         var minPortSetting = db.Settings.Get("docker_port_min");
         var minPort = 10000;
-        
+
 
         if (minPortSetting != null)
             minPort = int.Parse(minPortSetting.Value);
