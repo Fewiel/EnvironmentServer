@@ -68,7 +68,6 @@ public class FastDeploy : ActionBase
         db.Mail.Send($"Installation finished for {env.InternalName}!", $"Installation of {env.InternalName} is finished - Your \"admin\" password is {env.DBPassword}", usr.Email);
 
         await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", recrusiv: true);
-        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}/var/cache", recrusiv: true);
     }
 
     private async Task<int> SetupESAsync(ServiceProvider sp, long usrID, long cfID, string envName)

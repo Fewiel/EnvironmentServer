@@ -77,7 +77,7 @@ internal static class EnvironmentPacker
         db.Environments.SetStored(env.ID, true);
 
         //Set Privileges to user
-        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
+        await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}", recrusiv: true);
     }
 
     public static async Task UnpackEnvironmentAsync(ServiceProvider sp, Environment env)
@@ -238,7 +238,7 @@ internal static class EnvironmentPacker
         File.Delete($"/home/{user.Username}/files/{env.InternalName}/db-tmp.sql");
 
         //Set Privileges to user
-        await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", true);
+        await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/{env.InternalName}", recrusiv: true);
 
         //Import DB
         await Bash.CommandAsync($"mysql -u {user.Username}_{env.InternalName} -p{env.DBPassword} {user.Username}_{env.InternalName} < db.sql",
