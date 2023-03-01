@@ -209,7 +209,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             await Bash.ReloadApacheAsync();
         }
 
-        public async Task UpdateAsync(User user, string shellPassword)
+            public async Task UpdateAsync(User user, string shellPassword)
         {
             DB.Logs.Add("DAL", "Update user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);

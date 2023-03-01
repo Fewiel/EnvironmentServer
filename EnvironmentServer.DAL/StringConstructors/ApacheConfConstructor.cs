@@ -89,6 +89,7 @@ namespace EnvironmentServer.DAL.StringConstructors
 
     ErrorLog {LogRoot}/error.log
     CustomLog {LogRoot}/access.log combined
+    CustomLog /var/log/apache2/access.log combined
 
     <IfModule mpm_itk_module>
         AssignUserId {Username} sftp_users

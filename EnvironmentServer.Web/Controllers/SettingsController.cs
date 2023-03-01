@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Attributes;
+using EnvironmentServer.Util;
 
 namespace EnvironmentServer.Web.Controllers
 {
@@ -28,7 +29,7 @@ namespace EnvironmentServer.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm]Setting setting)
+        public IActionResult Create([FromForm] Setting setting)
         {
             DB.Settings.Insert(setting);
             AddInfo("Setting " + setting.Key + " added!");
@@ -48,6 +49,17 @@ namespace EnvironmentServer.Web.Controllers
         {
             DB.Settings.Delete(setting);
             AddInfo("Setting " + setting.Key + " removed!");
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> RestartPhpAsync()
+        {
+            await Bash.ServiceReloadAsync("php5.6-fpm");
+            await Bash.ServiceReloadAsync("php7.2-fpm");
+            await Bash.ServiceReloadAsync("php7.4-fpm");
+            await Bash.ServiceReloadAsync("php8.0-fpm");
+            await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ReloadApacheAsync();
             return RedirectToAction("Index");
         }
     }
