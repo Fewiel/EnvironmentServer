@@ -29,26 +29,24 @@ namespace EnvironmentServer.Daemon.Actions
             else if (version.ToLower().Contains("trunk"))
             {
                 await Bash.CommandAsync($"git clone --branch trunk https://github.com/shopware/platform.git {homeDir}", homeDir);
-                await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
             }
             else
             {
                 await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
             }
 
-            await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
-
             if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
                 File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
             if (File.Exists($"{homeDir}/vendor/shopware/recovery/Common/composer.lock"))
                 File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
 
-            await Bash.CommandAsync($"composer install -q", homeDir);
+            await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 
             if (File.Exists($"{homeDir}/public/.htaccess.dist"))
                 File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
-            await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
+            if (!version.ToLower().StartsWith("6.5"))
+                await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
 
             await Bash.CommandAsync($"php bin/console system:setup --app-env=\\\"prod\\\" " +
                     $"--env=\\\"prod\\\" -f -vvv " +
@@ -57,15 +55,18 @@ namespace EnvironmentServer.Daemon.Actions
                     $"--composer-home=\\\"/home/{user.Username}/files/{env.InternalName}/var/cache/composer\\\" " +
                     $"--app-env=\\\"prod\\\" -n",
                     $"/home/{user.Username}/files/{env.InternalName}");
-
-            await Bash.CommandAsync($"php bin/console system:install --create-database --basic-setup " +
+            
+            if (version.ToLower().StartsWith("6.5"))
+            {
+                await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
+            }
+            else
+            {
+                await Bash.CommandAsync($"php bin/console system:install --create-database --basic-setup " +
                 $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
                 $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
                 $"/home/{user.Username}/files/{env.InternalName}", validation: false);
-
-            if (version.ToLower().Contains("rc"))
-                await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
-
+            }       
             await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", homeDir);
 
             await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);

@@ -25,12 +25,10 @@ public class CloneProductionTemplate : ActionBase
         if (version.ToLower().Contains("rc"))
         {
             await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
-            await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
         }
         else if (version.ToLower().Contains("trunk"))
         {
             await Bash.CommandAsync($"git clone --branch trunk https://github.com/shopware/platform.git {homeDir}", homeDir);
-            await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
         }
         else
         {
