@@ -25,14 +25,16 @@ listen.owner = {0}
 listen.group = sftp_users
 
 pm = dynamic
-pm.max_children = 20
-pm.start_servers = 2
-pm.min_spare_servers = 1
-pm.max_spare_servers = 3
+pm.max_children = 256
+pm.start_servers = 64
+pm.min_spare_servers = 32
+pm.max_spare_servers = 64
 
 php_admin_value[open_basedir] = /home/{0}:/dev/urandom
 php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
-php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
+php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp
+php_admin_value[error_log] = /home/{0}/files/php/php-error.log
+php_admin_flag[log_errors] = on";
 
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
@@ -154,6 +156,8 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
 
+            File.Create($"/home/{user.Username}/files/php/php-error.log");
+
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
 
@@ -176,6 +180,7 @@ php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp";
         {
             foreach (var user in DB.Users.GetUsers())
             {
+                File.Create($"/home/{user.Username}/files/php/php-error.log");
                 try
                 {
                     DB.Logs.Add("RegenerateConfig", "Regenerate Config for " + user.Username);
