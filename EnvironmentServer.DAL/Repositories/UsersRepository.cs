@@ -129,7 +129,7 @@ php_admin_flag[log_errors] = on";
 
             await Bash.ChmodAsync("700", $"/home/{user.Username}");
             await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}");
-            
+
             DB.Logs.Add("DAL", "Create user files folder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}/files");
             Directory.CreateDirectory($"/home/{user.Username}/files/php");
@@ -176,7 +176,7 @@ php_admin_flag[log_errors] = on";
             await Bash.ChmodAsync("700", path);
         }
 
-        public async Task RegenerateConfig()
+        public async Task RegenerateConfig(bool includePhp)
         {
             foreach (var user in DB.Users.GetUsers())
             {
@@ -195,10 +195,12 @@ php_admin_flag[log_errors] = on";
                     File.WriteAllText($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf", conf);
                     conf = string.Format(phpfpm, user.Username, "php8.1-fpm");
                     File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf);
-
-                    foreach (var env in DB.Environments.GetForUser(user.ID))
+                    if (includePhp)
                     {
-                        await DB.Environments.UpdatePhpAsync(env.ID, user, env.Version);
+                        foreach (var env in DB.Environments.GetForUser(user.ID))
+                        {
+                            await DB.Environments.UpdatePhpAsync(env.ID, user, env.Version);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -215,7 +217,7 @@ php_admin_flag[log_errors] = on";
             await Bash.ReloadApacheAsync();
         }
 
-            public async Task UpdateAsync(User user, string shellPassword)
+        public async Task UpdateAsync(User user, string shellPassword)
         {
             DB.Logs.Add("DAL", "Update user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);
@@ -298,7 +300,7 @@ php_admin_flag[log_errors] = on";
                     password = user.Password,
                     isAdmin = user.IsAdmin,
                     active = user.Active,
-                    lastused =  user.LastUsed,
+                    lastused = user.LastUsed,
                     exp = user.ExpirationDate,
                     rid = user.RoleID
                 });
@@ -351,7 +353,7 @@ php_admin_flag[log_errors] = on";
                  });
         }
 
-        public IEnumerable<User>GetTempUsers()
+        public IEnumerable<User> GetTempUsers()
         {
             using var c = new MySQLConnectionWrapper(DB.ConnString);
             return c.Connection.Query<User>("SELECT * FROM `users` Where ExpirationDate IS NOT NULL;");
@@ -439,7 +441,7 @@ php_admin_flag[log_errors] = on";
             if (usr == null)
                 return;
 
-            var token = DB.Tokens.Generate(usr.ID);            
+            var token = DB.Tokens.Generate(usr.ID);
             DB.Mail.Send("Shopware Environment Server Account",
                 string.Format(DB.Settings.Get("mail_account_password_recovery").Value, usr.Username, token.ToString(), usr.Email), usr.Email);
         }
