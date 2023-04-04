@@ -181,6 +181,7 @@ php_admin_flag[log_errors] = on";
             foreach (var user in DB.Users.GetUsers())
             {
                 File.Create($"/home/{user.Username}/files/php/php-error.log");
+                await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/php/php-error.log");
                 try
                 {
                     DB.Logs.Add("RegenerateConfig", "Regenerate Config for " + user.Username);
