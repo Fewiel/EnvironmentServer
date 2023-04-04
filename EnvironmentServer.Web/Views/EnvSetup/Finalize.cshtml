@@ -57,6 +57,17 @@
         </dl>
 
         <button type="submit" class="btn btn-primary">Create</button>
+
+        @if (!Model.ShopwareVersion.StartsWith("6.5"))
+        {
+            <button type="submit" class="btn btn-primary" disabled>Create</button>
+            <span>No Manual Webinstaller for 6.5 and above - Use the Autoinstallation</span>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">Create</button>
+        }
+
     </form>
 
     @if (Model.TemplateID == 0 && Model.CustomSetupType != "empty" && DB.Permission.HasPermission(usr, "autoinstaller_use"))
@@ -85,7 +96,7 @@
         <div class="alert alert-info">
             New Login Information for Autoinstallations!<br /> <br />
             User: admin<br />
-            Password: shopware<br />
+            You will receive the password via Slack / Email <br />
         </div>
     }
 </div>
