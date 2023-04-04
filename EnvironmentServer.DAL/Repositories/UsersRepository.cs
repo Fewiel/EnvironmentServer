@@ -176,7 +176,7 @@ php_admin_flag[log_errors] = on";
             await Bash.ChmodAsync("700", path);
         }
 
-        public async Task RegenerateConfig(bool includePhp)
+        public async Task RegenerateConfig(bool includePhp = false)
         {
             foreach (var user in DB.Users.GetUsers())
             {
