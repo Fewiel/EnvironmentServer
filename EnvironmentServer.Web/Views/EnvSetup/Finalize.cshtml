@@ -58,7 +58,7 @@
 
         <button type="submit" class="btn btn-primary">Create</button>
 
-        @if (!Model.ShopwareVersion.StartsWith("6.5"))
+        @if (Model.MajorShopwareVersion >= 6.5)
         {
             <button type="submit" class="btn btn-primary" disabled>Create</button>
             <span>No Manual Webinstaller for 6.5 and above - Use the Autoinstallation</span>
