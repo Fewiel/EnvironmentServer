@@ -99,7 +99,7 @@ php_admin_flag[log_errors] = on";
             return usr;
         }
 
-        public async Task InsertAsync(User user, string shellPassword)
+        public async Task InsertAsync(User user, string shellPassword, bool sendmail = true)
         {
             DB.Logs.Add("DAL", "Insert user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);
@@ -159,8 +159,11 @@ php_admin_flag[log_errors] = on";
 
             File.Create($"/home/{user.Username}/files/php/php-error.log");
 
-            DB.Mail.Send("Shopware Environment Server Account",
-                string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
+            if (sendmail)
+            {
+                DB.Mail.Send("Shopware Environment Server Account",
+                                string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
+            }
 
             c.Connection.Execute("UPDATE mysql.user SET Super_Priv='Y';");
 

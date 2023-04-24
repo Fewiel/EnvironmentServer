@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
-using Newtonsoft.Json;
 
 namespace EnvironmentServer.Web.Controllers.API
 {
@@ -79,7 +78,7 @@ namespace EnvironmentServer.Web.Controllers.API
                     SSHPublicKey = "",
                     ExpirationDate = null
                 };
-                await DB.Users.InsertAsync(usr, CreatePassword(24));
+                await DB.Users.InsertAsync(usr, CreatePassword(24), false);
             }
             else if (ce.AccountMail != usr.Email)
             {
@@ -143,6 +142,9 @@ namespace EnvironmentServer.Web.Controllers.API
             System.IO.File.WriteAllText($"/home/{usr.Username}/files/{envName}/version.txt",
                     ce.ShopwareVersion);
 
+            System.IO.File.WriteAllBytes($"/home/{usr.Username}/files/{envName}/extension.zip", Convert.FromBase64String(ce.Base64Extension));
+            System.IO.File.Copy("/root/ShopDev/ExtTemplate/db.sql", $"/home/{usr.Username}/files/{envName}/db.sql");
+
             DB.CmdAction.CreateTask(new CmdAction
             {
                 Action = "extension_testing_install",
@@ -152,6 +154,28 @@ namespace EnvironmentServer.Web.Controllers.API
             DB.Environments.SetTaskRunning(lastID, true);
 
             return new CreateEnvironmentResponse { ID = lastID, Password = environmentPasswd, URL = url };
+        }
+
+        [HttpPost]
+        public bool DeleteAsync(long id)
+        {
+            Request.Headers.TryGetValue("authorization", out var apikey);
+
+            if (string.IsNullOrEmpty(apikey) || apikey != DB.Settings.Get("sbp_api_key").Value)
+                return false;
+
+            if (id == 0 || DB.Environments.Get(id) == null)
+                return false;
+
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "delete_environment",
+                Id_Variable = id,
+                ExecutedById = DB.Environments.Get(id).UserID
+            });
+            DB.Environments.SetTaskRunning(id, true);
+
+            return true;
         }
     }
 }
