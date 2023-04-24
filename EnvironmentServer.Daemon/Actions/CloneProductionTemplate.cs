@@ -45,8 +45,14 @@ public class CloneProductionTemplate : ActionBase
         if (File.Exists($"{homeDir}/public/.htaccess.dist"))
             File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
-
-        await Bash.CommandAsync($"php bin/console assets:install", homeDir, validation: false);
+        if (version.StartsWith("6.4"))
+        {
+            await Bash.CommandAsync($"php7.4 bin/console assets:install", homeDir, validation: false);
+        }
+        else
+        {
+            await Bash.CommandAsync($"php8.1 bin/console assets:install", homeDir, validation: false);
+        }
 
         await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
 
