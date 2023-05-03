@@ -22,17 +22,13 @@ namespace EnvironmentServer.Daemon.Actions
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
-            if (version.ToLower().Contains("rc"))
-            {
-                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
-            }
-            else if (version.ToLower().Contains("trunk"))
+            if (version.ToLower().Contains("trunk"))
             {
                 await Bash.CommandAsync($"git clone --branch trunk https://github.com/shopware/platform.git {homeDir}", homeDir);
             }
             else
             {
-                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
+                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
             }
 
             if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
