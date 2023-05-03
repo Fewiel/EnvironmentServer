@@ -42,7 +42,10 @@ namespace EnvironmentServer.Daemon.Actions
 
             await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 
-            if (File.Exists($"{homeDir}/public/.htaccess.dist") && !File.Exists($"{homeDir}/public/.htaccess"))
+            if (File.Exists($"{homeDir}/public/.htaccess"))
+                File.Delete($"{homeDir}/public/.htaccess");
+
+            if (File.Exists($"{homeDir}/public/.htaccess.dist"))
                 File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
             if (!version.ToLower().StartsWith("6.5"))
@@ -66,7 +69,7 @@ namespace EnvironmentServer.Daemon.Actions
                 $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
                 $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
                 $"/home/{user.Username}/files/{env.InternalName}", validation: false);
-            }       
+            }
             await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", homeDir);
 
             await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
