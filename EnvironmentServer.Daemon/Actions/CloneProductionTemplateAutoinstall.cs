@@ -22,13 +22,17 @@ namespace EnvironmentServer.Daemon.Actions
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
-            if (version.ToLower().Contains("trunk"))
+            if (version.ToLower().Contains("6.5"))
+            {
+                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
+            }
+            else if (version.ToLower().Contains("trunk"))
             {
                 await Bash.CommandAsync($"git clone --branch trunk https://github.com/shopware/platform.git {homeDir}", homeDir);
             }
             else
             {
-                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
+                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
             }
 
             if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
@@ -39,7 +43,7 @@ namespace EnvironmentServer.Daemon.Actions
             await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 
             if (File.Exists($"{homeDir}/public/.htaccess"))
-                File.Delete($"{homeDir}/public/.htaccess");
+                File.Delete();
 
             if (File.Exists($"{homeDir}/public/.htaccess.dist"))
                 File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
