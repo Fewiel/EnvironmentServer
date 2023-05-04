@@ -42,9 +42,6 @@ namespace EnvironmentServer.Daemon.Actions
 
             await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 
-            if (File.Exists($"{homeDir}/public/.htaccess"))
-                File.Delete();
-
             if (File.Exists($"{homeDir}/public/.htaccess.dist"))
                 File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
