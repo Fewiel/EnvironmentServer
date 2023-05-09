@@ -25,11 +25,11 @@ listen.owner = {0}
 listen.group = sftp_users
 
 pm = dynamic
-pm.max_children = 32
+pm.max_children = 64
 pm.start_servers = 16
 pm.min_spare_servers = 16
 pm.max_spare_servers = 32
-pm.max_requests = 2000
+pm.max_requests = 500
 
 php_admin_value[open_basedir] = /home/{0}:/dev/urandom
 php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
