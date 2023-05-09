@@ -22,7 +22,7 @@ namespace EnvironmentServer.Daemon.Actions
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
-            if (version.ToLower().Contains("rc"))
+            if (version.ToLower().Contains("6.5"))
             {
                 await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
             }
@@ -66,7 +66,7 @@ namespace EnvironmentServer.Daemon.Actions
                 $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
                 $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
                 $"/home/{user.Username}/files/{env.InternalName}", validation: false);
-            }       
+            }
             await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", homeDir);
 
             await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
