@@ -10,8 +10,8 @@ namespace EnvironmentServer.Daemon.Actions
 {
     internal class CloneProductionTemplateAutoinstall : ActionBase
     {
-        private const string DatabaseUrl = "(DATABASE_URL=\")(.*)(\")";
-        private const string AppUrl = "(APP_URL=\")(.*)(\")";
+        private const string DatabaseUrl = "(DATABASE_URL=)(.*)";
+        private const string AppUrl = "(APP_URL=)(.*)";
 
         public override string ActionIdentifier => "clone_production_template_install";
 
@@ -66,8 +66,8 @@ namespace EnvironmentServer.Daemon.Actions
             {
                 var path = $"/home/{user.Username}/files/{env.InternalName}/.env";
                 var conf = File.ReadAllText(path);
-                conf = Regex.Replace(conf, AppUrl, $"$1https://{env.Address}$3");
-                conf = Regex.Replace(conf, DatabaseUrl, $"$1mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}$3");
+                conf = Regex.Replace(conf, AppUrl, $"$1https://{env.Address}");
+                conf = Regex.Replace(conf, DatabaseUrl, $"$1mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}");
                 File.WriteAllText(path, conf);
 
                 await Bash.CommandAsync($"bin/console system:install --basic-setup", homeDir, validation: true);
