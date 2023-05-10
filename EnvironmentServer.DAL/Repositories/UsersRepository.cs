@@ -14,28 +14,7 @@ namespace EnvironmentServer.DAL.Repositories
     public class UsersRepository
     {
         private readonly Database DB;
-        private const string phpfpm = @"
-[{0}]
-user = {0}
-group = sftp_users
-
-listen = /run/php/{1}-{0}.sock
-
-listen.owner = {0}
-listen.group = sftp_users
-
-pm = dynamic
-pm.max_children = 64
-pm.start_servers = 16
-pm.min_spare_servers = 16
-pm.max_spare_servers = 32
-pm.max_requests = 500
-
-php_admin_value[open_basedir] = /home/{0}:/dev/urandom
-php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
-php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp
-php_admin_value[error_log] = /home/{0}/files/php/php-error.log
-php_admin_flag[log_errors] = on";
+        private string phpfpm;
 
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
@@ -140,6 +119,9 @@ php_admin_flag[log_errors] = on";
             await Bash.ChmodAsync("755", $"/home/{user.Username}/files");
 
             DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
+
+            phpfpm = DB.Settings.Get("phpfpm").Value;
+
             var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
             File.WriteAllText($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf", conf);
             conf = string.Format(phpfpm, user.Username, "php7.2-fpm");
@@ -179,13 +161,15 @@ php_admin_flag[log_errors] = on";
 
         public async Task RegenerateConfig(bool includePhp = false)
         {
+            phpfpm = DB.Settings.Get("phpfpm").Value;
+
             foreach (var user in DB.Users.GetUsers())
             {
                 File.Create($"/home/{user.Username}/files/php/php-error.log");
                 await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/php/php-error.log");
                 try
                 {
-                    DB.Logs.Add("RegenerateConfig", "Regenerate Config for " + user.Username);
+                    DB.Logs.Add("RegenerateConfig", "Regenerate Config for " + user.Username);                    
                     var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
                     File.WriteAllText($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf", conf);
                     conf = string.Format(phpfpm, user.Username, "php7.2-fpm");
