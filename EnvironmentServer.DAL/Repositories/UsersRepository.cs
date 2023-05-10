@@ -169,7 +169,7 @@ namespace EnvironmentServer.DAL.Repositories
                 await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/php/php-error.log");
                 try
                 {
-                    DB.Logs.Add("RegenerateConfig", "Regenerate Config for " + user.Username);                    
+                    DB.Logs.Add("RegenerateConfig", "Regenerate Config for " + user.Username);
                     var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
                     File.WriteAllText($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf", conf);
                     conf = string.Format(phpfpm, user.Username, "php7.2-fpm");

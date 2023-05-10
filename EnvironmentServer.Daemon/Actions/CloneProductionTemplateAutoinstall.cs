@@ -3,12 +3,16 @@ using EnvironmentServer.Interfaces;
 using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Daemon.Actions
 {
     internal class CloneProductionTemplateAutoinstall : ActionBase
     {
+        private const string DatabaseUrl = "(DATABASE_URL=\")(.*)(\")";
+        private const string AppUrl = "(APP_URL=\")(.*)(\")";
+
         public override string ActionIdentifier => "clone_production_template_install";
 
         public override async Task ExecuteAsync(ServiceProvider sp, long variableID, long userID)
@@ -22,11 +26,7 @@ namespace EnvironmentServer.Daemon.Actions
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
-            if (version.ToLower().Contains("6.5"))
-            {
-                await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/platform.git {homeDir}", homeDir);
-            }
-            else if (version.ToLower().Contains("trunk"))
+            if (version.ToLower().Contains("trunk"))
             {
                 await Bash.CommandAsync($"git clone --branch trunk https://github.com/shopware/platform.git {homeDir}", homeDir);
             }
@@ -46,27 +46,33 @@ namespace EnvironmentServer.Daemon.Actions
                 File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
             if (!version.ToLower().StartsWith("6.5"))
+            {
                 await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
 
-            await Bash.CommandAsync($"php bin/console system:setup --app-env=\\\"prod\\\" " +
-                    $"--env=\\\"prod\\\" -f -vvv " +
-                    $"--database-url=\\\"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}\\\" " +
-                    $"--app-url=\\\"https://{env.Address}\\\" " +
-                    $"--composer-home=\\\"/home/{user.Username}/files/{env.InternalName}/var/cache/composer\\\" " +
-                    $"--app-env=\\\"prod\\\" -n",
-                    $"/home/{user.Username}/files/{env.InternalName}");
-            
-            if (version.ToLower().StartsWith("6.5"))
-            {
-                await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
+                await Bash.CommandAsync($"php bin/console system:setup --app-env=\\\"prod\\\" " +
+                        $"--env=\\\"prod\\\" -f -vvv " +
+                        $"--database-url=\\\"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}\\\" " +
+                        $"--app-url=\\\"https://{env.Address}\\\" " +
+                        $"--composer-home=\\\"/home/{user.Username}/files/{env.InternalName}/var/cache/composer\\\" " +
+                        $"--app-env=\\\"prod\\\" -n",
+                        $"/home/{user.Username}/files/{env.InternalName}");
+
+                await Bash.CommandAsync($"php bin/console system:install --create-database --basic-setup " +
+                        $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
+                        $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
+                        $"/home/{user.Username}/files/{env.InternalName}", validation: false);
             }
             else
             {
-                await Bash.CommandAsync($"php bin/console system:install --create-database --basic-setup " +
-                $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
-                $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
-                $"/home/{user.Username}/files/{env.InternalName}", validation: false);
+                var path = $"/home/{user.Username}/files/{env.InternalName}/.env";
+                var conf = File.ReadAllText(path);
+                conf = Regex.Replace(conf, AppUrl, $"$1https://{env.Address}$3");
+                conf = Regex.Replace(conf, DatabaseUrl, $"$1mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}$3");
+                File.WriteAllText(path, conf);
+
+                await Bash.CommandAsync($"bin/console system:install --basic-setup", homeDir, validation: true);
             }
+
             await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", homeDir);
 
             await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
