@@ -30,6 +30,11 @@ public class CloneProductionTemplate : ActionBase
         {
             await Bash.CommandAsync($"git clone --branch trunk https://github.com/shopware/platform.git {homeDir}", homeDir);
         }
+        else if (version.ToLower().StartsWith("6.5"))
+        {
+            Directory.CreateDirectory($"{homeDir}/public");
+            await Bash.CommandAsync($"wget https://github.com/shopware/web-recovery/releases/latest/download/shopware-installer.phar.php shopware-installer.phar.php", $"{homeDir}/public");
+        }
         else
         {
             await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
@@ -53,6 +58,7 @@ public class CloneProductionTemplate : ActionBase
         {
             await Bash.CommandAsync($"php8.1 bin/console assets:install", homeDir, validation: false);
         }
+
 
         await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
 
