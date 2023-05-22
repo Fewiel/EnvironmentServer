@@ -60,6 +60,7 @@ namespace EnvironmentServer.Web.Controllers
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
             await Bash.ReloadApacheAsync();
+            AddInfo("Finished PHP restart");
             return RedirectToAction("Index");
         }
     }
