@@ -120,17 +120,13 @@ namespace EnvironmentServer.DAL.StringConstructors
 </VirtualHost>
 
 <VirtualHost *:443>
-    LoadModule ssl_module /usr/lib64/apache2-prefork/mod_ssl.so
-
-	<FilesMatch \.php>
-        SetHandler ""proxy:unix:/var/run/php/{Version.AsString()}-{Username}.sock|fcgi://localhost/"" 
-    </FilesMatch>
+ #   LoadModule ssl_module /usr/lib64/apache2-prefork/mod_ssl.so
 
 	ServerAdmin {Email}
     ServerName {Address}
-        SSLCertificateFile {SSLCertFile}
-        SSLCertificateKeyFile {SSLKeyFile}
-        SSLCertificateChainFile {SSLChainFile}
+#        SSLCertificateFile {SSLCertFile}
+#        SSLCertificateKeyFile {SSLKeyFile}
+#        SSLCertificateChainFile {SSLChainFile}
 	DocumentRoot {DocRoot}
     <Directory {DocRoot}>
         Options Indexes FollowSymLinks MultiViews
@@ -145,12 +141,12 @@ namespace EnvironmentServer.DAL.StringConstructors
         AssignUserId {Username} sftp_users
     </IfModule>
 
-<IfModule mod_fastcgi.c>
-	AddHandler php-fcgi-handler .php
-	Action php-fcgi-handler /php-fcgi-uri
-    Alias /php-fcgi-uri fcgi-application
-    FastCgiExternalServer fcgi-application -socket /var/run/php/{Version.AsString()}-{Username}.sock -pass-header Authorization -idle-timeout 30000 -flush
-</IfModule>
+   <IfModule mod_proxy_fcgi.c>
+        <FilesMatch "".+\.ph(p[3457]?|t|tml|ps)$"">
+          SetHandler ""proxy:unix:/var/run/php/{Version.AsString()}-{Username}.sock|fcgi://localhost""
+          SetEnvIfNoCase ^Authorization$ ""(.+)"" HTTP_AUTHORIZATION=$1
+        </FilesMatch>
+    </IfModule>
 
     <IfModule mod_rewrite>
         RewriteEngine On

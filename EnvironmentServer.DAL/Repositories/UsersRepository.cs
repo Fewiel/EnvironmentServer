@@ -141,8 +141,8 @@ namespace EnvironmentServer.DAL.Repositories
 
             File.Create($"/home/{user.Username}/files/php/php-error.log");
 
-            DB.Mail.Send("Shopware Environment Server Account",
-                string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
+            //DB.Mail.Send("Shopware Environment Server Account",
+            //    string.Format(DB.Settings.Get("mail_account_created").Value, user.Username, shellPassword), user.Email);
 
             c.Connection.Execute("UPDATE mysql.user SET Super_Priv='Y';");
 
