@@ -48,7 +48,7 @@ namespace EnvironmentServer.Daemon.Actions
                     File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
             }
 
-            if (swVersion.Major >= 5)
+            if (swVersion.Major < 5)
             {
                 await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
 
