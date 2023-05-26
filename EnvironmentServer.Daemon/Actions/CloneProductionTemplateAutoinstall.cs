@@ -31,6 +31,7 @@ namespace EnvironmentServer.Daemon.Actions
 
             if (swVersion.Major == 4 && swVersion.Minor >= 18 || swVersion.Major == 5)
             {
+                Directory.Delete(homeDir, true);
                 await Bash.CommandAsync($"shopware-cli project create {homeDir} {version}", homeDir);
             }
             else
