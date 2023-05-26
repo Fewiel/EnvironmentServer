@@ -29,7 +29,7 @@ namespace EnvironmentServer.Daemon.Actions
 
             var swVersion = new ShopwareVersion(version);
 
-            if (swVersion.Major >= 4 && swVersion.Minor >= 18)
+            if (swVersion.Major == 4 && swVersion.Minor >= 18 || swVersion.Major == 5)
             {
                 await Bash.CommandAsync($"shopware-cli project create {homeDir} {version}", homeDir);
             }
