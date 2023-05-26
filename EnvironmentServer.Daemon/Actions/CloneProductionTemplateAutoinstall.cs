@@ -1,4 +1,5 @@
-﻿using EnvironmentServer.DAL;
+﻿using EnvironmentServer.Daemon.Models;
+using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
 using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,26 +27,27 @@ namespace EnvironmentServer.Daemon.Actions
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
 
-            if (version.ToLower().Contains("trunk"))
+            var swVersion = new ShopwareVersion(version);
+
+            if (swVersion.Major >= 4 && swVersion.Minor >= 18)
             {
-                await Bash.CommandAsync($"git clone --branch trunk https://github.com/shopware/platform.git {homeDir}", homeDir);
+                await Bash.CommandAsync($"shopware-cli project create {homeDir} {version}", homeDir);
             }
             else
             {
                 await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
+                if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
+                    File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
+                if (File.Exists($"{homeDir}/vendor/shopware/recovery/Common/composer.lock"))
+                    File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
+
+                await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
+
+                if (File.Exists($"{homeDir}/public/.htaccess.dist") && !File.Exists($"{homeDir}/public/.htaccess"))
+                    File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
             }
 
-            if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
-                File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
-            if (File.Exists($"{homeDir}/vendor/shopware/recovery/Common/composer.lock"))
-                File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
-
-            await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
-
-            if (File.Exists($"{homeDir}/public/.htaccess.dist") && !File.Exists($"{homeDir}/public/.htaccess"))
-                File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
-
-            if (!version.ToLower().StartsWith("6.5"))
+            if (swVersion.Major >= 5)
             {
                 await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
 
