@@ -36,7 +36,7 @@ public class IniFile
 	private void ReadLine(string line)
 	{
 		var lineIndex = line.IndexOf('=');
-		Data.Add(line[..(lineIndex - 1)].Trim('"'), line[(lineIndex + 1)..].Trim('"'));
+		Data.Add(line[..lineIndex].Trim('"'), line[(lineIndex + 1)..].Trim('"'));
 	}
 
 	public bool TryGetValue(string key, out string value) => Data.TryGetValue(key, out value);

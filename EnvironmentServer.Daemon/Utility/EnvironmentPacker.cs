@@ -141,14 +141,13 @@ internal static class EnvironmentPacker
         var sw6 = Directory.Exists($"{tmpPath}/public");
 
         if (sw6)
-        {   
+        {
             var cnf = File.ReadAllText(File.Exists($"{tmpPath}/.env.local") ? $"{tmpPath}/.env.local" : $"{tmpPath}/.env");
             var file = new IniFile(cnf);
             file.SetValue("APP_URL", "{{APPURL}}");
             file.SetValue("DATABASE_URL", "{{DATABASEURL}}");
             file.SetValue("SHOPWARE_ES_HOSTS", "localhost:9200");
             file.SetValue("SHOPWARE_ES_ENABLED", "0");
-            
             File.WriteAllText(File.Exists($"{tmpPath}/.env.local") ? $"{tmpPath}/.env.local" : $"{tmpPath}/.env", file.Write());
         }
         else
