@@ -17,13 +17,6 @@ internal static class EnvironmentPacker
     private const string PatternSW5Password = "('password' => ')(.*)(')";
     private const string PatternSW5DBName = "('dbname' => ')(.*)(')";
 
-    private const string PatternSW6AppURL = "(APP_URL=\"?)(.*)(\")?";
-    private const string PatternSW6DatabaseURL = "(DATABASE_URL=\"?)(.*)(\")?";
-
-    private const string PatternSW6ComposerHome = "(COMPOSER_HOME=\"?)(.*)(\")?";
-    private const string PatternSW6ESEnabled = "(SHOPWARE_ES_ENABLED=\"?)(.*)(\")?";
-    private const string PatternSW6ESHost = "(SHOPWARE_ES_HOSTS=\"?)(.*)(\")?";
-
     public static async Task PackEnvironmentAsync(Database db, Environment env)
     {
         //Delete Cache
@@ -148,14 +141,15 @@ internal static class EnvironmentPacker
         var sw6 = Directory.Exists($"{tmpPath}/public");
 
         if (sw6)
-        {
+        {   
             var cnf = File.ReadAllText(File.Exists($"{tmpPath}/.env.local") ? $"{tmpPath}/.env.local" : $"{tmpPath}/.env");
-            cnf = Regex.Replace(cnf, PatternSW6AppURL, "$1{{APPURL}}$3");
-            cnf = Regex.Replace(cnf, PatternSW6ESHost, "$1$3");
-            cnf = Regex.Replace(cnf, PatternSW6ESEnabled, "SHOPWARE_ES_ENABLED=\"0\"");
-            cnf = Regex.Replace(cnf, PatternSW6DatabaseURL, "$1{{DATABASEURL}}$3");
-            cnf = Regex.Replace(cnf, PatternSW6ComposerHome, "$1{{COMPOSER}}$3");
-            File.WriteAllText(File.Exists($"{tmpPath}/.env.local") ? $"{tmpPath}/.env.local" : $"{tmpPath}/.env", cnf);
+            var file = new IniFile(cnf);
+            file.SetValue("APP_URL", "{{APPURL}}");
+            file.SetValue("DATABASE_URL", "{{DATABASEURL}}");
+            file.SetValue("SHOPWARE_ES_HOSTS", "localhost:9200");
+            file.SetValue("SHOPWARE_ES_ENABLED", "0");
+            
+            File.WriteAllText(File.Exists($"{tmpPath}/.env.local") ? $"{tmpPath}/.env.local" : $"{tmpPath}/.env", file.Write());
         }
         else
         {
