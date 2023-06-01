@@ -17,12 +17,12 @@ internal static class EnvironmentPacker
     private const string PatternSW5Password = "('password' => ')(.*)(')";
     private const string PatternSW5DBName = "('dbname' => ')(.*)(')";
 
-    private const string PatternSW6AppURL = "(APP_URL=\")(.*)(\")";
-    private const string PatternSW6DatabaseURL = "(DATABASE_URL=\")(.*)(\")";
+    private const string PatternSW6AppURL = "(APP_URL=\"?)(.*)(\")?";
+    private const string PatternSW6DatabaseURL = "(DATABASE_URL=\"?)(.*)(\")?";
 
-    private const string PatternSW6ComposerHome = "(COMPOSER_HOME=\")(.*)(\")";
-    private const string PatternSW6ESEnabled = "(SHOPWARE_ES_ENABLED=\")(.*)(\")";
-    private const string PatternSW6ESHost = "(SHOPWARE_ES_HOSTS=\")(.*)(\")";
+    private const string PatternSW6ComposerHome = "(COMPOSER_HOME=\"?)(.*)(\")?";
+    private const string PatternSW6ESEnabled = "(SHOPWARE_ES_ENABLED=\"?)(.*)(\")?";
+    private const string PatternSW6ESHost = "(SHOPWARE_ES_HOSTS=\"?)(.*)(\")?";
 
     public static async Task PackEnvironmentAsync(Database db, Environment env)
     {
@@ -149,13 +149,13 @@ internal static class EnvironmentPacker
 
         if (sw6)
         {
-            var cnf = File.ReadAllText($"{tmpPath}/.env");
+            var cnf = File.ReadAllText(File.Exists($"{tmpPath}/.env.local") ? $"{tmpPath}/.env.local" : $"{tmpPath}/.env");
             cnf = Regex.Replace(cnf, PatternSW6AppURL, "$1{{APPURL}}$3");
             cnf = Regex.Replace(cnf, PatternSW6ESHost, "$1$3");
             cnf = Regex.Replace(cnf, PatternSW6ESEnabled, "SHOPWARE_ES_ENABLED=\"0\"");
             cnf = Regex.Replace(cnf, PatternSW6DatabaseURL, "$1{{DATABASEURL}}$3");
             cnf = Regex.Replace(cnf, PatternSW6ComposerHome, "$1{{COMPOSER}}$3");
-            File.WriteAllText($"{tmpPath}/.env", cnf);
+            File.WriteAllText(File.Exists($"{tmpPath}/.env.local") ? $"{tmpPath}/.env.local" : $"{tmpPath}/.env", cnf);
         }
         else
         {
@@ -206,12 +206,16 @@ internal static class EnvironmentPacker
 
         if (sw6)
         {
-            var cnf = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/.env");
+            var confPath = $"/home/{user.Username}/files/{env.InternalName}/.env.local";
+            if (!File.Exists(confPath))
+                confPath = $"/home/{user.Username}/files/{env.InternalName}/.env";
+
+            var cnf = File.ReadAllText(confPath);
             cnf = cnf.Replace("{{APPURL}}", $"http://{env.InternalName}-{user.Username}.{db.Settings.Get("domain").Value}");
             cnf = cnf.Replace("{{DATABASEURL}}",
                 $"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}");
             cnf = cnf.Replace("{{COMPOSER}}", $"/home/{user.Username}/files/{env.InternalName}/var/cache/composer");
-            File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/.env", cnf);
+            File.WriteAllText(confPath, cnf);
         }
         else
         {
