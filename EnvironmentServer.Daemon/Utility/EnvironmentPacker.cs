@@ -204,7 +204,7 @@ internal static class EnvironmentPacker
                 confPath = $"/home/{user.Username}/files/{env.InternalName}/.env";
 
             var cnf = File.ReadAllText(confPath);
-            cnf = cnf.Replace("{{APPURL}}", $"http://{env.InternalName}-{user.Username}.{db.Settings.Get("domain").Value}");
+            cnf = cnf.Replace("{{APPURL}}", $"https://{env.InternalName}-{user.Username}.{db.Settings.Get("domain").Value}");
             cnf = cnf.Replace("{{DATABASEURL}}",
                 $"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}");
             cnf = cnf.Replace("{{COMPOSER}}", $"/home/{user.Username}/files/{env.InternalName}/var/cache/composer");
