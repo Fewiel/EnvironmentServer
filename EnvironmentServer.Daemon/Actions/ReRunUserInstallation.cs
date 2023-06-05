@@ -22,7 +22,10 @@ public class ReRunUserInstallation : ActionBase
 
         foreach (var usr in db.Users.GetUsers())
         {
-            db.Logs.Add("DAL", "Create user files folder: " + usr.Username);
+            if (usr.Username == "admin")
+                continue;
+
+            db.Logs.Add("DAL", "Import user: " + usr.Username);
 
             c.Connection.Execute($"create user {MySqlHelper.EscapeString(usr.Username)}@'localhost' identified by @password;", new
             {
@@ -59,12 +62,15 @@ public class ReRunUserInstallation : ActionBase
             File.WriteAllText($"/etc/php/8.0/fpm/pool.d/{usr.Username}.conf", conf);
             conf = string.Format(phpfpm, usr.Username, "php8.1-fpm");
             File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{usr.Username}.conf", conf);
+            conf = string.Format(phpfpm, usr.Username, "php8.2-fpm");
+            File.WriteAllText($"/etc/php/8.2/fpm/pool.d/{usr.Username}.conf", conf);
 
             await Bash.ServiceReloadAsync("php5.6-fpm");
             await Bash.ServiceReloadAsync("php7.2-fpm");
             await Bash.ServiceReloadAsync("php7.4-fpm");
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ServiceReloadAsync("php8.2-fpm");
         }
     }
 }

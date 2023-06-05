@@ -129,7 +129,8 @@ namespace EnvironmentServer.Daemon
                 new Actions.ShopwareConfigFiles.WriteConfig(),
                 new BackupEnvironment(),
                 new CloneProductionTemplate(),
-                new CloneProductionTemplateAutoinstall()
+                new CloneProductionTemplateAutoinstall(),
+                new ReRunUserInstallation()
             };
 
             foreach (var a in l)
