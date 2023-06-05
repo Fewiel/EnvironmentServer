@@ -38,7 +38,7 @@ public class ReRunUserInstallation : ActionBase
             await Bash.UserModGroupAsync(usr.Username, "sftp_users");
 
             Directory.CreateDirectory($"/home/{usr.Username}");
-            File.Create($"/home/{usr.Username}/files/php/php-error.log");
+            
 
             await Bash.ChmodAsync("700", $"/home/{usr.Username}");
             await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}");
@@ -46,6 +46,7 @@ public class ReRunUserInstallation : ActionBase
             Directory.CreateDirectory($"/home/{usr.Username}/files");
             Directory.CreateDirectory($"/home/{usr.Username}/files/php");
             Directory.CreateDirectory($"/home/{usr.Username}/files/php/tmp");
+            File.Create($"/home/{usr.Username}/files/php/php-error.log");
 
             await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files", true);
             await Bash.ChmodAsync("755", $"/home/{usr.Username}/files");
