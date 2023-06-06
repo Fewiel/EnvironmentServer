@@ -19,5 +19,6 @@ namespace EnvironmentServer.DAL.Models
         public DateTime LastUsed { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public UserInformation UserInformation { get; set; }
+        public bool ForcePasswordReset { get; set; }
     }
 }

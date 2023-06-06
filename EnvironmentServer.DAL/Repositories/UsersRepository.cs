@@ -83,15 +83,16 @@ namespace EnvironmentServer.DAL.Repositories
             DB.Logs.Add("DAL", "Insert user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);
 
-            c.Connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`, `ExpirationDate`, `RoleID`) "
-                     + "VALUES (NULL, @email, @username, @password, @isAdmin, @exp, @rid)", new
+            c.Connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`, `ExpirationDate`, `RoleID`, `ForcePasswordReset`) "
+                     + "VALUES (NULL, @email, @username, @password, @isAdmin, @exp, @rid, @pwreset)", new
                      {
                          email = user.Email,
                          username = user.Username,
                          password = user.Password,
                          isAdmin = user.IsAdmin,
                          exp = user.ExpirationDate,
-                         rid = user.RoleID
+                         rid = user.RoleID, 
+                         pwreset = true
                      });
 
             c.Connection.Execute($"create user {MySqlHelper.EscapeString(user.Username)}@'localhost' identified by @password;", new
@@ -209,14 +210,15 @@ namespace EnvironmentServer.DAL.Repositories
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin, `RoleID` = @rid WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `RoleID` = @rid, `ForcePasswordReset` = @pwreset WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
                     username = user.Username,
                     password = user.Password,
                     isAdmin = user.IsAdmin,
-                    rid = user.RoleID
+                    rid = user.RoleID,
+                    pwreset = user.ForcePasswordReset
                 });
 
             c.Connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
@@ -277,7 +279,7 @@ namespace EnvironmentServer.DAL.Repositories
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid, `ForcePasswordReset` = @pwreset WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
@@ -287,7 +289,8 @@ namespace EnvironmentServer.DAL.Repositories
                     active = user.Active,
                     lastused = user.LastUsed,
                     exp = user.ExpirationDate,
-                    rid = user.RoleID
+                    rid = user.RoleID, 
+                    pwreset = user.ForcePasswordReset
                 });
         }
 
@@ -313,7 +316,7 @@ namespace EnvironmentServer.DAL.Repositories
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid, `ForcePasswordReset` = @pwreset WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
@@ -323,7 +326,8 @@ namespace EnvironmentServer.DAL.Repositories
                     active = user.Active,
                     lastused = user.LastUsed,
                     exp = user.ExpirationDate,
-                    rid = user.RoleID
+                    rid = user.RoleID, 
+                    pwreset = user.ForcePasswordReset
                 });
         }
 
@@ -448,7 +452,8 @@ namespace EnvironmentServer.DAL.Repositories
                 Email = usr.Email,
                 Password = PasswordHasher.Hash(password),
                 IsAdmin = usr.IsAdmin,
-                RoleID = usr.RoleID
+                RoleID = usr.RoleID,
+                ForcePasswordReset = false
             };
 
             await UpdateAsync(update_usr, password);
