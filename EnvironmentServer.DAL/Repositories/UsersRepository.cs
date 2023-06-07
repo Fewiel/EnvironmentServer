@@ -133,13 +133,16 @@ namespace EnvironmentServer.DAL.Repositories
             conf = string.Format(phpfpm, user.Username, "php8.0-fpm");
             File.WriteAllText($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf", conf);
             conf = string.Format(phpfpm, user.Username, "php8.1-fpm");
-            File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf);
+            File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf); 
+            conf = string.Format(phpfpm, user.Username, "php8.2-fpm");
+            File.WriteAllText($"/etc/php/8.2/fpm/pool.d/{user.Username}.conf", conf);
 
             await Bash.ServiceReloadAsync("php5.6-fpm");
             await Bash.ServiceReloadAsync("php7.2-fpm");
             await Bash.ServiceReloadAsync("php7.4-fpm");
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ServiceReloadAsync("php8.2-fpm");
 
             File.Create($"/home/{user.Username}/files/php/php-error.log");
 
@@ -185,6 +188,8 @@ namespace EnvironmentServer.DAL.Repositories
                     File.WriteAllText($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf", conf);
                     conf = string.Format(phpfpm, user.Username, "php8.1-fpm");
                     File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf);
+                    conf = string.Format(phpfpm, user.Username, "php8.2-fpm");
+                    File.WriteAllText($"/etc/php/8.2/fpm/pool.d/{user.Username}.conf", conf);
                     if (includePhp)
                     {
                         foreach (var env in DB.Environments.GetForUser(user.ID))
@@ -204,6 +209,7 @@ namespace EnvironmentServer.DAL.Repositories
             await Bash.ServiceReloadAsync("php7.4-fpm");
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ServiceReloadAsync("php8.2-fpm");
             await Bash.ReloadApacheAsync();
         }
 
