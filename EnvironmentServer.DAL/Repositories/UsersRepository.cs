@@ -104,6 +104,7 @@ namespace EnvironmentServer.DAL.Repositories
 
             await Bash.UserAddAsync(user.Username, shellPassword);
             await Bash.UserModGroupAsync(user.Username, "sftp_users");
+            await Bash.UserModGroupAsync(user.Username, "www-data");
 
             DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
@@ -166,6 +167,8 @@ namespace EnvironmentServer.DAL.Repositories
 
             foreach (var user in DB.Users.GetUsers())
             {
+                await Bash.UserModGroupAsync(user.Username, "www-data");
+
                 if (!File.Exists($"/home/{user.Username}/files/php/php-error.log"))
                     File.Create($"/home/{user.Username}/files/php/php-error.log");
                 await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/php/php-error.log");
