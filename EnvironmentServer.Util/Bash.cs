@@ -66,8 +66,17 @@ public static class Bash
     public static async Task UserAddAsync(string user, string password)
         => await CommandAsync($"useradd -p $(openssl passwd -1 $'{password}') {user}", log: false);
 
-    public static async Task UserModGroupAsync(string user, string group)
-        => await CommandAsync($"usermod -G {group} {user}");
+    public static async Task UserModGroupAsync(string user, string group, bool add = false)
+    {
+        if (add)
+        {
+            await CommandAsync($"usermod -a -G {group} {user}");
+        }
+        else
+        {
+            await CommandAsync($"usermod -G {group} {user}");
+        }
+    }
 
     public static async Task ServiceReloadAsync(string service) => await CommandAsync($"service {service} reload");
 }
