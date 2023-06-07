@@ -104,7 +104,7 @@ namespace EnvironmentServer.DAL.Repositories
 
             await Bash.UserAddAsync(user.Username, shellPassword);
             await Bash.UserModGroupAsync(user.Username, "sftp_users");
-            await Bash.UserModGroupAsync(user.Username, "www-data");
+            await Bash.UserModGroupAsync(user.Username, "www-data", true);
 
             DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
