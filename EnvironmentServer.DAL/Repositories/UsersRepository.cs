@@ -166,7 +166,8 @@ namespace EnvironmentServer.DAL.Repositories
 
             foreach (var user in DB.Users.GetUsers())
             {
-                File.Create($"/home/{user.Username}/files/php/php-error.log");
+                if (!File.Exists($"/home/{user.Username}/files/php/php-error.log"))
+                    File.Create($"/home/{user.Username}/files/php/php-error.log");
                 await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/php/php-error.log");
                 try
                 {

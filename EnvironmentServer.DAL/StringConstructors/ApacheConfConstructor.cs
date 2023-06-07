@@ -122,10 +122,6 @@ namespace EnvironmentServer.DAL.StringConstructors
 <VirtualHost *:443>
     LoadModule ssl_module /usr/lib64/apache2-prefork/mod_ssl.so
 
-	<FilesMatch \.php>
-        SetHandler ""proxy:unix:/var/run/php/{Version.AsString()}-{Username}.sock|fcgi://localhost/"" 
-    </FilesMatch>
-
 	ServerAdmin {Email}
     ServerName {Address}
         SSLCertificateFile {SSLCertFile}

@@ -12,7 +12,8 @@ namespace EnvironmentServer.DAL.Enums
         Php72,
         Php74,
         Php80,
-        Php81
+        Php81,
+        Php82
     }
 
     public static class PhpVersionExtensions
@@ -23,6 +24,7 @@ namespace EnvironmentServer.DAL.Enums
             PhpVersion.Php74 => "php7.4-fpm",
             PhpVersion.Php80 => "php8.0-fpm",
             PhpVersion.Php81 => "php8.1-fpm",
+            PhpVersion.Php82 => "php8.2-fpm",
             _ => throw new InvalidOperationException("Unkown Php Version: " + v)
         };
     }
