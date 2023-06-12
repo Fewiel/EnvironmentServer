@@ -55,7 +55,7 @@ public static class Bash
 
     public static async Task ApacheDisableSiteAsync(string siteConfig) => await CommandAsync($"a2dissite {siteConfig}", validation: false);
 
-    public static async Task ReloadApacheAsync() => await CommandAsync("systemctl restart apache2");
+    public static async Task ReloadApacheAsync() => await CommandAsync("systemctl reload apache2");
 
     public static async Task ChmodAsync(string permission, string path, bool recrusiv = false)
         => await CommandAsync($"chmod{(recrusiv ? " -R" : "")} {permission} {path}");
@@ -78,5 +78,5 @@ public static class Bash
         }
     }
 
-    public static async Task ServiceReloadAsync(string service) => await CommandAsync($"systemctl restart {service}");
+    public static async Task ServiceReloadAsync(string service) => await CommandAsync($"systemctl reload {service}");
 }
