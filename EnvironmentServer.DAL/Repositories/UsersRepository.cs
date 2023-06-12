@@ -373,6 +373,7 @@ namespace EnvironmentServer.DAL.Repositories
             await Bash.ServiceReloadAsync("php7.4-fpm");
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ServiceReloadAsync("php8.2-fpm");
 
             DB.Logs.Add("DAL", "Delete user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);
