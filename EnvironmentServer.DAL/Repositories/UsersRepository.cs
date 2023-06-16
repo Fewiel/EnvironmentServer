@@ -367,6 +367,7 @@ namespace EnvironmentServer.DAL.Repositories
             File.Delete($"/etc/php/7.4/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf");
+            File.Delete($"/etc/php/8.2/fpm/pool.d/{user.Username}.conf");
 
             await Bash.ServiceReloadAsync("php5.6-fpm");
             await Bash.ServiceReloadAsync("php7.2-fpm");
