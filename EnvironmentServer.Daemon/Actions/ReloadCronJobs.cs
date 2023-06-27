@@ -34,6 +34,7 @@ public class ReloadCronJobs : ActionBase
         {
             if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
                 await em.SendMessageAsync("errors in crontab file, can't install.", user.UserInformation.SlackID);
+            return;
         }
 
         if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
