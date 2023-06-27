@@ -79,4 +79,9 @@ public static class Bash
     }
 
     public static async Task ServiceReloadAsync(string service) => await CommandAsync($"systemctl reload {service}");
+
+    public static void ChownAsync(string path, string username)
+    {
+        throw new NotImplementedException();
+    }
 }

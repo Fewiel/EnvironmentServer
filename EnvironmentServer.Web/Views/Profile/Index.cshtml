@@ -26,6 +26,14 @@
         <br />
     }
 
+    @if (DB.Permission.HasPermission(usr, "cronjobs"))
+    {
+        <form method="post" asp-action="ReloadCronjobs" style="width: 400px;">
+            <button type="submit" class="btn btn-primary">Reload Cronjobs</button>
+        </form>
+        <br />
+    }
+
     <form method="post" asp-action="UpdateInformations" style="width: 400px;">
         <input type="hidden" asp-for="UserInformation.ID" />
         <input type="hidden" asp-for="UserInformation.AdminNote" />
