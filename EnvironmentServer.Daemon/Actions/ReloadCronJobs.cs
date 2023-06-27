@@ -22,12 +22,12 @@ public class ReloadCronJobs : ActionBase
         if (!File.Exists(path))
         {
             File.Create(path);
-            Bash.ChownAsync(path, user.Username);
+            await Bash.ChownAsync(user.Username, "sftp_users", path);
         }
 
         await Bash.CommandAsync($"crontab -u {user.Username} {path}");
 
         if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
-            await em.SendMessageAsync($"Cronjobs syncronized!", user.UserInformation.SlackID);
+            await em.SendMessageAsync("Cronjobs syncronized!", user.UserInformation.SlackID);
     }
 }
