@@ -3,6 +3,7 @@ using EnvironmentServer.DAL;
 using EnvironmentServer.Interfaces;
 using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
+using SlackAPI;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -19,15 +20,24 @@ public class ReloadCronJobs : ActionBase
 
         var user = db.Users.GetByID(userID);
         var path = $"/home/{user.Username}/files/cronjob.txt";
-        if (!File.Exists(path))
+        if (!System.IO.File.Exists(path))
         {
-            File.Create(path);
+            System.IO.File.Create(path);
             await Bash.ChownAsync(user.Username, "sftp_users", path);
         }
 
-        await Bash.CommandAsync($"crontab -u {user.Username} {path}");
+        try
+        {
+            await Bash.CommandAsync($"crontab -u {user.Username} {path}");
+        }
+        catch (System.Exception)
+        {
+            if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
+                await em.SendMessageAsync("errors in crontab file, can't install.", user.UserInformation.SlackID);
+        }
 
         if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
             await em.SendMessageAsync("Cronjobs syncronized!", user.UserInformation.SlackID);
+
     }
 }
