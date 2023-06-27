@@ -109,7 +109,7 @@ namespace EnvironmentServer.DAL.Repositories
             DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
 
-            await Bash.ChmodAsync("700", $"/home/{user.Username}");
+            await Bash.ChmodAsync("711", $"/home/{user.Username}");
             await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}");
 
             DB.Logs.Add("DAL", "Create user files folder: " + user.Username);
