@@ -55,22 +55,8 @@
             <dt class="col-sm-6">Php Version</dt>
             <dd class="col-sm-6">@Model.PhpVersion</dd>
         </dl>
-        @if (!string.IsNullOrEmpty(Model.ShopwareVersion))
-        {
-            if (Model.ShopwareVersion.StartsWith("6.5"))
-            {
-                <button type="submit" class="btn btn-primary" disabled>Create</button>
-                <span>No Manual Webinstaller for 6.5 and above - Use the Autoinstallation</span>
-            }
-            else
-            {
-                <button type="submit" class="btn btn-primary">Create</button>
-            }
-        }
-        else
-        {
-            <button type="submit" class="btn btn-primary">Create</button>
-        }
+        
+        <button type="submit" class="btn btn-primary">Create</button>        
 
     </form>
 

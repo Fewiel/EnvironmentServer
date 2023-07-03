@@ -14,28 +14,7 @@ namespace EnvironmentServer.DAL.Repositories
     public class UsersRepository
     {
         private readonly Database DB;
-        private const string phpfpm = @"
-[{0}]
-user = {0}
-group = sftp_users
-
-listen = /run/php/{1}-{0}.sock
-
-listen.owner = {0}
-listen.group = sftp_users
-
-pm = dynamic
-pm.max_children = 32
-pm.start_servers = 16
-pm.min_spare_servers = 16
-pm.max_spare_servers = 32
-pm.max_requests = 2000
-
-php_admin_value[open_basedir] = /home/{0}:/dev/urandom
-php_admin_value[sys_temp_dir] = /home/{0}/files/php/tmp
-php_admin_value[upload_tmp_dir] = /home/{0}/files/php/tmp
-php_admin_value[error_log] = /home/{0}/files/php/php-error.log
-php_admin_flag[log_errors] = on";
+        private string phpfpm;
 
         private static readonly Random Random = new();
         public static string RandomPasswordString(int length)
@@ -104,15 +83,16 @@ php_admin_flag[log_errors] = on";
             DB.Logs.Add("DAL", "Insert user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);
 
-            c.Connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`, `ExpirationDate`, `RoleID`) "
-                     + "VALUES (NULL, @email, @username, @password, @isAdmin, @exp, @rid)", new
+            c.Connection.Execute("INSERT INTO `users` (`ID`, `Email`, `Username`, `Password`, `IsAdmin`, `ExpirationDate`, `RoleID`, `ForcePasswordReset`) "
+                     + "VALUES (NULL, @email, @username, @password, @isAdmin, @exp, @rid, @pwreset)", new
                      {
                          email = user.Email,
                          username = user.Username,
                          password = user.Password,
                          isAdmin = user.IsAdmin,
                          exp = user.ExpirationDate,
-                         rid = user.RoleID
+                         rid = user.RoleID, 
+                         pwreset = true
                      });
 
             c.Connection.Execute($"create user {MySqlHelper.EscapeString(user.Username)}@'localhost' identified by @password;", new
@@ -124,11 +104,12 @@ php_admin_flag[log_errors] = on";
 
             await Bash.UserAddAsync(user.Username, shellPassword);
             await Bash.UserModGroupAsync(user.Username, "sftp_users");
+            await Bash.UserModGroupAsync(user.Username, "www-data", true);
 
             DB.Logs.Add("DAL", "Create user homefolder: " + user.Username);
             Directory.CreateDirectory($"/home/{user.Username}");
 
-            await Bash.ChmodAsync("700", $"/home/{user.Username}");
+            await Bash.ChmodAsync("711", $"/home/{user.Username}");
             await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}");
 
             DB.Logs.Add("DAL", "Create user files folder: " + user.Username);
@@ -140,6 +121,9 @@ php_admin_flag[log_errors] = on";
             await Bash.ChmodAsync("755", $"/home/{user.Username}/files");
 
             DB.Logs.Add("DAL", "Create user php-fpm - " + user.Username);
+
+            phpfpm = DB.Settings.Get("phpfpm").Value;
+
             var conf = string.Format(phpfpm, user.Username, "php5.6-fpm");
             File.WriteAllText($"/etc/php/5.6/fpm/pool.d/{user.Username}.conf", conf);
             conf = string.Format(phpfpm, user.Username, "php7.2-fpm");
@@ -149,13 +133,16 @@ php_admin_flag[log_errors] = on";
             conf = string.Format(phpfpm, user.Username, "php8.0-fpm");
             File.WriteAllText($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf", conf);
             conf = string.Format(phpfpm, user.Username, "php8.1-fpm");
-            File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf);
+            File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf); 
+            conf = string.Format(phpfpm, user.Username, "php8.2-fpm");
+            File.WriteAllText($"/etc/php/8.2/fpm/pool.d/{user.Username}.conf", conf);
 
             await Bash.ServiceReloadAsync("php5.6-fpm");
             await Bash.ServiceReloadAsync("php7.2-fpm");
             await Bash.ServiceReloadAsync("php7.4-fpm");
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ServiceReloadAsync("php8.2-fpm");
 
             File.Create($"/home/{user.Username}/files/php/php-error.log");
 
@@ -182,9 +169,12 @@ php_admin_flag[log_errors] = on";
 
         public async Task RegenerateConfig(bool includePhp = false)
         {
+            phpfpm = DB.Settings.Get("phpfpm").Value;
+
             foreach (var user in DB.Users.GetUsers())
             {
-                File.Create($"/home/{user.Username}/files/php/php-error.log");
+                if (!File.Exists($"/home/{user.Username}/files/php/php-error.log"))
+                    File.Create($"/home/{user.Username}/files/php/php-error.log");
                 await Bash.ChownAsync(user.Username, "sftp_users", $"/home/{user.Username}/files/php/php-error.log");
                 try
                 {
@@ -199,6 +189,8 @@ php_admin_flag[log_errors] = on";
                     File.WriteAllText($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf", conf);
                     conf = string.Format(phpfpm, user.Username, "php8.1-fpm");
                     File.WriteAllText($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf", conf);
+                    conf = string.Format(phpfpm, user.Username, "php8.2-fpm");
+                    File.WriteAllText($"/etc/php/8.2/fpm/pool.d/{user.Username}.conf", conf);
                     if (includePhp)
                     {
                         foreach (var env in DB.Environments.GetForUser(user.ID))
@@ -218,6 +210,7 @@ php_admin_flag[log_errors] = on";
             await Bash.ServiceReloadAsync("php7.4-fpm");
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ServiceReloadAsync("php8.2-fpm");
             await Bash.ReloadApacheAsync();
         }
 
@@ -228,14 +221,15 @@ php_admin_flag[log_errors] = on";
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin, `RoleID` = @rid WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `RoleID` = @rid, `ForcePasswordReset` = @pwreset WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
                     username = user.Username,
                     password = user.Password,
                     isAdmin = user.IsAdmin,
-                    rid = user.RoleID
+                    rid = user.RoleID,
+                    pwreset = user.ForcePasswordReset
                 });
 
             c.Connection.Execute($"ALTER USER {MySqlHelper.EscapeString(user.Username)}@'localhost' IDENTIFIED BY @password;", new
@@ -296,7 +290,7 @@ php_admin_flag[log_errors] = on";
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid, `ForcePasswordReset` = @pwreset WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
@@ -306,7 +300,8 @@ php_admin_flag[log_errors] = on";
                     active = user.Active,
                     lastused = user.LastUsed,
                     exp = user.ExpirationDate,
-                    rid = user.RoleID
+                    rid = user.RoleID, 
+                    pwreset = user.ForcePasswordReset
                 });
         }
 
@@ -332,7 +327,7 @@ php_admin_flag[log_errors] = on";
 
             c.Connection.Execute("UPDATE `users` SET "
                 + "`Email` = @email, `Username` = @username, `Password` = @password," +
-                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid WHERE `users`.`ID` = @id", new
+                " `IsAdmin` = @isAdmin, `Active` = @active, `LastUsed` = @lastused, `ExpirationDate` = @exp, `RoleID` = @rid, `ForcePasswordReset` = @pwreset WHERE `users`.`ID` = @id", new
                 {
                     id = user.ID,
                     email = user.Email,
@@ -342,7 +337,8 @@ php_admin_flag[log_errors] = on";
                     active = user.Active,
                     lastused = user.LastUsed,
                     exp = user.ExpirationDate,
-                    rid = user.RoleID
+                    rid = user.RoleID, 
+                    pwreset = user.ForcePasswordReset
                 });
         }
 
@@ -374,12 +370,14 @@ php_admin_flag[log_errors] = on";
             File.Delete($"/etc/php/7.4/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/8.0/fpm/pool.d/{user.Username}.conf");
             File.Delete($"/etc/php/8.1/fpm/pool.d/{user.Username}.conf");
+            File.Delete($"/etc/php/8.2/fpm/pool.d/{user.Username}.conf");
 
             await Bash.ServiceReloadAsync("php5.6-fpm");
             await Bash.ServiceReloadAsync("php7.2-fpm");
             await Bash.ServiceReloadAsync("php7.4-fpm");
             await Bash.ServiceReloadAsync("php8.0-fpm");
             await Bash.ServiceReloadAsync("php8.1-fpm");
+            await Bash.ServiceReloadAsync("php8.2-fpm");
 
             DB.Logs.Add("DAL", "Delete user " + user.Username);
             using var c = new MySQLConnectionWrapper(DB.ConnString);
@@ -467,7 +465,8 @@ php_admin_flag[log_errors] = on";
                 Email = usr.Email,
                 Password = PasswordHasher.Hash(password),
                 IsAdmin = usr.IsAdmin,
-                RoleID = usr.RoleID
+                RoleID = usr.RoleID,
+                ForcePasswordReset = false
             };
 
             await UpdateAsync(update_usr, password);

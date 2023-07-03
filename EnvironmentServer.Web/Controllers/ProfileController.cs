@@ -99,7 +99,8 @@ namespace EnvironmentServer.Web.Controllers
                 Email = usr.Email,
                 Password = PasswordHasher.Hash(pvm.PasswordNew),
                 IsAdmin = usr.IsAdmin,
-                RoleID = usr.RoleID
+                RoleID = usr.RoleID,
+                ForcePasswordReset = false
             };
 
             await DB.Users.UpdateAsync(update_usr, pvm.PasswordNew);
@@ -153,6 +154,22 @@ namespace EnvironmentServer.Web.Controllers
             }
 
             AddInfo("Passwort set. You can now login to your account!");
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Permission("cronjobs"), HttpPost]
+        public IActionResult ReloadCronjobs()
+        {
+            var usr = DB.Users.GetByID(GetSessionUser().ID);
+
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "reload_cronjobs",
+                Id_Variable = usr.ID,
+                ExecutedById = usr.ID
+            });
+
+            AddInfo("Reloading CornJobs... This can take up to 1 minute");
             return RedirectToAction("Index", "Home");
         }
     }

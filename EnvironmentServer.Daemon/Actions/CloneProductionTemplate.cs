@@ -30,23 +30,37 @@ public class CloneProductionTemplate : ActionBase
         {
             await Bash.CommandAsync($"git clone --branch trunk https://github.com/shopware/platform.git {homeDir}", homeDir);
         }
+        else if (version.ToLower().StartsWith("6.5"))
+        {
+            Directory.CreateDirectory($"{homeDir}/public");
+            await Bash.CommandAsync($"wget https://github.com/shopware/web-recovery/releases/latest/download/shopware-installer.phar.php shopware-installer.phar.php", $"{homeDir}/public", validation: false);
+        }
         else
         {
             await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
-        }        
+        }
 
-        await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
+        if (!version.StartsWith("6.5"))
+        {
+            await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
 
-        if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
-            File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
-        if (File.Exists($"{homeDir}/vendor/shopware/recovery/Common/composer.lock"))
-            File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
+            if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
+                File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
+            if (File.Exists($"{homeDir}/vendor/shopware/recovery/Common/composer.lock"))
+                File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
 
-        if (File.Exists($"{homeDir}/public/.htaccess.dist"))
-            File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
+            if (File.Exists($"{homeDir}/public/.htaccess.dist"))
+                File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
 
-
-        await Bash.CommandAsync($"bin/console assets:install", homeDir, validation: false);
+            if (version.StartsWith("6.4"))
+            {
+                await Bash.CommandAsync($"php7.4 bin/console assets:install", homeDir, validation: false);
+            }
+            else
+            {
+                await Bash.CommandAsync($"php8.1 bin/console assets:install", homeDir, validation: false);
+            }
+        }
 
         await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
 
