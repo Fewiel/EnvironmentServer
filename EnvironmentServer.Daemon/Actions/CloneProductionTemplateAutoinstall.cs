@@ -73,10 +73,10 @@ namespace EnvironmentServer.Daemon.Actions
                 conf = Regex.Replace(conf, DatabaseUrl, $"$1mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}");
                 File.WriteAllText($"{path}.local", conf);
 
-                await Bash.CommandAsync($"bin/console system:install --basic-setup", homeDir, validation: true);
+                //await Bash.CommandAsync($"bin/console system:install --basic-setup", homeDir, validation: true);
             }
 
-            await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", homeDir);
+            //await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", homeDir);
 
             await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
 
