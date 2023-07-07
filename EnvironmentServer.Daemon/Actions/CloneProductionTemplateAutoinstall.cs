@@ -71,7 +71,7 @@ namespace EnvironmentServer.Daemon.Actions
                 var conf = File.ReadAllText(path);
                 conf = Regex.Replace(conf, AppUrl, $"$1https://{env.Address}");
                 conf = Regex.Replace(conf, DatabaseUrl, $"$1mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}");
-                File.WriteAllText(path, conf);
+                File.WriteAllText($"{path}.local", conf);
 
                 await Bash.CommandAsync($"bin/console system:install --basic-setup", homeDir, validation: true);
             }
