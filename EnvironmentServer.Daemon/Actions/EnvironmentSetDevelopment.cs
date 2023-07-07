@@ -10,7 +10,7 @@ namespace EnvironmentServer.Daemon.Actions;
 
 public class EnvironmentSetDevelopment : ActionBase
 {
-    private const string PatternSW6AppEnv = "(APP_ENV=\")(.*)(\")";
+    private const string PatternSW6AppEnv = "(APP_URL=)(.*)";
 
     public override string ActionIdentifier => "environment_set_dev";
 
@@ -22,7 +22,7 @@ public class EnvironmentSetDevelopment : ActionBase
         var usr = db.Users.GetByID(env.UserID);
         var path = $"/home/{usr.Username}/files/{env.InternalName}/.env";
 
-        if (!File.Exists(path))
+        if (!File.Exists(path) && !File.Exists($"{path}.local"))
         {
             if (!string.IsNullOrEmpty(usr.UserInformation.SlackID))
             {
@@ -33,9 +33,12 @@ public class EnvironmentSetDevelopment : ActionBase
             return;
         }
 
-        var conf = File.ReadAllText(path);
+        if (File.Exists($"{path}.local"))
+            path += ".local";
 
-        conf = Regex.Replace(conf, PatternSW6AppEnv, env.DevelopmentMode ? "$1prod$3" : "$1dev$3");
+        var conf = File.ReadAllText(path);
+        conf = Regex.Replace(conf, PatternSW6AppEnv, env.DevelopmentMode ? "$1prod" : "$1dev");
+
         File.WriteAllText(path, conf);
 
         await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");
