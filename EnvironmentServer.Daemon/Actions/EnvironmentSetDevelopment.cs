@@ -32,13 +32,14 @@ public class EnvironmentSetDevelopment : ActionBase
             db.Environments.SetTaskRunning(variableID, false);
             return;
         }
-
+        
         if (File.Exists($"{path}.local"))
             path += ".local";
 
         var conf = File.ReadAllText(path);
         conf = Regex.Replace(conf, PatternSW6AppEnv, env.DevelopmentMode ? "$1prod" : "$1dev");
 
+        conf = Regex.Replace(conf, PatternSW6AppEnv, env.DevelopmentMode ? "$1prod" : "$1dev");
         File.WriteAllText(path, conf);
 
         await Bash.ChownAsync(usr.Username, "sftp_users", $"/home/{usr.Username}/files/{env.InternalName}");

@@ -25,6 +25,10 @@ public class UpdateConfig : ActionBase
         {
             swConf.Content = File.ReadAllText(path + "config.php");
         }
+        else if (File.Exists(path + ".env.local"))
+        {
+            swConf.Content = File.ReadAllText(path + ".env.local");
+        }
         else if (File.Exists(path + ".env"))
         {
             swConf.Content = File.ReadAllText(path + ".env");
