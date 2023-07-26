@@ -1,7 +1,11 @@
-﻿using EnvironmentServer.DAL;
+﻿using EnvironmentServer.Daemon.Models;
+using EnvironmentServer.Daemon.Utility;
+using EnvironmentServer.DAL;
+using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Interfaces;
 using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -20,41 +24,33 @@ public class ExtensionTestingInstall : ActionBase
         var homeDir = $"/home/{user.Username}/files/{env.InternalName}";
 
         var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
-        File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
+        var zipPath = Directory.GetFiles(homeDir, "*.zip")[0];
 
-        await Bash.CommandAsync($"git clone --branch v{version} https://github.com/shopware/production.git {homeDir}", homeDir);
-
-        if (File.Exists($"{homeDir}/vendor/shopware/recovery/composer.lock"))
-            File.Delete($"{homeDir}/vendor/shopware/recovery/composer.lock");
-        if (File.Exists($"{homeDir}/vendor/shopware/recovery/Common/composer.lock"))
-            File.Delete($"{homeDir}/vendor/shopware/recovery/Common/composer.lock");
-
-        await Bash.CommandAsync($"composer install -q", homeDir, validation: false);
-
-        if (File.Exists($"{homeDir}/public/.htaccess.dist"))
-            File.Move($"{homeDir}/public/.htaccess.dist", $"{homeDir}/public/.htaccess");
-
-        await Bash.CommandAsync($"php bin/console assets:install", homeDir, validation: false);
-
-        await Bash.CommandAsync($"php bin/console system:setup --app-env=\\\"prod\\\" " +
-                $"--env=\\\"prod\\\" -f -vvv " +
-                $"--database-url=\\\"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}\\\" " +
-                $"--app-url=\\\"https://{env.Address}\\\" " +
-                $"--composer-home=\\\"/home/{user.Username}/files/{env.InternalName}/var/cache/composer\\\" " +
-                $"--app-env=\\\"prod\\\" -n",
-                $"/home/{user.Username}/files/{env.InternalName}");
-
-        if (version.ToLower().StartsWith("6.5"))
+        if (version.StartsWith('6'))
         {
-            await Bash.CommandAsync($"composer setup -q", homeDir, validation: false);
+            var swVersion = new ShopwareVersion(version);
+            switch (swVersion.Major)
+            {
+                case 4:
+                    await EnvironmentPacker.DeployTemplateAsync(db, env, 6400);
+                    await Bash.CommandAsync($"unzip -o -q {zipPath}", Path.Combine(homeDir, "custom/plugins/"), validation: false);
+                    await Bash.CommandAsync($"composer require -W \"shopware/core:{version}\" \"shopware/administration:{version}\" \"shopware/elasticsearch:{version}\" \"shopware/storefront:{version}\" \"shopware/recovery:{version}\"", validation: false);
+                    File.Move(zipPath, Path.Combine(homeDir, "custom/plugins/"));
+                    break;
+                case 5:
+                    await EnvironmentPacker.DeployTemplateAsync(db, env, 6500);
+                    await Bash.CommandAsync($"unzip -o -q {zipPath}", Path.Combine(homeDir, "custom/plugins/"), validation: false);
+                    await Bash.CommandAsync($"composer require -W \"shopware/core:{version}\" \"shopware/administration:{version}\" \"shopware/elasticsearch:{version}\" \"shopware/storefront:{version}\"", validation: false);
+                    File.Move(zipPath, Path.Combine(homeDir, "custom/plugins/"));
+                    break;
+            }
         }
         else
         {
-            await Bash.CommandAsync($"php bin/console system:install --create-database --basic-setup " +
-            $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
-            $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
-            $"/home/{user.Username}/files/{env.InternalName}", validation: false);
+            await EnvironmentPacker.DeployTemplateAsync(db, env, 5000);
+            await Bash.CommandAsync($"unzip -o -q {zipPath}", Path.Combine(homeDir, "custom/plugins/"), validation: false);
         }
+
         await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", homeDir);
         await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
 

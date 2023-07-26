@@ -76,7 +76,8 @@ namespace EnvironmentServer.Web.Controllers.API
                     },
                     Password = PasswordHasher.Hash(CreatePassword(24)),
                     SSHPublicKey = "",
-                    ExpirationDate = null
+                    ExpirationDate = null,
+                    ForcePasswordReset = false
                 };
                 await DB.Users.InsertAsync(usr, CreatePassword(24), false);
             }
@@ -104,9 +105,9 @@ namespace EnvironmentServer.Web.Controllers.API
                 DBPassword = environmentPasswd,
                 UserID = usr.ID,
                 LatestUse = DateTime.Now,
-                Permanent = true, 
+                Permanent = true,
                 Sorting = 0,
-                Stored = false                
+                Stored = false
             }, usr, true);
 
             var envSettingPersistent = new EnvironmentSettingValue()
@@ -142,8 +143,7 @@ namespace EnvironmentServer.Web.Controllers.API
             System.IO.File.WriteAllText($"/home/{usr.Username}/files/{envName}/version.txt",
                     ce.ShopwareVersion);
 
-            System.IO.File.WriteAllBytes($"/home/{usr.Username}/files/{envName}/extension.zip", Convert.FromBase64String(ce.Base64Extension));
-            System.IO.File.Copy("/root/ShopDev/ExtTemplate/db.sql", $"/home/{usr.Username}/files/{envName}/db.sql");
+            System.IO.File.WriteAllBytes($"/home/{usr.Username}/files/{envName}/{ce.ExtensionName}.zip", Convert.FromBase64String(ce.Base64Extension));
 
             DB.CmdAction.CreateTask(new CmdAction
             {
