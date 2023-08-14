@@ -160,6 +160,9 @@ namespace EnvironmentServer.DAL.Repositories
         {
             var path = "/home/" + user;
 
+            await Bash.UserModGroupAsync(user, "sftp_users");
+            await Bash.UserModGroupAsync(user, "www-data", true);
+
             await Bash.ChownAsync(user, "sftp_users", path);
             await Bash.ChmodAsync("700", path);
         }
