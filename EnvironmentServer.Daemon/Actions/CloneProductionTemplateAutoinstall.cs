@@ -29,6 +29,8 @@ namespace EnvironmentServer.Daemon.Actions
             var settings = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt").Split(':');
             //File.Delete($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt");
 
+            db.Logs.Add("Daemon", File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt"));
+
             var swVersion = new ShopwareVersion(version);
             
             db.Logs.Add("Daemon", $"Language: {settings[0]} Currency: {settings[1]}");
