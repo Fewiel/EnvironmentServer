@@ -57,17 +57,11 @@
         </dl>
         <br />
         <h3>Language & Currency only used for autoinstallation</h3>
-        <div class="mb-3">
-            <select asp-for="Language" class="form-select" aria-label="Default language">
-                <option value="de_DE">German</option>
-                <option selected value="en_EN">Englisch</option>
-            </select>
+        <div class="mb-3">            
+            <select asp-for="Language" asp-items=@Model.Languages class="form-select" label="Default language"></select>
         </div>
         <div class="mb-3">
-            <select asp-for="Currency" class="form-select" aria-label="Default currency">
-                <option value="EUR">Euro</option>
-                <option selected value="USD">US Dollar</option>
-            </select>
+            <select asp-for="Currency" asp-items=@Model.Currencies class ="form-select" label="Default currency"></select>
         </div>
         
         <button type="submit" class="btn btn-primary">Create</button>        

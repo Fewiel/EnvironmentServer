@@ -1,5 +1,7 @@
 ﻿using EnvironmentServer.DAL.Enums;
 using EnvironmentServer.DAL.Models;
+using EnvironmentServer.Web.Controllers;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -25,11 +27,13 @@ namespace EnvironmentServer.Web.ViewModels.EnvSetup
         public string ExhibitionFile { get; set; }
         public long TemplateID { get; set; }
         public int WebRoutePath { get; set; }
-        public string Language { get; set; }
-        public string Currency { get; set; }
+        public Language Language { get; set; }
+        public Currency Currency { get; set; }
 
         //Display Data
         public IEnumerable<PhpVersion> PhpVersions { get; set; }
+        public IEnumerable<SelectListItem> Currencies { get; set; }
+        public IEnumerable<SelectListItem> Languages { get; set; }
         public IEnumerable<ShopwareVersionInfo> ShopwareVersions { get; set; }
         public IEnumerable<string> Shopware6Versions { get; set; }
         public IEnumerable<ExhibitionVersion> ExhibitionVersions { get; set;}

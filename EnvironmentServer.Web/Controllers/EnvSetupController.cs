@@ -4,7 +4,9 @@ using EnvironmentServer.DAL.Models;
 using EnvironmentServer.Web.Attributes;
 using EnvironmentServer.Web.ViewModels.EnvSetup;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -85,7 +87,7 @@ namespace EnvironmentServer.Web.Controllers
         public async Task<IActionResult> MinorVersion6Async([FromForm] EnvSetupViewModel esv)
         {
             if (esv.CustomSetupType == "empty")
-                return RedirectToAction(nameof(EmptyWebspaceSettings), esv);     
+                return RedirectToAction(nameof(EmptyWebspaceSettings), esv);
             if (esv.CustomSetupType == "git")
                 return RedirectToAction(nameof(GitSource), esv);
             if (esv.CustomSetupType == "wget")
@@ -140,6 +142,10 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public IActionResult Finalize([FromForm] EnvSetupViewModel esv)
         {
+            esv.Languages = System.Enum.GetValues(typeof(Language)).Cast<Language>()
+                    .Select(v => new SelectListItem(v.AsText(), ((int)v).ToString()));
+            esv.Currencies = System.Enum.GetValues(typeof(Currency)).Cast<Currency>()
+                    .Select(v => new SelectListItem(v.AsText(), ((int)v).ToString()));
             return View(esv);
         }
 
@@ -159,7 +165,7 @@ namespace EnvironmentServer.Web.Controllers
                 esv.ShopwareVersion = "N/A";
             }
 
-            var environment = new Environment()
+            var environment = new DAL.Models.Environment()
             {
                 UserID = GetSessionUser().ID,
                 DisplayName = esv.DisplayName,
@@ -288,7 +294,7 @@ namespace EnvironmentServer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateWithAutoinstallerAsync([FromForm] EnvSetupViewModel esv)
         {
-            var environment = new Environment()
+            var environment = new DAL.Models.Environment()
             {
                 UserID = GetSessionUser().ID,
                 DisplayName = esv.DisplayName,
@@ -339,7 +345,7 @@ namespace EnvironmentServer.Web.Controllers
                     esv.Shopware6VersionDownload);
 
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/default-settings.txt",
-                    $"{esv.Language}:{esv.Currency}");
+                    $"{esv.Language.AsCode()}:{esv.Currency.AsCode()}");
 
                 DB.CmdAction.CreateTask(new CmdAction
                 {
@@ -366,5 +372,51 @@ namespace EnvironmentServer.Web.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+    }
+
+    public enum Language
+    {
+        EN,
+        DE
+    }
+
+    public enum Currency
+    {
+        USD,
+        EUR
+    }
+
+    public static class LanguageExtensions
+    {
+        public static string AsText(this Language v) => v switch
+        {
+            Language.EN => "Englisch",
+            Language.DE => "German",
+            _ => throw new InvalidOperationException("Unkown Php Version: " + v)
+        };
+
+        public static string AsCode(this Language v) => v switch
+        {
+            Language.EN => "en_EN",
+            Language.DE => "de_DE",
+            _ => throw new InvalidOperationException("Unkown Php Version: " + v)
+        };
+    }
+
+    public static class CurrencyExtensions
+    {
+        public static string AsText(this Currency v) => v switch
+        {
+            Currency.USD => "US Dollar",
+            Currency.EUR => "Euro",
+            _ => throw new InvalidOperationException("Unkown Php Version: " + v)
+        };
+
+        public static string AsCode(this Currency v) => v switch
+        {
+            Currency.USD => "USD",
+            Currency.EUR => "EUR",
+            _ => throw new InvalidOperationException("Unkown Php Version: " + v)
+        };
     }
 }
