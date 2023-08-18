@@ -30,6 +30,8 @@ namespace EnvironmentServer.Daemon.Actions
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt");
 
             var swVersion = new ShopwareVersion(version);
+            
+            db.Logs.Add("Daemon", $"Language: {settings[0]} Currency: {settings[1]}");
 
             if (swVersion.Major == 5)
             {
