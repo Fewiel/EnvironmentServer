@@ -345,7 +345,7 @@ namespace EnvironmentServer.Web.Controllers
                     esv.Shopware6VersionDownload);
 
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/default-settings.txt",
-                    $"{esv.Language.AsCode()}:{esv.Currency.AsCode()}");
+                    $"{((Language)esv.Language).AsCode()}:{((Currency)esv.Currency).AsCode()}");
 
                 DB.CmdAction.CreateTask(new CmdAction
                 {
@@ -397,7 +397,7 @@ namespace EnvironmentServer.Web.Controllers
 
         public static string AsCode(this Language v) => v switch
         {
-            Language.EN => "en_EN",
+            Language.EN => "en_US",
             Language.DE => "de_DE",
             _ => throw new InvalidOperationException("Unkown Php Version: " + v)
         };
