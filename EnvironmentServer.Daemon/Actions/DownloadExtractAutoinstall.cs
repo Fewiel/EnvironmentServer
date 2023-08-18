@@ -52,6 +52,8 @@ internal class DownloadExtractAutoinstall : ActionBase
         var dbname = user.Username + "_" + env.InternalName;
         var envVersion = env.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version");
 
+        var settings = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt").Split(':');
+
         db.Logs.Add("Daemon", "Unzip File for: " + env.InternalName);
 
         try
@@ -68,8 +70,8 @@ internal class DownloadExtractAutoinstall : ActionBase
                     $"/home/{user.Username}/files/{env.InternalName}");
 
                 await Bash.CommandAsync($"php8.0 bin/console system:install --create-database --basic-setup " +
-                    $"--shop-locale=\\\"de-DE\\\" --shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
-                    $"--shop-currency=\\\"EUR\\\" -n",
+                    $"--shop-locale=\\\"{settings[0].Replace("_", "-")}\\\" --shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
+                    $"--shop-currency=\\\"{settings[1]}\\\" -n",
                     $"/home/{user.Username}/files/{env.InternalName}", validation: false);
             }
             else
@@ -78,9 +80,9 @@ internal class DownloadExtractAutoinstall : ActionBase
                 await Bash.CommandAsync($"php7.4 recovery/install/index.php --no-interaction --quiet " +
                     $"--no-skip-import --db-host=\\\"localhost\\\" --db-user=\\\"{dbname}\\\" " +
                     $"--db-password=\\\"{env.DBPassword}\\\" --db-name=\\\"{dbname}\\\" " +
-                    $"--shop-locale=\\\"de_DE\\\" --shop-host=\\\"{env.Address}\\\" " +
+                    $"--shop-locale=\\\"{settings[0]}\\\" --shop-host=\\\"{env.Address}\\\" " +
                     $"--shop-name=\\\"{env.InternalName}\\\" --shop-email=\\\"{user.Email}\\\" " +
-                    $"--shop-currency=\\\"EUR\\\" --admin-username=\\\"admin\\\" --admin-password=\\\"{env.DBPassword}\\\" " +
+                    $"--shop-currency=\\\"{settings[1]}\\\" --admin-username=\\\"admin\\\" --admin-password=\\\"{env.DBPassword}\\\" " +
                     $"--admin-email=\\\"{user.Email}\\\" --admin-name=\\\"Shopware Demo\\\" --admin-locale=\\\"de_DE\\\"",
                     $"/home/{user.Username}/files/{env.InternalName}");
             }

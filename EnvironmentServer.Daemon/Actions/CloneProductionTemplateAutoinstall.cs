@@ -26,6 +26,8 @@ namespace EnvironmentServer.Daemon.Actions
 
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
+            var settings = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt").Split(':');
+            File.Delete($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt");
 
             var swVersion = new ShopwareVersion(version);
 
@@ -62,7 +64,7 @@ namespace EnvironmentServer.Daemon.Actions
 
                 await Bash.CommandAsync($"php bin/console system:install --create-database --basic-setup " +
                         $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" " +
-                        $"--shop-locale=\\\"de_DE\\\" --shop-currency=\\\"EUR\\\" -n",
+                        $"--shop-locale=\\\"{settings[0]}\\\" --shop-currency=\\\"{settings[1]}\\\" -n",
                         $"/home/{user.Username}/files/{env.InternalName}", validation: false);
             }
             else
@@ -73,7 +75,9 @@ namespace EnvironmentServer.Daemon.Actions
                 conf = Regex.Replace(conf, DatabaseUrl, $"$1mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}");
                 File.WriteAllText($"{path}.local", conf);
 
-                await Bash.CommandAsync($"bin/console system:install --basic-setup", homeDir, validation: true);
+                await Bash.CommandAsync($"bin/console system:install --basic-setup " +
+                    $"--shop-locale=\\\"{settings[0].Replace("_", "-")}\\\" --shop-currency=\\\"{settings[1]}\\\" " +
+                    $"--shop-name=\\\"{env.DisplayName}\\\" --shop-email=\\\"{user.Email}\\\" ", homeDir, validation: true);
             }
 
             await Bash.CommandAsync($"php bin/console user:change-password admin -p {env.DBPassword}", homeDir);

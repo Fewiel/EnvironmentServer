@@ -338,6 +338,9 @@ namespace EnvironmentServer.Web.Controllers
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/version.txt",
                     esv.Shopware6VersionDownload);
 
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/default-settings.txt",
+                    $"{esv.Language}:{esv.Currency}");
+
                 DB.CmdAction.CreateTask(new CmdAction
                 {
                     Action = "clone_production_template_install",
