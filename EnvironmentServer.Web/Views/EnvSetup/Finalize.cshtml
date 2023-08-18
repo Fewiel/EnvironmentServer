@@ -55,15 +55,7 @@
             <dt class="col-sm-6">Php Version</dt>
             <dd class="col-sm-6">@Model.PhpVersion</dd>
         </dl>
-        <br />
-        <h3>Language & Currency only used for autoinstallation</h3>
-        <div class="mb-3">            
-            <select asp-for="Language" asp-items=@Model.Languages class="form-select" label="Default language"></select>
-        </div>
-        <div class="mb-3">
-            <select asp-for="Currency" asp-items=@Model.Currencies class="form-select" label="Default currency"></select>
-        </div>
-        
+                
         <button type="submit" class="btn btn-primary">Create</button>        
 
     </form>
@@ -85,6 +77,14 @@
             <input type="hidden" asp-for="WebRoutePath" />
 
             <h4>or</h4>
+            <br />            
+            <h3>Language & Currency only used for autoinstallation</h3>
+            <div class="mb-3">
+                <select asp-for="Language" asp-items=@Model.Languages class="form-select" label="Default language"></select>
+            </div>
+            <div class="mb-3">
+                <select asp-for="Currency" asp-items=@Model.Currencies class="form-select" label="Default currency"></select>
+            </div>
             <br />
             <div class="alert alert-danger">Older Versions are not Supported! (Automatic installations of versions below 6.4.7.0 and 5.7.6. may fail!)</div>
             <button type="submit" onclick="return confirm('Please keep in mind. Automatic installations of versions below 6.4.7.0 and 5.7.6. may fail!')" class="btn btn-danger">Create with Autoinstallation</button>
