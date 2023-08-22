@@ -27,9 +27,8 @@ namespace EnvironmentServer.Daemon.Actions
             var version = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             File.Delete($"/home/{user.Username}/files/{env.InternalName}/version.txt");
             var settings = File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt").Split(':');
-            //File.Delete($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt");
+            File.Delete($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt");
 
-            db.Logs.Add("Daemon", File.ReadAllText($"/home/{user.Username}/files/{env.InternalName}/default-settings.txt"));
 
             var swVersion = new ShopwareVersion(version);
             
