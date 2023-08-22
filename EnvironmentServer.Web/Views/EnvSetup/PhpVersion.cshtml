@@ -8,7 +8,7 @@
     foreach (var v in @Model.PhpVersions)
     {
         <div class="card hovercard">
-            <div class="card-header container-fluid" @(@v.ToString() != "Php81" ? "" : "style=background-color:#335624;")>
+            <div class="card-header container-fluid" @(@v.ToString() == "Php81" || @v.ToString() == "Php82" ? "style=background-color:#335624;" : "")>
                 <div class="row">
                     <div class="col-md-10">
                         Version: @v @(@v.ToString() != "Php81" ? "" : "- Recommended for Shopware 6.5")@(@v.ToString() != "Php74" ? "" : "- Recommended for Shopware 5.7+ & 6")@(@v.ToString() != "Php56" ? "" : "- Shopware 5.6 and later!")
