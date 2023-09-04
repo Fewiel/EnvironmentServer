@@ -24,7 +24,7 @@ public class ReindexElasticSearch : ActionBase
         log += $"Start UTC: {DateTime.UtcNow} {Environment.NewLine}";
 
         log += $"{DateTime.UtcNow} - es:reset {Environment.NewLine}";
-        log += await Bash.CommandQueryAsync("bin/console es:reset", homeDir);        
+        log += await Bash.CommandQueryAsync("bin/console es:reset -n", homeDir);
         log += Environment.NewLine;
         log += $"{DateTime.UtcNow} - cache:clear";
         log += await Bash.CommandQueryAsync("bin/console cache:clear", homeDir);
