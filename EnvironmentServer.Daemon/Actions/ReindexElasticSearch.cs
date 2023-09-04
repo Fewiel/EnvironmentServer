@@ -3,6 +3,7 @@ using EnvironmentServer.Interfaces;
 using EnvironmentServer.Util;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EnvironmentServer.Daemon.Actions;
@@ -34,6 +35,8 @@ public class ReindexElasticSearch : ActionBase
         log += Environment.NewLine;
 
         log += $"End UTC: {DateTime.UtcNow} {Environment.NewLine}";
+
+        log = Regex.Replace(log, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
 
         if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
         {
