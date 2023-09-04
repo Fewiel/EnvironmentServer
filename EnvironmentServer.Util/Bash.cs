@@ -40,14 +40,19 @@ public static class Bash
             LogCallback?.Invoke("Bash Command", $"Finished {JsonSerializer.Serialize(cli)}");
     }
 
-    public static async Task<StringBuilder> CommandQueryAsync(string cmd, string workingDir)
+    public static async Task<StringBuilder> CommandQueryAsync(string cmd, string workingDir, bool validation = false)
     {
         StringBuilder result = new();
-        await Cli.Wrap("/bin/bash")
+        var cli = Cli.Wrap("/bin/bash")
                 .WithArguments($"-c \"{cmd}\"")
                 .WithWorkingDirectory(workingDir)
-                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(result))
-                .ExecuteAsync();
+                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(result));
+
+        if (!validation)
+            cli = cli.WithValidation(CommandResultValidation.None);
+
+        await cli.ExecuteAsync();
+
         return result;
     }
 
