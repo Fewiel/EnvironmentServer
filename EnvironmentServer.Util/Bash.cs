@@ -30,8 +30,8 @@ public static class Bash
         StringBuilder error = new();
         cli = cli.WithStandardErrorPipe(PipeTarget.ToStringBuilder(error));
 
-        await cli.ExecuteAsync(); 
-        
+        await cli.ExecuteAsync();
+
         if (log)
             LogCallback?.Invoke("Bash Command OutoutPipe", $"Result: {JsonSerializer.Serialize(result)}");
         if (log)

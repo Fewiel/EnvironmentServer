@@ -208,6 +208,18 @@ namespace EnvironmentServer.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public IActionResult Reindex(long id)
+        {
+            DB.CmdAction.CreateTask(new CmdAction
+            {
+                Action = "reindex_es",
+                Id_Variable = id,
+                ExecutedById = GetSessionUser().ID
+            });
+            AddInfo("Reindex triggered - Wait until the task has been executed - You will receive a message (Mail/Slack)");
+            return RedirectToAction("Index", "Home");
+        }
+
         public IActionResult BackupEnvironment(long id)
         {
             DB.CmdAction.CreateTask(new CmdAction

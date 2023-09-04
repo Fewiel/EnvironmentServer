@@ -13,8 +13,14 @@
         <button type="submit" class="btn btn-primary">Change Name</button>
     </form>
     <br />
+    <br />
     <span>Shopware Config</span>
     <a asp-controller="Env" asp-action="ConfigFile" asp-route-id=@Model.ID class="btn btn-primary">Edit Shopware Config/Env File</a>
+    <br />
+    <br />
+    <span>Shopware Reindex ElasticSearch - WARNING: You need ElasticSearch running for this!</span>
+    <a asp-controller="Env" asp-action="Reindex" asp-route-id=@Model.ID class="btn btn-primary">Reindex ElasticSearch</a>
+    <br />
     <br />
     <span>Backup Environment</span>
     <a asp-controller="Env" asp-action="BackupEnvironment" asp-route-id=@Model.ID class="btn btn-primary">Backup Environment</a>

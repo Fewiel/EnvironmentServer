@@ -130,7 +130,8 @@ namespace EnvironmentServer.Daemon
                 new BackupEnvironment(),
                 new CloneProductionTemplate(),
                 new CloneProductionTemplateAutoinstall(),
-                new ReloadCronJobs()
+                new ReloadCronJobs(),
+                new ReindexElasticSearch()
             };
 
             foreach (var a in l)
