@@ -23,14 +23,19 @@ public class ReindexElasticSearch : ActionBase
         var log = $"Reindex Log for {env.DisplayName} - UTC: {DateTime.UtcNow} {Environment.NewLine}";
         log += $"Start UTC: {DateTime.UtcNow} {Environment.NewLine}";
 
-        log += await Bash.CommandQueryAsync("bin/console es:reset", homeDir);
+        log += $"{DateTime.UtcNow} - es:reset {Environment.NewLine}";
+        log += await Bash.CommandQueryAsync("bin/console es:reset", homeDir);        
         log += Environment.NewLine;
+        log += $"{DateTime.UtcNow} - cache:clear";
         log += await Bash.CommandQueryAsync("bin/console cache:clear", homeDir);
         log += Environment.NewLine;
+        log += $"{DateTime.UtcNow} - es:index";
         log += await Bash.CommandQueryAsync("bin/console es:index", homeDir);
         log += Environment.NewLine;
+        log += $"{DateTime.UtcNow} - dal:refresh:index";
         log += await Bash.CommandQueryAsync("bin/console dal:refresh:index", homeDir);
         log += Environment.NewLine;
+        log += $"{DateTime.UtcNow} - es:create:alias";
         log += await Bash.CommandQueryAsync("bin/console es:create:alias", homeDir);
         log += Environment.NewLine;
 
