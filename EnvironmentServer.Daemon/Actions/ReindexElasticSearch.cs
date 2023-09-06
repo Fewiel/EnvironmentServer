@@ -43,6 +43,8 @@ public class ReindexElasticSearch : ActionBase
 
         log = Regex.Replace(log, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Multiline);
 
+        await Bash.ChownAsync(user.Username, "sftp_users", homeDir, true);
+
         if (!string.IsNullOrEmpty(user.UserInformation.SlackID))
         {
             var success = await em.SendMessageAsync($"Reindex of Environment {env.DisplayName} finished. {Environment.NewLine} {log}",
