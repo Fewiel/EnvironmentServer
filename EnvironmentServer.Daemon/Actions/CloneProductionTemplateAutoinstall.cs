@@ -56,7 +56,6 @@ namespace EnvironmentServer.Daemon.Actions
                         $"--env=\\\"prod\\\" -f -vvv " +
                         $"--database-url=\\\"mysql://{user.Username}_{env.InternalName}:{env.DBPassword}@localhost:3306/{user.Username}_{env.InternalName}\\\" " +
                         $"--app-url=\\\"https://{env.Address}\\\" " +
-                        $"--composer-home=\\\"/home/{user.Username}/files/{env.InternalName}/var/cache/composer\\\" " +
                         $"--app-env=\\\"prod\\\" -n",
                         $"/home/{user.Username}/files/{env.InternalName}");
 
