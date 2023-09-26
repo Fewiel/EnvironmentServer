@@ -361,6 +361,9 @@ namespace EnvironmentServer.Web.Controllers
                 System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/dl.txt",
                     esv.ShopwareVersionDownload);
 
+                System.IO.File.WriteAllText($"/home/{GetSessionUser().Username}/files/{esv.InternalName}/default-settings.txt",
+                   $"{((Language)esv.Language).AsCode()}:{((Currency)esv.Currency).AsCode()}");
+
                 DB.CmdAction.CreateTask(new CmdAction
                 {
                     Action = "download_extract_autoinstall",

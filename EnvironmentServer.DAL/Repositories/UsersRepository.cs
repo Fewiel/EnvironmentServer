@@ -91,7 +91,7 @@ namespace EnvironmentServer.DAL.Repositories
                          password = user.Password,
                          isAdmin = user.IsAdmin,
                          exp = user.ExpirationDate,
-                         rid = user.RoleID, 
+                         rid = user.RoleID,
                          pwreset = true
                      });
 
