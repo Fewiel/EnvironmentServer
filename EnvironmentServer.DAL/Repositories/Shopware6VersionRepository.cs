@@ -1,6 +1,4 @@
-﻿using Dapper;
-using EnvironmentServer.DAL.Models;
-using EnvironmentServer.DAL.Utility;
+﻿using EnvironmentServer.Util;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -19,11 +17,14 @@ public class Shopware6VersionRepository
 
     public async Task<IEnumerable<string>> GetVersionsAsync()
     {
-        HttpClient client = new HttpClient();
-        HttpResponseMessage response = await client.GetAsync("https://releases.shopware.com/changelog/index.json");
-        response.EnsureSuccessStatusCode();
-        string responseBody = await response.Content.ReadAsStringAsync();
+        //---- not working due to bugged httpClient ----
+        //HttpClient client = new HttpClient();
+        //HttpResponseMessage response = await client.GetAsync("https://releases.shopware.com/changelog/index.json");
+        //response.EnsureSuccessStatusCode();
+        //string responseBody = await response.Content.ReadAsStringAsync();
 
-        return JsonConvert.DeserializeObject<IEnumerable<string>>(responseBody);
+        var versions = await Bash.CommandQueryAsync("curl https://releases.shopware.com/changelog/index.json", "/", true);
+        
+        return JsonConvert.DeserializeObject<IEnumerable<string>>(versions.ToString());
     }
 }
