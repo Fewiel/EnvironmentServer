@@ -117,7 +117,7 @@ namespace EnvironmentServer.Web.Controllers
         {
             var env = DB.Environments.Get(id);
             DB.Environments.Use(id);
-            return Redirect("https://" + env.Address);
+            return Redirect("http://" + env.Address);
         }
 
         public IActionResult OpenBackend(long id)
@@ -126,8 +126,8 @@ namespace EnvironmentServer.Web.Controllers
             var version = env.Settings.Find(s => s.EnvironmentSetting.Property == "sw_version").Value;
             DB.Environments.Use(id);
             if (env.Stored)
-                return Redirect("https://" + env.Address);
-            return Redirect("https://" + env.Address + (version[0] == '5' ? "/backend" : "/admin"));
+                return Redirect("http://" + env.Address);
+            return Redirect("http://" + env.Address + (version[0] == '5' ? "/backend" : "/admin"));
         }
 
         public IActionResult ChangePerma(long id)
