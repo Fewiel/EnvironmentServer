@@ -19,6 +19,8 @@ namespace EnvironmentServer.Daemon.Actions
             var env = db.Environments.Get(variableID);
             var usr = db.Users.GetByID(userID);
 
+            db.Logs.Add("EnvironmentDelete", "Delete Environment: " + env.InternalName + " UserID: " + env.UserID);
+
             await db.Environments.DeleteAsync(env, usr).ConfigureAwait(false);
         }
     }

@@ -335,11 +335,14 @@ namespace EnvironmentServer.DAL.Repositories
         {
             DB.Logs.Add("DAL", "Delete Environment " + environment.InternalName + " for " + user.Username);
 
+            DB.Logs.Add("DAL", "Disable " + $"{user.Username}_{environment.InternalName}.conf");
+
             await Bash.ApacheDisableSiteAsync($"{user.Username}_{environment.InternalName}.conf");
             await Bash.ReloadApacheAsync();
 
+            DB.Logs.Add("DAL", "Delete " + $"{user.Username}_{environment.InternalName}.conf");
             File.Delete($"/etc/apache2/sites-available/{user.Username}_{environment.InternalName}.conf");
-
+                        
             if (environment.Stored && File.Exists($"/home/{user.Username}/files/inactive/{environment.InternalName}.zip"))
                 File.Delete($"/home/{user.Username}/files/inactive/{environment.InternalName}.zip");
 
