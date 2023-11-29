@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace EnvironmentServer.DAL.Repositories
 {
@@ -384,6 +385,17 @@ namespace EnvironmentServer.DAL.Repositories
         {
             using var c = new MySQLConnectionWrapper(DB.ConnString);
             await c.Connection.ExecuteAsync($"UPDATE {dbname}.s_core_shops SET secure = '1' WHERE id = 1;");
+        }
+
+        public async Task ChangeToSW5(Environment environment)
+        {
+            using var c = new MySQLConnectionWrapper(DB.ConnString);
+            var Command = new MySqlCommand($"UPDATE environments_settings_values SET `Value` = '5' WHERE environments_ID_fk = @envid And environments_settings_ID_fk = 3;");
+            Command.Parameters.AddWithValue("@envid", environment.ID);
+            Command.Connection = c.Connection;
+            Command.ExecuteNonQuery();
+
+            await UpdatePhpAsync(environment.ID, DB.Users.GetByID(environment.UserID), environment.Version);
         }
     }
 }

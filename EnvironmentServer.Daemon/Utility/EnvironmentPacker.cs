@@ -217,6 +217,8 @@ internal static class EnvironmentPacker
             cnf = cnf.Replace("{{DBPASSWORD}}", env.DBPassword);
             cnf = cnf.Replace("{{DBNAME}}", $"{user.Username}_{env.InternalName}");
             File.WriteAllText($"/home/{user.Username}/files/{env.InternalName}/config.php", cnf);
+
+            await db.Environments.ChangeToSW5(env);
         }
 
         //Replace parts in DB Dump
